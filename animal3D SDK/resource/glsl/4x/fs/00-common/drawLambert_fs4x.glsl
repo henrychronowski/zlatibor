@@ -37,8 +37,18 @@
 
 layout (location = 0) out vec4 rtFragColor;
 
+in vec4 vNorm;
+in vec4 vLight;
+
 void main()
 {
-	// DUMMY OUTPUT: all fragments are OPAQUE LIME
-	rtFragColor = vec4(0.5, 1.0, 0.0, 1.0);
+
+
+	// diffuse coefficient = dot(unit surface normal, unit light normal)
+	//vec4 norm = 
+	//vec4 light = 
+	float kd = dot(vNorm,vLight);
+
+	// DEBUG OUTPUT;
+	rtFragColor = vec4(kd,kd,kd,1.0f);
 }

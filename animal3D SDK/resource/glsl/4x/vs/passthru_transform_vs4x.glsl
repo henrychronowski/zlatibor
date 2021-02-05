@@ -24,20 +24,21 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> declare model-view-projection matrix uniform
 //		(hint: correct name is used in codebase)
 //	-> transform input position by MVP matrix, store as output
 
 layout (location = 0) in vec4 aPosition;
 
+uniform mat4 uMVP;	// model-view-projection matrix
+
 flat out int vVertexID;
 flat out int vInstanceID;
 
 void main()
 {
-	// DUMMY OUTPUT: directly assign input position to output position
-	gl_Position = aPosition;
+	gl_Position = uMVP * aPosition;
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;
