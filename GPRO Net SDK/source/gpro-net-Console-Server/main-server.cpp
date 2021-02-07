@@ -34,13 +34,15 @@
 #include "RakNet/MessageIdentifiers.h"
 #include "RakNet/BitStream.h"
 #include "RakNet/RakNetTypes.h"
+#include "RakNet/GetTime.h"
 
 #define MAX_CLIENTS 10
 #define SERVER_PORT 7777
 
 enum GameMessages
 {
-	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
+	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
+	ID_GAME_MESSAGE_2 = ID_GAME_MESSAGE_1 + 1
 };
 
 
@@ -50,6 +52,8 @@ int main(int const argc, char const* const argv[])
 
 	RakNet::RakPeerInterface* peer = RakNet::RakPeerInterface::GetInstance();
 	RakNet::Packet* packet;
+
+	peer->SetOccasionalPing(true);
 
 	RakNet::SocketDescriptor sd(SERVER_PORT, 0);
 	peer->Startup(MAX_CLIENTS, &sd, 1);
@@ -101,6 +105,19 @@ int main(int const argc, char const* const argv[])
 				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
 				bsIn.Read(rs);
 				printf("%s\n", rs.C_String());
+
+				//RakNet::MessageID useTimeStamp = ID_TIMESTAMP;
+				RakNet::Time timeStamp = RakNet::GetTime();
+				RakNet::BitStream bsOut;
+				
+				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_2);
+				bsOut.Write("Yay.");
+
+				//bsOut.Write(useTimeStamp);
+				bsOut.Write(timeStamp);
+
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				printf("Sending message from client at time %" PRINTF_64_BIT_MODIFIER "u\n", timeStamp);
 			}
 			break;
 
@@ -116,3 +133,4 @@ int main(int const argc, char const* const argv[])
 
 	return EXIT_SUCCESS;
 }
+
