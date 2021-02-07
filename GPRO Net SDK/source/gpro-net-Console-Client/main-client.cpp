@@ -34,30 +34,30 @@
 #include "RakNet/MessageIdentifiers.h"
 #include "RakNet/BitStream.h"
 #include "RakNet/RakNetTypes.h"
+#include "RakNet/GetTime.h"
 
-#define MAX_CLIENTS 10
 #define SERVER_PORT 7777
+#define SERVER_IP "172.16.2.56"
 
 enum GameMessages
 {
-	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
+	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
+	ID_GAME_MESSAGE_2 = ID_GAME_MESSAGE_1 + 1
 };
 
 int main(int const argc, char const* const argv[])
 {
-	char str[512];
+	//char str[512];
 	RakNet::RakPeerInterface* peer = RakNet::RakPeerInterface::GetInstance();
 	RakNet::Packet* packet;
+	
+	peer->SetOccasionalPing(true);
 
 	RakNet::SocketDescriptor sd;
 	peer->Startup(1, &sd, 1);
 
-	printf("Enter server IP or hit enter for 127.0.0.1\n");
-	fgets(str, 512, stdin);
-	if (str[0] == 0)
-		strcpy(str, "127.0.0.1");
 	printf("Client starting.\n");
-	peer->Connect(str, SERVER_PORT, 0, 0);
+	peer->Connect(SERVER_IP, SERVER_PORT, 0, 0);
 
 
 	while (true)
@@ -66,15 +66,6 @@ int main(int const argc, char const* const argv[])
 		{
 			switch (packet->data[0])
 			{
-			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
-				printf("Another client has disconnected.\n");
-				break;
-			case ID_REMOTE_CONNECTION_LOST:
-				printf("Another client has lost connection.\n");
-				break;
-			case ID_REMOTE_NEW_INCOMING_CONNECTION:
-				printf("Another client has connected.\n");
-				break;
 			case ID_CONNECTION_REQUEST_ACCEPTED:
 			{
 				printf("Our connection request has been accepted.\n");
@@ -103,6 +94,18 @@ int main(int const argc, char const* const argv[])
 				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
 				bsIn.Read(rs);
 				printf("%s\n", rs.C_String());
+			}
+			break;
+			case ID_GAME_MESSAGE_2:
+			{
+				RakNet::RakString rs;
+				RakNet::Time time;
+				RakNet::BitStream bsIn(packet->data, packet->length, false);
+				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+				bsIn.Read(rs);
+				bsIn.Read(time);
+				printf("%s\n", rs.C_String());
+				printf("Sending message from client at time %" PRINTF_64_BIT_MODIFIER "u\n", time);
 			}
 			break;
 
