@@ -44,11 +44,68 @@
 
 void handleRemoteInput(RakNet::RakPeerInterface* peer) 
 {
+	RakNet::Packet* packet;
+	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
+	{
+		switch (packet->data[0])
+		{
+		case ID_CONNECTION_REQUEST_ACCEPTED:
+		{
+			printf("Our connection request has been accepted.\n");
 
+			RakNet::BitStream bsOut;
+			bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+			bsOut.Write("Hello world");
+			peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+		}
+		break;
+		case ID_NEW_INCOMING_CONNECTION:
+			printf("A connection is incoming.\n");
+			break;
+		case ID_NO_FREE_INCOMING_CONNECTIONS:
+			printf("The server is full.\n");
+		case ID_DISCONNECTION_NOTIFICATION:
+			printf("We have been disconnected.\n");
+			break;
+		case ID_CONNECTION_LOST:
+			printf("We have lost connection.\n");
+			break;
+		case ID_GAME_MESSAGE_1:
+		{
+			RakNet::RakString rs;
+			RakNet::BitStream bsIn(packet->data, packet->length, false);
+			bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+			bsIn.Read(rs);
+			printf("%s\n", rs.C_String());
+		}
+		break;
+		case ID_GAME_MESSAGE_2:
+		{
+			RakNet::RakString rs;
+			RakNet::Time time;
+			RakNet::BitStream bsIn(packet->data, packet->length, false);
+			bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+			bsIn.Read(rs);
+			bsIn.Read(time);
+			printf("%s\n", rs.C_String());
+			printf("Sending message from client at time %" PRINTF_64_BIT_MODIFIER "u\n", time);
+		}
+		break;
+		case ID_PUBLIC_SERVER_CLIENT:
+		{
+
+		}
+		break;
+		default:
+			printf("Message with identifier %i has arrived.\n", packet->data[0]);
+			break;
+		}
+	}
 }
 
 void handleLocalInput(RakNet::RakPeerInterface* peer) 
 {
+	printf("msg: ");
 
 }
 
@@ -56,7 +113,6 @@ int main(int const argc, char const* const argv[])
 {
 	//char str[512];
 	RakNet::RakPeerInterface* peer = RakNet::RakPeerInterface::GetInstance();
-	RakNet::Packet* packet;
 	
 	peer->SetOccasionalPing(true);
 
@@ -69,58 +125,8 @@ int main(int const argc, char const* const argv[])
 
 	while (true)
 	{
-		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
-		{
-			switch (packet->data[0])
-			{
-			case ID_CONNECTION_REQUEST_ACCEPTED:
-			{
-				printf("Our connection request has been accepted.\n");
-
-				RakNet::BitStream bsOut;
-				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
-				bsOut.Write("Hello world");
-				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-			}
-			break;
-			case ID_NEW_INCOMING_CONNECTION:
-				printf("A connection is incoming.\n");
-				break;
-			case ID_NO_FREE_INCOMING_CONNECTIONS:
-				printf("The server is full.\n");
-			case ID_DISCONNECTION_NOTIFICATION:
-				printf("We have been disconnected.\n");
-				break;
-			case ID_CONNECTION_LOST:
-				printf("We have lost connection.\n");
-				break;
-			case ID_GAME_MESSAGE_1:
-			{
-				RakNet::RakString rs;
-				RakNet::BitStream bsIn(packet->data, packet->length, false);
-				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-				bsIn.Read(rs);
-				printf("%s\n", rs.C_String());
-			}
-			break;
-			case ID_GAME_MESSAGE_2:
-			{
-				RakNet::RakString rs;
-				RakNet::Time time;
-				RakNet::BitStream bsIn(packet->data, packet->length, false);
-				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-				bsIn.Read(rs);
-				bsIn.Read(time);
-				printf("%s\n", rs.C_String());
-				printf("Sending message from client at time %" PRINTF_64_BIT_MODIFIER "u\n", time);
-			}
-			break;
-
-			default:
-				printf("Message with identifier %i has arrived.\n", packet->data[0]);
-				break;
-			}
-		}
+		handleRemoteInput(peer);
+		handleLocalInput(peer);
 	}
 
 
