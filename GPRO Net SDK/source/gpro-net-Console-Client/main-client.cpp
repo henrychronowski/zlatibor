@@ -31,19 +31,26 @@
 
 
 #include "RakNet/RakPeerInterface.h"
-#include "RakNet/MessageIdentifiers.h"
 #include "RakNet/BitStream.h"
 #include "RakNet/RakNetTypes.h"
 #include "RakNet/GetTime.h"
 
+#include "gpro-net/gpro-net.h"
+
 #define SERVER_PORT 7777
 #define SERVER_IP "172.16.2.56"
 
-enum GameMessages
+
+
+void handleRemoteInput(RakNet::RakPeerInterface* peer) 
 {
-	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
-	ID_GAME_MESSAGE_2 = ID_GAME_MESSAGE_1 + 1
-};
+
+}
+
+void handleLocalInput(RakNet::RakPeerInterface* peer) 
+{
+
+}
 
 int main(int const argc, char const* const argv[])
 {

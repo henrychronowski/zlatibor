@@ -25,6 +25,15 @@
 #ifndef _GPRO_NET_H_
 #define _GPRO_NET_H_
 
+#include "RakNet/MessageIdentifiers.h"
+
+enum GameMessages
+{
+	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
+	ID_GAME_MESSAGE_2,
+	ID_PUBLIC_CLIENT_SERVER,
+	ID_PUBLIC_SERVER_CLIENT,
+};
 
 
 #endif	// !_GPRO_NET_H_
