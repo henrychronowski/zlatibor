@@ -36,16 +36,31 @@
 //	-> calculate final normal and assign to varying
 //	-> assign texture coordinate to varying
 
+uniform mat4 uMV, uMV_nrm, uP;
+
 layout (location = 0) in vec4 aPosition;
+layout (location = 2) in vec3 aNormal;
 
 flat out int vVertexID;
 flat out int vInstanceID;
 
+out vec4 vNormal;
+out vec4 vPosition;
+
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
-	gl_Position = aPosition;
+	//gl_Position = aPosition;
 
+	//vVertexID = gl_VertexID;
+	//vInstanceID = gl_InstanceID;
+
+	// Get position and normal in camera space
+	vPosition = uMV * aPosition;
+	vNormal = uMV_nrm * vec4(aNormal, 0.0f);
+
+	gl_Position = uP * vPosition; // clip-space
+	
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;
 }

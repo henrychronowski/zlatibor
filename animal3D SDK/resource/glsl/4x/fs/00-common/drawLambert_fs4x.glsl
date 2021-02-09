@@ -35,19 +35,19 @@
 //	-> implement for multiple lights
 //		(hint: there is another uniform for light count)
 
+uniform vec4 uLightPos; // World/camera
+
 layout (location = 0) out vec4 rtFragColor;
 
-in vec4 vNorm;
-in vec4 vLight;
+in vec4 vNormal;
+in vec4 vPosition;
 
 void main()
 {
-
-
 	// diffuse coefficient = dot(unit surface normal, unit light normal)
-	//vec4 norm = 
-	//vec4 light = 
-	float kd = dot(vNorm,vLight);
+	vec4 N = normalize(vNormal);
+	vec4 L = normalize(uLightPos - vPosition);
+	float kd = dot(N,L);
 
 	// DEBUG OUTPUT;
 	rtFragColor = vec4(kd,kd,kd,1.0f);
