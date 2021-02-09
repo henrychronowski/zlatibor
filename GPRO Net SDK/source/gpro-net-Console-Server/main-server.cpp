@@ -55,9 +55,9 @@ enum GameMessages
 // Render
 
 // Log a message
-int logMessage(const char* message, const char* fileName = "C:\\Users\\Public\\log.txt")
+int logMessage(const char* message, const char* fileName = "C:\\Users\\Public\\log.log")
 {
-	FILE* file = fopen(fileName, "w");
+	FILE* file = fopen(fileName, "a+");
 	if (file == NULL)
 	{
 		fprintf(stderr, "Unable to open log file %s in create and append mode\n", fileName);
@@ -77,7 +77,7 @@ int logMessage(const char* message, const char* fileName = "C:\\Users\\Public\\l
 
 int main(int const argc, char const* const argv[])
 {
-	logMessage("Starting server");
+	logMessage("Starting server\n");
 
 	RakNet::RakPeerInterface* peer = RakNet::RakPeerInterface::GetInstance();
 	RakNet::Packet* packet;
@@ -95,6 +95,8 @@ int main(int const argc, char const* const argv[])
 	{
 		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 		{
+			char buf[256];
+
 			switch (packet->data[0])
 			{
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
@@ -118,6 +120,8 @@ int main(int const argc, char const* const argv[])
 			break;
 			case ID_NEW_INCOMING_CONNECTION:
 				printf("A connection is incoming.\n");
+				snprintf(buf, sizeof buf, "%s%s", packet->systemAddress.ToString(), " is connecting");
+				logMessage(buf);
 				break;
 			case ID_NO_FREE_INCOMING_CONNECTIONS:
 				printf("The server is full.\n");
