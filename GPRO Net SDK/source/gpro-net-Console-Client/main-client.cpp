@@ -68,7 +68,7 @@ int main(int const argc, char const* const argv[])
 	fgets(userName, 10, stdin);
 	fflush(stdin);
 
-	for (int i = 0; i < strlen(userName); i++)
+	for (int i = 0; i < strlen(userName); i++) //Remove newline character from name (can't think of abetter solution at the moment)
 	{
 		if (userName[i] == '\n')
 			userName[i] = '\0';
@@ -131,8 +131,26 @@ int main(int const argc, char const* const argv[])
 			}
 		}
 
+		//Get message from user
 		printf("%s: ", userName);
 		fgets(str, 512, stdin);
+
+		for (int i = 0; i < strlen(str); i++) 
+		{
+			if (str[i] == '\n')
+				str[i] = '\0';
+		}
+
+		//Send message to server
+		RakNet::RakString rs = str;
+		RakNet::Time time = RakNet::GetTime();
+		RakNet::BitStream bsOut;
+		bsOut.Write((RakNet::MessageID)ID_PUBLIC_CLIENT_SERVER);
+		bsOut.Write(rs);
+		bsOut.Write(time);
+
+		packet = peer->AllocatePacket(sizeof(rs));
+		peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::SystemAddress(SERVER_IP, SERVER_PORT), false);
 	}
 
 
