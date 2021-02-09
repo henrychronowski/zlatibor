@@ -55,8 +55,14 @@ enum GameMessages
 // Render
 
 // Log a message
-int logMessage(const char* message, const char* fileName = "C:\\Users\\Public\\log.log")
+int logMessage(const char* message, const char* directory = "C:\\Users\\Public\\", const char* extension = ".log")
 {
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
+
+	char fileName[128];
+	snprintf(fileName, sizeof(fileName), "%s%d-%02d-%02d%s", directory, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, extension);
+
 	FILE* file = fopen(fileName, "a+");
 	if (file == NULL)
 	{
@@ -64,8 +70,7 @@ int logMessage(const char* message, const char* fileName = "C:\\Users\\Public\\l
 		return 1;
 	}
 
-	time_t t = time(NULL);
-	struct tm tm = *localtime(&t);
+	
 	fprintf(file, "%d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 	fprintf(file, message);
 
@@ -95,8 +100,6 @@ int main(int const argc, char const* const argv[])
 	{
 		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 		{
-			char buf[256];
-
 			switch (packet->data[0])
 			{
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
@@ -119,17 +122,30 @@ int main(int const argc, char const* const argv[])
 			}
 			break;
 			case ID_NEW_INCOMING_CONNECTION:
+			{
+				char buf[256];
 				printf("A connection is incoming.\n");
 				snprintf(buf, sizeof buf, "%s%s", packet->systemAddress.ToString(), " is connecting");
 				logMessage(buf);
+			}
 				break;
 			case ID_NO_FREE_INCOMING_CONNECTIONS:
 				printf("The server is full.\n");
 			case ID_DISCONNECTION_NOTIFICATION:
+			{
 				printf("A client has disconnected.\n");
+				char buf[256];
+				snprintf(buf, sizeof buf, "%s%s", packet->systemAddress.ToString(), " has disconnected");
+				logMessage(buf);
+			}
 				break;
 			case ID_CONNECTION_LOST:
+			{
 				printf("A client has lost connection.\n");
+				char buf[256];
+				snprintf(buf, sizeof buf, "%s%s", packet->systemAddress.ToString(), " has lost connection");
+				logMessage(buf);
+			}
 				break;
 			case ID_PUBLIC_CLIENT_SERVER:
 			{
@@ -139,18 +155,15 @@ int main(int const argc, char const* const argv[])
 				bsIn.Read(rs);
 				printf("%s\n", rs.C_String());
 
-				//RakNet::MessageID useTimeStamp = ID_TIMESTAMP;
 				RakNet::Time timeStamp = RakNet::GetTime();
 				RakNet::BitStream bsOut;
 
 				bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
 				bsOut.Write(rs);
 
-				//bsOut.Write(useTimeStamp);
 				bsOut.Write(timeStamp);
 
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
-				printf("Sending message from client at time %" PRINTF_64_BIT_MODIFIER "u\n", timeStamp);
 			}
 			break;
 
@@ -163,7 +176,7 @@ int main(int const argc, char const* const argv[])
 
 
 	RakNet::RakPeerInterface::DestroyInstance(peer);
-	logMessage("Server shutting down");
+	logMessage("Server shutting down\n");
 	return EXIT_SUCCESS;
 }
 
