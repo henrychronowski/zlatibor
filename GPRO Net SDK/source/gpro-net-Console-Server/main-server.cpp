@@ -55,7 +55,7 @@ enum GameMessages
 // Render
 
 // Log a message
-int logMessage(const char* message, const char* directory = "C:\\Users\\Public\\", const char* extension = ".log")
+int logMessage(const char* message, const char* type = "notice", const char* directory = "C:\\Users\\Public\\", const char* extension = ".log")
 {
 	time_t t = time(NULL);
 	struct tm tm = *localtime(&t);
@@ -71,7 +71,7 @@ int logMessage(const char* message, const char* directory = "C:\\Users\\Public\\
 	}
 
 	
-	fprintf(file, "%d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+	fprintf(file, "%d-%02d-%02d %02d:%02d:%02d\t%s:\t", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, type);
 	fprintf(file, message);
 
 	fclose(file);
@@ -130,7 +130,10 @@ int main(int const argc, char const* const argv[])
 			}
 				break;
 			case ID_NO_FREE_INCOMING_CONNECTIONS:
+			{
 				printf("The server is full.\n");
+			}
+				break;
 			case ID_DISCONNECTION_NOTIFICATION:
 			{
 				printf("A client has disconnected.\n");
@@ -164,11 +167,18 @@ int main(int const argc, char const* const argv[])
 				bsOut.Write(timeStamp);
 
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
+
+				char buf[256];
+				snprintf(buf, sizeof buf, "Message type %i %u:\"%s\" from client %s", ID_PUBLIC_SERVER_CLIENT, (UINT)timeStamp, rs.C_String(), packet->systemAddress.ToString());
+				logMessage(buf, "message");
 			}
 			break;
 
 			default:
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
+				char buf[256];
+				snprintf(buf, sizeof buf, "Message with identifier %i has arrived from %s", packet->data[0], packet->systemAddress.ToString());
+				logMessage(buf);
 				break;
 			}
 		}
