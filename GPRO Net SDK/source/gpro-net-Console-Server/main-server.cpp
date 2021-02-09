@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <signal.h>
 
 
 #include "RakNet/RakPeerInterface.h"
@@ -46,6 +47,17 @@ enum GameMessages
 	ID_PUBLIC_SERVER_CLIENT
 };
 
+
+bool sig_caught = false;
+
+void signal_handler(int sig)
+{
+	if (sig == SIGINT)
+	{
+		sig_caught = true;
+	}
+}
+
 // Local input
 
 // Remote input
@@ -55,8 +67,14 @@ enum GameMessages
 // Render
 
 // Log a message
-int logMessage(const char* message, const char* fileName = "C:\\Users\\Public\\log.log")
+int logMessage(const char* message, const char* type = "notice\t", const char* directory = "C:\\Users\\Public\\", const char* extension = ".log")
 {
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
+
+	char fileName[128];
+	snprintf(fileName, sizeof(fileName), "%s%d-%02d-%02d%s", directory, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, extension);
+
 	FILE* file = fopen(fileName, "a+");
 	if (file == NULL)
 	{
@@ -64,9 +82,8 @@ int logMessage(const char* message, const char* fileName = "C:\\Users\\Public\\l
 		return 1;
 	}
 
-	time_t t = time(NULL);
-	struct tm tm = *localtime(&t);
-	fprintf(file, "%d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+	
+	fprintf(file, "%d-%02d-%02d %02d:%02d:%02d\t%s:\t", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, type);
 	fprintf(file, message);
 
 	fclose(file);
@@ -77,6 +94,12 @@ int logMessage(const char* message, const char* fileName = "C:\\Users\\Public\\l
 
 int main(int const argc, char const* const argv[])
 {
+	if (signal(SIGINT, signal_handler) == SIG_ERR)
+	{
+		fprintf(stderr, "Signal function registration failed, unable to proceed\n");
+		return EXIT_FAILURE;
+	}
+
 	logMessage("Starting server\n");
 
 	RakNet::RakPeerInterface* peer = RakNet::RakPeerInterface::GetInstance();
@@ -95,8 +118,6 @@ int main(int const argc, char const* const argv[])
 	{
 		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 		{
-			char buf[256];
-
 			switch (packet->data[0])
 			{
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
@@ -111,25 +132,58 @@ int main(int const argc, char const* const argv[])
 			case ID_CONNECTION_REQUEST_ACCEPTED:
 			{
 				printf("Our connection request has been accepted.\n");
-
-				RakNet::BitStream bsOut;
-				bsOut.Write((RakNet::MessageID)ID_PUBLIC_CLIENT_SERVER);
-				bsOut.Write("Hello world");
-				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 			}
 			break;
 			case ID_NEW_INCOMING_CONNECTION:
+			{
+				char buf[256];
 				printf("A connection is incoming.\n");
-				snprintf(buf, sizeof buf, "%s%s", packet->systemAddress.ToString(), " is connecting");
+				snprintf(buf, sizeof buf, "%s%s\n", packet->systemAddress.ToString(), " is connecting");
 				logMessage(buf);
+
+				RakNet::RakString rs = buf;
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
+				bsOut.Write(rs);
+
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
+			}
 				break;
 			case ID_NO_FREE_INCOMING_CONNECTIONS:
+			{
 				printf("The server is full.\n");
+			}
+				break;
 			case ID_DISCONNECTION_NOTIFICATION:
+			{
 				printf("A client has disconnected.\n");
+				char buf[256];
+				snprintf(buf, sizeof buf, "%s%s\n", packet->systemAddress.ToString(), " has disconnected");
+				logMessage(buf);
+
+				RakNet::RakString rs = buf;
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
+				bsOut.Write(rs);
+
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
+			}
 				break;
 			case ID_CONNECTION_LOST:
-				printf("A client has lost connection.\n");
+			{
+				printf("%s has lost connection.\n", packet->systemAddress.ToString());
+
+				char buf[256];
+				snprintf(buf, sizeof buf, "%s%s\n", packet->systemAddress.ToString(), " has lost connection");
+				logMessage(buf);
+
+				RakNet::RakString rs = buf;
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
+				bsOut.Write(rs);
+
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
+			}
 				break;
 			case ID_PUBLIC_CLIENT_SERVER:
 			{
@@ -139,31 +193,42 @@ int main(int const argc, char const* const argv[])
 				bsIn.Read(rs);
 				printf("%s\n", rs.C_String());
 
-				//RakNet::MessageID useTimeStamp = ID_TIMESTAMP;
 				RakNet::Time timeStamp = RakNet::GetTime();
 				RakNet::BitStream bsOut;
 
 				bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
 				bsOut.Write(rs);
 
-				//bsOut.Write(useTimeStamp);
 				bsOut.Write(timeStamp);
 
-				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
-				printf("Sending message from client at time %" PRINTF_64_BIT_MODIFIER "u\n", timeStamp);
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
+
+				char buf[256];
+				snprintf(buf, sizeof buf, "Message type %i %u:\"%s\" from client %s\n", ID_PUBLIC_SERVER_CLIENT, (UINT)timeStamp, rs.C_String(), packet->systemAddress.ToString());
+				logMessage(buf, "message");
 			}
 			break;
 
 			default:
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
+				char buf[256];
+				snprintf(buf, sizeof buf, "Message with identifier %i has arrived from %s\n", packet->data[0], packet->systemAddress.ToString());
+				logMessage(buf);
 				break;
 			}
+		}
+
+		if (sig_caught)
+		{
+			printf("Shutting down server\n");
+			break;
 		}
 	}
 
 
 	RakNet::RakPeerInterface::DestroyInstance(peer);
-	logMessage("Server shutting down");
+	logMessage("Server shutting down\n");
+	system("pause");
 	return EXIT_SUCCESS;
 }
 

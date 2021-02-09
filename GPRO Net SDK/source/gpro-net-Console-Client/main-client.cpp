@@ -37,7 +37,7 @@
 #include "RakNet/GetTime.h"
 
 #define SERVER_PORT 7777
-#define SERVER_IP "172.16.2.63"
+#define SERVER_IP "172.16.2.67"
 
 enum GameMessages
 {
