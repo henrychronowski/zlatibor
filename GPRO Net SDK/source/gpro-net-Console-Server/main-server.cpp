@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <signal.h>
 
 
 #include "RakNet/RakPeerInterface.h"
@@ -45,6 +46,17 @@ enum GameMessages
 	ID_PUBLIC_CLIENT_SERVER = ID_USER_PACKET_ENUM + 1,
 	ID_PUBLIC_SERVER_CLIENT
 };
+
+
+bool sig_caught = false;
+
+void signal_handler(int sig)
+{
+	if (sig == SIGINT)
+	{
+		sig_caught = true;
+	}
+}
 
 // Local input
 
@@ -82,6 +94,12 @@ int logMessage(const char* message, const char* type = "notice\t", const char* d
 
 int main(int const argc, char const* const argv[])
 {
+	if (signal(SIGINT, signal_handler) == SIG_ERR)
+	{
+		fprintf(stderr, "Signal function registration failed, unable to proceed\n");
+		return EXIT_FAILURE;
+	}
+
 	logMessage("Starting server\n");
 
 	RakNet::RakPeerInterface* peer = RakNet::RakPeerInterface::GetInstance();
@@ -199,11 +217,18 @@ int main(int const argc, char const* const argv[])
 				break;
 			}
 		}
+
+		if (sig_caught)
+		{
+			printf("Shutting down server\n");
+			break;
+		}
 	}
 
 
 	RakNet::RakPeerInterface::DestroyInstance(peer);
 	logMessage("Server shutting down\n");
+	system("pause");
 	return EXIT_SUCCESS;
 }
 
