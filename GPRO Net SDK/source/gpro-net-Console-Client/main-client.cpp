@@ -85,11 +85,6 @@ int main(int const argc, char const* const argv[])
 			case ID_CONNECTION_REQUEST_ACCEPTED:
 			{
 				printf("Our connection request has been accepted.\n");
-
-				RakNet::BitStream bsOut;
-				bsOut.Write((RakNet::MessageID)ID_PUBLIC_CLIENT_SERVER);
-				bsOut.Write("Hello world");
-				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 			}
 			break;
 			case ID_NEW_INCOMING_CONNECTION:
