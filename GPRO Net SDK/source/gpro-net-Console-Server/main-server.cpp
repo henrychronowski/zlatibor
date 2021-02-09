@@ -28,111 +28,59 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 
 #include "RakNet/RakPeerInterface.h"
+#include "RakNet/MessageIdentifiers.h"
 #include "RakNet/BitStream.h"
 #include "RakNet/RakNetTypes.h"
 #include "RakNet/GetTime.h"
 
-#include "gpro-net/gpro-net.h"
-
 #define MAX_CLIENTS 10
 #define SERVER_PORT 7777
 
-
-
-
-// Handle remote input->recieve/send
-void handleRemoteInput(RakNet::RakPeerInterface* peer)
+enum GameMessages
 {
-	RakNet::Packet* packet;
+	ID_PUBLIC_CLIENT_SERVER = ID_USER_PACKET_ENUM + 1,
+	ID_PUBLIC_SERVER_CLIENT
+};
 
-	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
-	{
-		switch (packet->data[0])
-		{
-		case ID_REMOTE_DISCONNECTION_NOTIFICATION:
-			printf("Another client has disconnected.\n");
-			break;
-		case ID_REMOTE_CONNECTION_LOST:
-			printf("Another client has lost connection.\n");
-			break;
-		case ID_REMOTE_NEW_INCOMING_CONNECTION:
-			printf("Another client has connected.\n");
-			break;
-		case ID_CONNECTION_REQUEST_ACCEPTED:
-		{
-			printf("Our connection request has been accepted.\n");
+// Local input
 
-			RakNet::BitStream bsOut;
-			bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
-			bsOut.Write("Hello world");
-			peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-		}
-		break;
-		case ID_NEW_INCOMING_CONNECTION:
-			printf("A connection is incoming.\n");
-			break;
-		case ID_NO_FREE_INCOMING_CONNECTIONS:
-			printf("The server is full.\n");
-		case ID_DISCONNECTION_NOTIFICATION:
-			printf("A client has disconnected.\n");
-			break;
-		case ID_CONNECTION_LOST:
-			printf("A client has lost connection.\n");
-			break;
-		case ID_GAME_MESSAGE_1:
-		{
-			RakNet::RakString rs;
-			RakNet::BitStream bsIn(packet->data, packet->length, false);
-			bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-			bsIn.Read(rs);
-			printf("%s\n", rs.C_String());
-
-
-
-			RakNet::Time timeStamp = RakNet::GetTime();
-			RakNet::BitStream bsOut;
-
-			bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_2);
-			bsOut.Write("Yay.");
-
-			bsOut.Write(timeStamp);
-
-			peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-			printf("Sending message from client at time %" PRINTF_64_BIT_MODIFIER "u\n", timeStamp);
-		}
-		break;
-		case ID_PUBLIC_CLIENT_SERVER:
-		{
-
-		}
-		break;
-
-		default:
-			printf("Message with identifier %i has arrived.\n", packet->data[0]);
-			break;
-		}
-	}
-}
-
-// Handle local input->send
-void handleLocalInput(RakNet::RakPeerInterface*)
-{
-
-}
+// Remote input
 
 // Update
 
 // Render
 
+// Log a message
+int logMessage(const char* message, const char* fileName = "C:\\Users\\Public\\log.txt")
+{
+	FILE* file = fopen(fileName, "w");
+	if (file == NULL)
+	{
+		fprintf(stderr, "Unable to open log file %s in create and append mode\n", fileName);
+		return 1;
+	}
+
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
+	fprintf(file, "%d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+	fprintf(file, message);
+
+	fclose(file);
+
+	return 0;
+}
+
 
 int main(int const argc, char const* const argv[])
 {
-
+	logMessage("Starting server");
 
 	RakNet::RakPeerInterface* peer = RakNet::RakPeerInterface::GetInstance();
+	RakNet::Packet* packet;
 
 	peer->SetOccasionalPing(true);
 
@@ -145,13 +93,73 @@ int main(int const argc, char const* const argv[])
 
 	while (true)
 	{
-		handleRemoteInput(peer);
-		handleLocalInput(peer);
+		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
+		{
+			switch (packet->data[0])
+			{
+			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
+				printf("Another client has disconnected.\n");
+				break;
+			case ID_REMOTE_CONNECTION_LOST:
+				printf("Another client has lost connection.\n");
+				break;
+			case ID_REMOTE_NEW_INCOMING_CONNECTION:
+				printf("Another client has connected.\n");
+				break;
+			case ID_CONNECTION_REQUEST_ACCEPTED:
+			{
+				printf("Our connection request has been accepted.\n");
+
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_PUBLIC_CLIENT_SERVER);
+				bsOut.Write("Hello world");
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+			}
+			break;
+			case ID_NEW_INCOMING_CONNECTION:
+				printf("A connection is incoming.\n");
+				break;
+			case ID_NO_FREE_INCOMING_CONNECTIONS:
+				printf("The server is full.\n");
+			case ID_DISCONNECTION_NOTIFICATION:
+				printf("A client has disconnected.\n");
+				break;
+			case ID_CONNECTION_LOST:
+				printf("A client has lost connection.\n");
+				break;
+			case ID_PUBLIC_CLIENT_SERVER:
+			{
+				RakNet::RakString rs;
+				RakNet::BitStream bsIn(packet->data, packet->length, false);
+				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+				bsIn.Read(rs);
+				printf("%s\n", rs.C_String());
+
+				//RakNet::MessageID useTimeStamp = ID_TIMESTAMP;
+				RakNet::Time timeStamp = RakNet::GetTime();
+				RakNet::BitStream bsOut;
+
+				bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
+				bsOut.Write(rs);
+
+				//bsOut.Write(useTimeStamp);
+				bsOut.Write(timeStamp);
+
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
+				printf("Sending message from client at time %" PRINTF_64_BIT_MODIFIER "u\n", timeStamp);
+			}
+			break;
+
+			default:
+				printf("Message with identifier %i has arrived.\n", packet->data[0]);
+				break;
+			}
+		}
 	}
 
 
 	RakNet::RakPeerInterface::DestroyInstance(peer);
-
+	logMessage("Server shutting down");
 	return EXIT_SUCCESS;
 }
 

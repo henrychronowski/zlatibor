@@ -27,11 +27,5 @@
 
 #include "RakNet/MessageIdentifiers.h"
 
-enum GameMessages
-{
-	ID_PUBLIC_CLIENT_SERVER,
-	ID_PUBLIC_SERVER_CLIENT
-};
-
 
 #endif	// !_GPRO_NET_H_
