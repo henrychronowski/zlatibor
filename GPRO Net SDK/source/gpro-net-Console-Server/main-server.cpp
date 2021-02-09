@@ -55,7 +55,7 @@ enum GameMessages
 // Render
 
 // Log a message
-int logMessage(const char* message, const char* type = "notice", const char* directory = "C:\\Users\\Public\\", const char* extension = ".log")
+int logMessage(const char* message, const char* type = "notice\t", const char* directory = "C:\\Users\\Public\\", const char* extension = ".log")
 {
 	time_t t = time(NULL);
 	struct tm tm = *localtime(&t);
@@ -114,19 +114,21 @@ int main(int const argc, char const* const argv[])
 			case ID_CONNECTION_REQUEST_ACCEPTED:
 			{
 				printf("Our connection request has been accepted.\n");
-
-				RakNet::BitStream bsOut;
-				bsOut.Write((RakNet::MessageID)ID_PUBLIC_CLIENT_SERVER);
-				bsOut.Write("Hello world");
-				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 			}
 			break;
 			case ID_NEW_INCOMING_CONNECTION:
 			{
 				char buf[256];
 				printf("A connection is incoming.\n");
-				snprintf(buf, sizeof buf, "%s%s", packet->systemAddress.ToString(), " is connecting");
+				snprintf(buf, sizeof buf, "%s%s\n", packet->systemAddress.ToString(), " is connecting");
 				logMessage(buf);
+
+				RakNet::RakString rs = buf;
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
+				bsOut.Write(rs);
+
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
 			}
 				break;
 			case ID_NO_FREE_INCOMING_CONNECTIONS:
@@ -138,16 +140,31 @@ int main(int const argc, char const* const argv[])
 			{
 				printf("A client has disconnected.\n");
 				char buf[256];
-				snprintf(buf, sizeof buf, "%s%s", packet->systemAddress.ToString(), " has disconnected");
+				snprintf(buf, sizeof buf, "%s%s\n", packet->systemAddress.ToString(), " has disconnected");
 				logMessage(buf);
+
+				RakNet::RakString rs = buf;
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
+				bsOut.Write(rs);
+
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
 			}
 				break;
 			case ID_CONNECTION_LOST:
 			{
-				printf("A client has lost connection.\n");
+				printf("%s has lost connection.\n", packet->systemAddress.ToString());
+
 				char buf[256];
-				snprintf(buf, sizeof buf, "%s%s", packet->systemAddress.ToString(), " has lost connection");
+				snprintf(buf, sizeof buf, "%s%s\n", packet->systemAddress.ToString(), " has lost connection");
 				logMessage(buf);
+
+				RakNet::RakString rs = buf;
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
+				bsOut.Write(rs);
+
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
 			}
 				break;
 			case ID_PUBLIC_CLIENT_SERVER:
@@ -166,10 +183,10 @@ int main(int const argc, char const* const argv[])
 
 				bsOut.Write(timeStamp);
 
-				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
 
 				char buf[256];
-				snprintf(buf, sizeof buf, "Message type %i %u:\"%s\" from client %s", ID_PUBLIC_SERVER_CLIENT, (UINT)timeStamp, rs.C_String(), packet->systemAddress.ToString());
+				snprintf(buf, sizeof buf, "Message type %i %u:\"%s\" from client %s\n", ID_PUBLIC_SERVER_CLIENT, (UINT)timeStamp, rs.C_String(), packet->systemAddress.ToString());
 				logMessage(buf, "message");
 			}
 			break;
@@ -177,7 +194,7 @@ int main(int const argc, char const* const argv[])
 			default:
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
 				char buf[256];
-				snprintf(buf, sizeof buf, "Message with identifier %i has arrived from %s", packet->data[0], packet->systemAddress.ToString());
+				snprintf(buf, sizeof buf, "Message with identifier %i has arrived from %s\n", packet->data[0], packet->systemAddress.ToString());
 				logMessage(buf);
 				break;
 			}
