@@ -54,7 +54,8 @@ enum GameMessages
 	ID_PUBLIC_SERVER_CLIENT,
 	ID_CLIENT_INFO,
 	ID_CLIENT_REQUEST_USERS,
-	ID_PRIVATE_CLIENT_SERVER
+	ID_PRIVATE_CLIENT_SERVER,
+	ID_PRIVATE_SERVER_CLIENT
 };
 
 struct User
@@ -132,6 +133,18 @@ int getClientIndex(std::vector<User>& users, RakNet::SystemAddress address)
 	for (int i = 0; i < users.size(); i++)
 	{
 		if (users.at(i).mAddress == address)
+			result = i;
+	}
+
+	return result;
+}
+
+int getClientIndex(std::vector<User>& users, char name[11])
+{
+	int result = -1;
+	for (int i = 0; i < users.size(); i++)
+	{
+		if (!strcmp(users.at(i).mUserName, name))
 			result = i;
 	}
 
@@ -320,6 +333,45 @@ int main(int const argc, char const* const argv[])
 				//bsOut.Write("yellow");
 				bsOut.Write(buf);
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false); // To only sender
+			}
+				break;
+			case ID_PRIVATE_CLIENT_SERVER:
+			{
+				RakNet::BitStream bsIn(packet->data, packet->length, false);
+				char name[11];
+				RakNet::RakString rs;
+				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+				bsIn.Read(rs);
+				snprintf(name, sizeof name, "%s", rs.C_String());
+				printf("%s\n", name);
+				bsIn.Read(rs);
+				printf("%s\n", rs.C_String());
+
+				RakNet::BitStream bsOut;
+
+				int result = getClientIndex(users, name);
+				if (result == -1)
+				{
+					rs = "Error: Client not found\n";
+					bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
+					bsOut.Write(rs);
+
+					peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false); // To only sender
+				}
+				else
+				{
+					RakNet::Time timeStamp = RakNet::GetTime();
+
+					char buf[256];
+					snprintf(buf, sizeof buf, "%s whispers to you: %s\n", users.at(getClientIndex(users, packet->systemAddress)).mUserName, rs.C_String());
+					bsOut.Write((RakNet::MessageID)ID_PRIVATE_SERVER_CLIENT);
+					rs = buf;
+					bsOut.Write(rs);
+					bsOut.Write(timeStamp);
+
+					peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, users.at(result).mAddress, false); // To only address
+				}
+
 			}
 				break;
 
