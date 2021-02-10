@@ -18,6 +18,7 @@
 	GPRO Net SDK: Networking framework.
 	By Daniel S. Buckstein
 	Extended by Ethan Heil & Henry Chronowski
+	Based on RakNet tutorial http://www.jenkinssoftware.com/raknet/manual/tutorial.html
 
 	main-client.c/.cpp
 	Main source for console client application.

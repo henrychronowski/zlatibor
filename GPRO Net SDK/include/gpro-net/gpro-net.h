@@ -27,6 +27,7 @@
 
 #include "RakNet/MessageIdentifiers.h"
 
+//Enum for all common client-server messages
 enum GameMessages
 {
 	ID_PUBLIC_CLIENT_SERVER = ID_USER_PACKET_ENUM + 1,
