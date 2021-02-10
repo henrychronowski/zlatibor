@@ -17,6 +17,7 @@
 /*
 	GPRO Net SDK: Networking framework.
 	By Daniel S. Buckstein
+	Extended by Ethan Heil & Henry Chronowski
 
 	main-client.c/.cpp
 	Main source for console client application.
@@ -53,10 +54,13 @@ void removeNewline(char* str)
 	}
 }
 
+//CLIENT
 int main(int const argc, char const* const argv[])
 {
 	char str[512];
 	char userName[11];
+
+	//Initialize RakNet peer
 	RakNet::RakPeerInterface* peer = RakNet::RakPeerInterface::GetInstance();
 	RakNet::Packet* packet;
 
@@ -78,16 +82,19 @@ int main(int const argc, char const* const argv[])
 
 	removeNewline(userName);
 
+	//Main loop, runs until client is shut down
 	while (true)
 	{
+		//Networking Loop
 		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 		{
 			switch (packet->data[0])
 			{
-			case ID_CONNECTION_REQUEST_ACCEPTED:
+			case ID_CONNECTION_REQUEST_ACCEPTED: //Client successfully connects to the server
 			{
 				printf("Our connection request has been accepted.\n");
 
+				//Create message to send username to the server
 				RakNet::RakString rs = userName;
 				RakNet::Time time = RakNet::GetTime();
 				RakNet::BitStream bsOut;
@@ -95,22 +102,19 @@ int main(int const argc, char const* const argv[])
 				bsOut.Write(rs);
 				bsOut.Write(time);
 
+				//Send usernam to server to be stored
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 			}
 			break;
-			case ID_NEW_INCOMING_CONNECTION:
-				printf("A connection is incoming.\n");
-				break;
-			case ID_NO_FREE_INCOMING_CONNECTIONS:
-				printf("The server is full.\n");
 			case ID_DISCONNECTION_NOTIFICATION:
 				printf("We have been disconnected.\n");
 				break;
 			case ID_CONNECTION_LOST:
 				printf("We have lost connection.\n");
 				break;
-			case ID_PUBLIC_CLIENT_SERVER:
+			case ID_PUBLIC_CLIENT_SERVER: //Public message from a client to all clients
 			{
+				//Read in message data from client
 				RakNet::RakString rs;
 				RakNet::BitStream bsIn(packet->data, packet->length, false);
 				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
@@ -118,28 +122,9 @@ int main(int const argc, char const* const argv[])
 				printf("%s\n", rs.C_String());
 			}
 			break;
-			case ID_PUBLIC_SERVER_CLIENT:
+			case ID_PUBLIC_SERVER_CLIENT: //Public message from server
 			{
-				RakNet::RakString rs;
-				RakNet::Time time;
-				RakNet::BitStream bsIn(packet->data, packet->length, false);
-				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-				bsIn.Read(rs);
-				bsIn.Read(time);
-				printf("%s\n", rs.C_String());
-			}
-			break;
-			case ID_CLIENT_REQUEST_USERS:
-			{
-				RakNet::RakString rs;
-				RakNet::BitStream bsIn(packet->data, packet->length, false);
-				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-				bsIn.Read(rs);
-				printf("%s\n", rs.C_String());
-			}
-			break;
-			case ID_PRIVATE_SERVER_CLIENT:
-			{
+				//Read in message data from server
 				RakNet::RakString rs;
 				RakNet::Time time;
 				RakNet::BitStream bsIn(packet->data, packet->length, false);
@@ -149,7 +134,29 @@ int main(int const argc, char const* const argv[])
 				printf("%s\n", rs.C_String());
 			}
 			break;
-			default:
+			case ID_CLIENT_REQUEST_USERS: //Client requesting a list of users from the server
+			{
+				//Read in list of users from the server
+				RakNet::RakString rs;
+				RakNet::BitStream bsIn(packet->data, packet->length, false);
+				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+				bsIn.Read(rs);
+				printf("%s\n", rs.C_String());
+			}
+			break;
+			case ID_PRIVATE_SERVER_CLIENT: //Recieve private message from server
+			{
+				// Read in intended recipient and message
+				RakNet::RakString rs;
+				RakNet::Time time;
+				RakNet::BitStream bsIn(packet->data, packet->length, false);
+				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+				bsIn.Read(rs);
+				bsIn.Read(time);
+				printf("%s\n", rs.C_String());
+			}
+			break;
+			default: //Unknown message ID
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
 				break;
 			}
@@ -158,27 +165,21 @@ int main(int const argc, char const* const argv[])
 		//Get message from user
 		printf("%s: ", userName);
 		fgets(str, 512, stdin);
-
 		removeNewline(str);
 		
 		//Check for client commands
-
-		if (strstr(str, "@")) //Assumes that user will enter a username after @
+		if (strstr(str, "@")) //Send private message to specific client. Assumes that user will only enter '@' to do this
 		{
 			//Get username from the message string
 			char user[11];
 			printf("User: ");
 			fgets(user, 10, stdin);
-
 			removeNewline(user);
-
-			//printf("\n");
 
 			//Get message for chosen user
 			char msg[512];
 			printf("Message: ");
 			fgets(msg, 512, stdin);
-
 			removeNewline(msg);
 
 			//Send message to server
@@ -191,17 +192,17 @@ int main(int const argc, char const* const argv[])
 			bsOut.Write(msgRs);
 			bsOut.Write(time);
 
-			peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::SystemAddress(SERVER_IP, SERVER_PORT), false);
+			peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::SystemAddress(SERVER_IP, SERVER_PORT), false); //Send to specific user
 		}
-		else if (strstr(str, REQUEST_USER_LIST)) 
+		else if (strstr(str, REQUEST_USER_LIST)) //Request user list from server
 		{
-			//Request user list from server
+			//Send message to server
 			RakNet::Time time = RakNet::GetTime();
 			RakNet::BitStream bsOut;
 			bsOut.Write((RakNet::MessageID)ID_CLIENT_REQUEST_USERS);
 			bsOut.Write(time);
 
-			peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::SystemAddress(SERVER_IP, SERVER_PORT), false);
+			peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::SystemAddress(SERVER_IP, SERVER_PORT), false); //Send to server
 		}
 		else
 		{
@@ -213,7 +214,7 @@ int main(int const argc, char const* const argv[])
 			bsOut.Write(rs);
 			bsOut.Write(time);
 
-			peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::SystemAddress(SERVER_IP, SERVER_PORT), false);
+			peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::SystemAddress(SERVER_IP, SERVER_PORT), false); //Send to server
 		}
 	}
 
