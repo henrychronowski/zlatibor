@@ -44,10 +44,25 @@
 enum GameMessages
 {
 	ID_PUBLIC_CLIENT_SERVER = ID_USER_PACKET_ENUM + 1,
-	ID_PUBLIC_SERVER_CLIENT
+	ID_PUBLIC_SERVER_CLIENT,
+	ID_CLIENT_INFO,
+	ID_CLIENT_REQUEST_USERS
+};
+
+struct user
+{
+	RakNet::SystemAddress mAddress;
+	char* mUserName;
+
+	/*user User(RakNet::SystemAddress address, char name[10])
+	{
+		mAddress = address;
+		userName = name;
+	}*/
 };
 
 
+// Signal handler function to handle ctrl+c for program exit
 bool sig_caught = false;
 
 void signal_handler(int sig)
@@ -94,6 +109,8 @@ int logMessage(const char* message, const char* type = "notice\t", const char* d
 
 int main(int const argc, char const* const argv[])
 {
+
+	// Checking to see if signal function registration succeeded
 	if (signal(SIGINT, signal_handler) == SIG_ERR)
 	{
 		fprintf(stderr, "Signal function registration failed, unable to proceed\n");
@@ -112,6 +129,11 @@ int main(int const argc, char const* const argv[])
 
 	printf("Server starting.\n");
 	peer->SetMaximumIncomingConnections(MAX_CLIENTS);
+
+	//user users[MAX_CLIENTS];
+	user* users;
+	users = new user[MAX_CLIENTS];
+	int currentUsers = 0;
 
 
 	while (true)
@@ -134,19 +156,40 @@ int main(int const argc, char const* const argv[])
 				printf("Our connection request has been accepted.\n");
 			}
 			break;
-			case ID_NEW_INCOMING_CONNECTION:
+			case ID_CLIENT_INFO:
 			{
+				RakNet::RakString rs;
+				RakNet::BitStream bsIn(packet->data, packet->length, false);
+				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+				bsIn.Read(rs);
+				users[currentUsers].mAddress = packet->systemAddress;
 				char buf[256];
-				printf("A connection is incoming.\n");
-				snprintf(buf, sizeof buf, "%s%s\n", packet->systemAddress.ToString(), " is connecting");
-				logMessage(buf);
+				snprintf(buf, sizeof buf, "%s", rs.C_String());
+				users[currentUsers].mUserName = buf;
+				currentUsers++;
 
-				RakNet::RakString rs = buf;
+				snprintf(buf, sizeof buf, "%s%s", buf, " has connected\n");
+				rs = buf;
 				RakNet::BitStream bsOut;
 				bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
 				bsOut.Write(rs);
 
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
+			}
+				break;
+			case ID_NEW_INCOMING_CONNECTION:
+			{
+				char buf[256];
+				snprintf(buf, sizeof buf, "%s%s\n", packet->systemAddress.ToString(), " is connecting");
+				printf(buf);
+				logMessage(buf);
+
+				//RakNet::RakString rs = buf;
+				//RakNet::BitStream bsOut;
+				//bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
+				//bsOut.Write(rs);
+
+				//peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
 			}
 				break;
 			case ID_NO_FREE_INCOMING_CONNECTIONS:
@@ -208,6 +251,21 @@ int main(int const argc, char const* const argv[])
 				logMessage(buf, "message");
 			}
 			break;
+			case ID_CLIENT_REQUEST_USERS:
+			{
+				RakNet::RakString rs;
+				RakNet::BitStream bsOut;
+				char buf[102];
+				bsOut.Write((RakNet::MessageID)ID_CLIENT_REQUEST_USERS);
+				snprintf(buf, sizeof buf, "%s%s", buf, users[0].mUserName);
+				for (int i = 1; i <= currentUsers; i++)
+				{
+					snprintf(buf, sizeof buf, "%s|%s", buf, users[i].mUserName);
+				}
+
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false); // To only sender
+			}
+				break;
 
 			default:
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
@@ -218,6 +276,8 @@ int main(int const argc, char const* const argv[])
 			}
 		}
 
+
+		// Check if exit signal has been caught and if so shut down the server
 		if (sig_caught)
 		{
 			printf("Shutting down server\n");
@@ -228,6 +288,7 @@ int main(int const argc, char const* const argv[])
 
 	RakNet::RakPeerInterface::DestroyInstance(peer);
 	logMessage("Server shutting down\n");
+	delete[] users;
 	system("pause");
 	return EXIT_SUCCESS;
 }
