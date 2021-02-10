@@ -17,9 +17,16 @@
 /*
 	GPRO Net SDK: Networking framework.
 	By Daniel S. Buckstein
+	Extended by Henry Chronowski & Ethan Heil
+	Based on RakNet tutorial http://www.jenkinssoftware.com/raknet/manual/tutorial.html
 
 	main-server.c/.cpp
 	Main source for console server application.
+
+	General consulted sources:
+	http://www.jenkinssoftware.com/raknet/manual/index.html
+	https://www.gnu.org/software/libc/manual/html_node/Basic-Signal-Handling.html
+	https://www.gnu.org/software/libc/manual/html_node/Formatted-Output-Functions.html
 */
 
 #include "gpro-net/gpro-net.h"
@@ -39,12 +46,14 @@
 #include "RakNet/RakNetTypes.h"
 #include "RakNet/GetTime.h"
 
+// Ideally would take these values in as arguments and have these as defaults
 #define MAX_CLIENTS 10
 #define SERVER_PORT 7777
 
 
 // Handles interrupt signal
-// If the debugger is configured to handle SIGINT it will override this
+// If the debugger is configured to handle SIGINT it will override this but without the debugger will function properly
+// Referenced for signal handling code: https://www.gnu.org/software/libc/manual/html_node/Basic-Signal-Handling.html
 bool sig_caught = false;
 void signal_handler(int sig)
 {
@@ -121,7 +130,6 @@ int getClientIndex(std::vector<User>& users, char name[11])
 // SERVER
 int main(int const argc, char const* const argv[])
 {
-
 	// Checking to see if signal function registration succeeded
 	if (signal(SIGINT, signal_handler) == SIG_ERR)
 	{
