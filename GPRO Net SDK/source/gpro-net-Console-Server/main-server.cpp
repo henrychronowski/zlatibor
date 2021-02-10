@@ -106,6 +106,17 @@ int logMessage(const char* message, const char* type = "notice\t", const char* d
 	return 0;
 }
 
+RakNet::SystemAddress getAddress(user* users, char* name, int count = MAX_CLIENTS)
+{
+	RakNet::SystemAddress result = NULL;
+	for (int i = 0; i < count; i++)
+	{
+		if (users[i].mUserName == name)
+			result = users[i].mAddress;
+	}
+
+	return result;
+}
 
 int main(int const argc, char const* const argv[])
 {
