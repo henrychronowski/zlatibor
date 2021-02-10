@@ -30,6 +30,7 @@
 #include <string.h>
 #include <time.h>
 #include <signal.h>
+#include <vector>
 
 
 #include "RakNet/RakPeerInterface.h"
@@ -38,26 +39,22 @@
 #include "RakNet/RakNetTypes.h"
 #include "RakNet/GetTime.h"
 
-
-
-
-
-#include <vector>
-
-
 #define MAX_CLIENTS 10
 #define SERVER_PORT 7777
 
-enum GameMessages
-{
-	ID_PUBLIC_CLIENT_SERVER = ID_USER_PACKET_ENUM + 1,
-	ID_PUBLIC_SERVER_CLIENT,
-	ID_CLIENT_INFO,
-	ID_CLIENT_REQUEST_USERS,
-	ID_PRIVATE_CLIENT_SERVER,
-	ID_PRIVATE_SERVER_CLIENT
-};
 
+// Handles interrupt signal
+// If the debugger is configured to handle SIGINT it will override this
+bool sig_caught = false;
+void signal_handler(int sig)
+{
+	if (sig == SIGINT)
+	{
+		sig_caught = true;
+	}
+}
+
+// A struct to represent a user, holding a username and the address of their system
 struct User
 {
 	RakNet::SystemAddress mAddress;
@@ -69,35 +66,16 @@ struct User
 	}
 };
 
-
-// Signal handler function to handle ctrl+c for program exit
-bool sig_caught = false;
-
-void signal_handler(int sig)
+// Logs a message to the given file for the purpose of a running server log
+int logMessage(const char* message, const char* type = "notice", const char* directory = "C:\\Users\\Public\\", const char* extension = ".log")
 {
-	if (sig == SIGINT)
-	{
-		sig_caught = true;
-	}
-}
-
-// Local input
-
-// Remote input
-
-// Update
-
-// Render
-
-// Log a message
-int logMessage(const char* message, const char* type = "notice\t", const char* directory = "C:\\Users\\Public\\", const char* extension = ".log")
-{
+	// Get time in human readable format
 	time_t t = time(NULL);
 	struct tm tm = *localtime(&t);
 
+	// Open file in the given directory with a name of the current date, appending if a log already exists for this date
 	char fileName[128];
 	snprintf(fileName, sizeof(fileName), "%s%d-%02d-%02d%s", directory, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, extension);
-
 	FILE* file = fopen(fileName, "a+");
 	if (file == NULL)
 	{
@@ -105,28 +83,15 @@ int logMessage(const char* message, const char* type = "notice\t", const char* d
 		return 1;
 	}
 
-	
-	fprintf(file, "%d-%02d-%02d %02d:%02d:%02d\t%s:\t", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, type);
-	fprintf(file, message);
+	// Print the human readable time and message type, then the message content
+	fprintf(file, "%d-%02d-%02d %02d:%02d:%02d\t%s\t:\t%s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, type, message);
 
 	fclose(file);
 
 	return 0;
 }
 
-//RakNet::SystemAddress getAddress(User* users, char* name, int count = MAX_CLIENTS)
-//{
-//	RakNet::SystemAddress result = NULL;
-//	for (int i = 0; i < count; i++)
-//	{
-//		if (users[i].mUserName == name)
-//			result = users[i].mAddress;
-//	}
-//
-//	return result;
-//}
-
-// returns -1 on not found
+// Checks for the given address in the given vector, returns -1 on not found
 int getClientIndex(std::vector<User>& users, RakNet::SystemAddress address)
 {
 	int result = -1;
@@ -139,6 +104,7 @@ int getClientIndex(std::vector<User>& users, RakNet::SystemAddress address)
 	return result;
 }
 
+// Checks for the given user name in the given vector, returns -1 on not found
 int getClientIndex(std::vector<User>& users, char name[11])
 {
 	int result = -1;
@@ -151,6 +117,8 @@ int getClientIndex(std::vector<User>& users, char name[11])
 	return result;
 }
 
+
+// SERVER
 int main(int const argc, char const* const argv[])
 {
 
@@ -161,49 +129,31 @@ int main(int const argc, char const* const argv[])
 		return EXIT_FAILURE;
 	}
 
-	logMessage("Starting server\n");
+	logMessage("Starting server");
+	printf("Server starting.\n");
 
+	// Initialize RakNet peer and associated settings
 	RakNet::RakPeerInterface* peer = RakNet::RakPeerInterface::GetInstance();
 	RakNet::Packet* packet;
-
 	peer->SetOccasionalPing(true);
-
 	RakNet::SocketDescriptor sd(SERVER_PORT, 0);
-	peer->Startup(MAX_CLIENTS, &sd, 1);
-
-	printf("Server starting.\n");
+	peer->Startup(MAX_CLIENTS, &sd, 1);	
 	peer->SetMaximumIncomingConnections(MAX_CLIENTS);
 
-	////user users[MAX_CLIENTS];
-	//user* users;
-	//users = new user[MAX_CLIENTS];
-	//int currentUsers = 0;
-
+	// If this were entirely in c I would likely implement a binary search tree rather than using vector
 	std::vector<User> users;
 
-
+	// Main loop, runs until server is shut down
 	while (true)
 	{
+		// Process all incoming packets each loop
 		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 		{
 			switch (packet->data[0])
 			{
-			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
-				printf("Another client has disconnected.\n");
-				break;
-			case ID_REMOTE_CONNECTION_LOST:
-				printf("Another client has lost connection.\n");
-				break;
-			case ID_REMOTE_NEW_INCOMING_CONNECTION:
-				printf("Another client has connected.\n");
-				break;
-			case ID_CONNECTION_REQUEST_ACCEPTED:
+			case ID_CLIENT_INFO:	// Client response to successful connection, contains username
 			{
-				printf("Our connection request has been accepted.\n");
-			}
-			break;
-			case ID_CLIENT_INFO:
-			{
+				// Read in and store data from client
 				RakNet::RakString rs;
 				RakNet::BitStream bsIn(packet->data, packet->length, false);
 				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
@@ -212,8 +162,9 @@ int main(int const argc, char const* const argv[])
 				snprintf(bufName, sizeof bufName, "%s", rs.C_String());
 				users.push_back(User(packet->systemAddress, bufName));
 
+				// Update other clients with the status and username of the new client
 				char buf[256];
-				snprintf(buf, sizeof buf, "%s", bufName);
+				snprintf(buf, sizeof buf, "%s", bufName);	// This makes it work
 				snprintf(buf, sizeof buf, "%s%s", buf, " has connected\n");
 				rs = buf;
 				RakNet::BitStream bsOut;
@@ -221,23 +172,14 @@ int main(int const argc, char const* const argv[])
 				bsOut.Write(rs);
 
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
-
-				//delete[] bufName;
 			}
 				break;
 			case ID_NEW_INCOMING_CONNECTION:
 			{
 				char buf[256];
-				snprintf(buf, sizeof buf, "%s%s\n", packet->systemAddress.ToString(), " is connecting");
-				printf(buf);
+				snprintf(buf, sizeof buf, "%s%s", packet->systemAddress.ToString(), " is connecting");
+				printf("%s\n", buf);
 				logMessage(buf);
-
-				//RakNet::RakString rs = buf;
-				//RakNet::BitStream bsOut;
-				//bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
-				//bsOut.Write(rs);
-
-				//peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
 			}
 				break;
 			case ID_NO_FREE_INCOMING_CONNECTIONS:
@@ -247,111 +189,114 @@ int main(int const argc, char const* const argv[])
 				break;
 			case ID_DISCONNECTION_NOTIFICATION:
 			{
-				printf("A client has disconnected.\n");
+				// Log and print disconnection information
 				char buf[256];
-				snprintf(buf, sizeof buf, "%s%s\n", packet->systemAddress.ToString(), " has disconnected");
+				snprintf(buf, sizeof buf, "%s%s", packet->systemAddress.ToString(), " has disconnected");
+				printf("%s\n", buf);
 				logMessage(buf);
 
+				// Notify other clients of the disconnection
 				RakNet::RakString rs = buf;
 				RakNet::BitStream bsOut;
 				bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
 				bsOut.Write(rs);
 
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
+
+				// Remove disconnected client from stored clients
+				int result = getClientIndex(users, packet->systemAddress);
+				if (result != -1)
+					users.erase(users.begin() + result);
 			}
 				break;
 			case ID_CONNECTION_LOST:
 			{
-				printf("%s has lost connection.\n", packet->systemAddress.ToString());
-
+				// Log and print connection lost information
 				char buf[256];
-				snprintf(buf, sizeof buf, "%s%s\n", packet->systemAddress.ToString(), " has lost connection");
+				snprintf(buf, sizeof buf, "%s%s", packet->systemAddress.ToString(), " has lost connection");
+				printf("%s\n", buf);
 				logMessage(buf);
 
+				// Notify other clients of connection lost
 				RakNet::RakString rs = buf;
 				RakNet::BitStream bsOut;
 				bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
 				bsOut.Write(rs);
 				
-				int result = getClientIndex(users, packet->systemAddress);
-				if(result != -1)
-					users.erase(users.begin() + result);
-
-				for (auto food : users)
-				{
-					printf("%s\n", food.mUserName);
-				}
-				printf("\n\n");
-
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
+
+				// Remove disconnected client from stored clients
+				int result = getClientIndex(users, packet->systemAddress);
+				if (result != -1)
+					users.erase(users.begin() + result);
 			}
 				break;
-			case ID_PUBLIC_CLIENT_SERVER:
+			case ID_PUBLIC_CLIENT_SERVER:	// Message from a client intended for all clients
 			{
+				// Read in message data from client
 				RakNet::RakString rs;
+				RakNet::Time timeStamp;
 				RakNet::BitStream bsIn(packet->data, packet->length, false);
 				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
 				bsIn.Read(rs);
+				bsIn.Read(timeStamp);
 				printf("%s\n", rs.C_String());
 
-				RakNet::Time timeStamp = RakNet::GetTime();
+				// Construct and send message to all other clients
 				RakNet::BitStream bsOut;
-
+				char buf[512];
+				snprintf(buf, sizeof buf, "%s:%s", users.at(getClientIndex(users, packet->systemAddress)).mUserName, rs.C_String());
+				rs = buf;
 				bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
 				bsOut.Write(rs);
-
 				bsOut.Write(timeStamp);
 
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
 
-				char buf[256];
-				snprintf(buf, sizeof buf, "Message type %i %u:\"%s\" from client %s\n", ID_PUBLIC_SERVER_CLIENT, (UINT)timeStamp, rs.C_String(), packet->systemAddress.ToString());
+				// Log message traffic
+				//char buf[256];
+				snprintf(buf, sizeof buf, "Message type %i %u:\"%s\" from client %s", ID_PUBLIC_SERVER_CLIENT, (UINT)timeStamp, rs.C_String(), packet->systemAddress.ToString());
 				logMessage(buf, "message");
 			}
 			break;
-			case ID_CLIENT_REQUEST_USERS:
+			case ID_CLIENT_REQUEST_USERS:	// The client is requesting a list of connected clients from the server
 			{
+				// Construct list of currently connected usernames in a char buffer
 				RakNet::RakString rs;
 				RakNet::BitStream bsOut;
-				char buf[102];
+				char buf[MAX_CLIENTS * 12];	// 12 comes from max username length (10) + 2 buffer for delimiters and parity
 				bsOut.Write((RakNet::MessageID)ID_CLIENT_REQUEST_USERS);
+
+				// Constructs a buffer of all connected usernames delimited by a pipe |
 				snprintf(buf, sizeof buf, "%s", users.at(0).mUserName);
-				/*for (int i = 1; i < currentUsers; i++)
-				{
-					snprintf(buf, sizeof buf, "%s|%s", buf, users[i].mUserName);
-				}*/
-				//for (int i = 0; i < users.size(); i++)
-				//{
-				//	//rs = 
-				//	bsOut.Write(users.at(i).mUserName);
-				//}
 				for (int i = 1; i < users.size(); i++)
 				{
 					snprintf(buf, sizeof buf, "%s|%s", buf, users.at(i).mUserName);
 				}
 
-				//bsOut.Write("yellow");
+				// Send constructed information to requester
 				bsOut.Write(buf);
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false); // To only sender
 			}
 				break;
-			case ID_PRIVATE_CLIENT_SERVER:
+			case ID_PRIVATE_CLIENT_SERVER:	// A message from a client intended for a specific other client
 			{
+				// Read in intended recipient and message
 				RakNet::BitStream bsIn(packet->data, packet->length, false);
 				char name[11];
 				RakNet::RakString rs;
 				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-				bsIn.Read(rs);
+				bsIn.Read(rs);	// recipient username
 				snprintf(name, sizeof name, "%s", rs.C_String());
-				printf("%s\n", name);
-				bsIn.Read(rs);
-				printf("%s\n", rs.C_String());
+				bsIn.Read(rs);	// message content
 
 				RakNet::BitStream bsOut;
 
+				// Check for user existence
 				int result = getClientIndex(users, name);
 				if (result == -1)
 				{
+					// If client not found return error to the source
 					rs = "Error: Client not found\n";
 					bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
 					bsOut.Write(rs);
@@ -360,25 +305,28 @@ int main(int const argc, char const* const argv[])
 				}
 				else
 				{
+					// If client found package and send message to the recipient
 					RakNet::Time timeStamp = RakNet::GetTime();
-
-					char buf[256];
-					snprintf(buf, sizeof buf, "%s whispers to you: %s\n", users.at(getClientIndex(users, packet->systemAddress)).mUserName, rs.C_String());
+					char buf[512], msg[512];
+					snprintf(msg, sizeof msg, rs.C_String());
+					snprintf(buf, sizeof buf, "%s whispers to you: %s\n", users.at(getClientIndex(users, packet->systemAddress)).mUserName, msg);
 					bsOut.Write((RakNet::MessageID)ID_PRIVATE_SERVER_CLIENT);
 					rs = buf;
 					bsOut.Write(rs);
 					bsOut.Write(timeStamp);
 
 					peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, users.at(result).mAddress, false); // To only address
-				}
 
+					// Log message traffic
+					snprintf(buf, sizeof buf, "Message type %i %u:\"%s\" from client %s to client %s", ID_PRIVATE_SERVER_CLIENT, (UINT)timeStamp, msg, packet->systemAddress.ToString(), users.at(result).mAddress.ToString());
+					logMessage(buf, "message");
+				}
 			}
 				break;
-
 			default:
-				printf("Message with identifier %i has arrived.\n", packet->data[0]);
 				char buf[256];
-				snprintf(buf, sizeof buf, "Message with identifier %i has arrived from %s\n", packet->data[0], packet->systemAddress.ToString());
+				snprintf(buf, sizeof buf, "Message with identifier %i has arrived from %s", packet->data[0], packet->systemAddress.ToString());
+				printf("%s\n", buf);
 				logMessage(buf);
 				break;
 			}
@@ -394,11 +342,9 @@ int main(int const argc, char const* const argv[])
 	}
 
 
+	// Clean up and shutdown
 	RakNet::RakPeerInterface::DestroyInstance(peer);
-	logMessage("Server shutting down\n");
-	//delete[] users;
+	logMessage("Server shutting down");
 	users.clear();
-	system("pause");
 	return EXIT_SUCCESS;
 }
-

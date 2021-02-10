@@ -42,15 +42,6 @@
 
 const char REQUEST_USER_LIST[8] = "!users";
 
-enum GameMessages
-{
-	ID_PUBLIC_CLIENT_SERVER = ID_USER_PACKET_ENUM + 1,
-	ID_PUBLIC_SERVER_CLIENT,
-	ID_CLIENT_INFO,
-	ID_CLIENT_REQUEST_USERS,
-	ID_PRIVATE_CLIENT_SERVER,
-	ID_PRIVATE_SERVER_CLIENT
-};
 
 //Removes newline character from name (can't think of abetter solution at the moment)
 void removeNewline(char* str) 

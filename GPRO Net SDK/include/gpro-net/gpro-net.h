@@ -27,15 +27,15 @@
 
 #include "RakNet/MessageIdentifiers.h"
 
-
-
-// I hate the fact that I am doing this
-struct node
+enum GameMessages
 {
-	char name[11];
-	struct node* mleft, * mright;
+	ID_PUBLIC_CLIENT_SERVER = ID_USER_PACKET_ENUM + 1,
+	ID_PUBLIC_SERVER_CLIENT,
+	ID_CLIENT_INFO,
+	ID_CLIENT_REQUEST_USERS,
+	ID_PRIVATE_CLIENT_SERVER,
+	ID_PRIVATE_SERVER_CLIENT
 };
 
-//void insert(node*root)
 
 #endif	// !_GPRO_NET_H_
