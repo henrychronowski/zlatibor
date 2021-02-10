@@ -39,10 +39,13 @@
 #define SERVER_PORT 7777
 #define SERVER_IP "172.16.2.67"
 
+const char REQUEST_USER_LIST[7] = "!users";
+
 enum GameMessages
 {
 	ID_PUBLIC_CLIENT_SERVER = ID_USER_PACKET_ENUM + 1,
-	ID_PUBLIC_SERVER_CLIENT
+	ID_PUBLIC_SERVER_CLIENT,
+	ID_CLIENT_INFO
 };
 
 int main(int const argc, char const* const argv[])
@@ -77,7 +80,6 @@ int main(int const argc, char const* const argv[])
 
 	while (true)
 	{
-
 		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 		{
 			switch (packet->data[0])
@@ -85,6 +87,15 @@ int main(int const argc, char const* const argv[])
 			case ID_CONNECTION_REQUEST_ACCEPTED:
 			{
 				printf("Our connection request has been accepted.\n");
+
+				RakNet::RakString rs = userName;
+				RakNet::Time time = RakNet::GetTime();
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_CLIENT_INFO);
+				bsOut.Write(rs);
+				bsOut.Write(time);
+
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 			}
 			break;
 			case ID_NEW_INCOMING_CONNECTION:
@@ -116,7 +127,6 @@ int main(int const argc, char const* const argv[])
 				bsIn.Read(rs);
 				bsIn.Read(time);
 				printf("%s\n", rs.C_String());
-				printf("Sending message from client at time %" PRINTF_64_BIT_MODIFIER "u\n", time);
 			}
 			break;
 
@@ -130,22 +140,37 @@ int main(int const argc, char const* const argv[])
 		printf("%s: ", userName);
 		fgets(str, 512, stdin);
 
+		//Remove newline
 		for (int i = 0; i < strlen(str); i++) 
 		{
 			if (str[i] == '\n')
 				str[i] = '\0';
 		}
 
-		//Send message to server
-		RakNet::RakString rs = str;
-		RakNet::Time time = RakNet::GetTime();
-		RakNet::BitStream bsOut;
-		bsOut.Write((RakNet::MessageID)ID_PUBLIC_CLIENT_SERVER);
-		bsOut.Write(rs);
-		bsOut.Write(time);
+		//Check for client commands
 
-		packet = peer->AllocatePacket(sizeof(rs));
-		peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::SystemAddress(SERVER_IP, SERVER_PORT), false);
+		if (str[0] == '@') 
+		{
+			//Send message to specific user
+		}
+		else if (str == REQUEST_USER_LIST) 
+		{
+			//Request user list from server
+		}
+		else
+		{
+			//Send message to server
+			RakNet::RakString rs = str;
+			RakNet::Time time = RakNet::GetTime();
+			RakNet::BitStream bsOut;
+			bsOut.Write((RakNet::MessageID)ID_PUBLIC_CLIENT_SERVER);
+			bsOut.Write(rs);
+			bsOut.Write(time);
+
+			packet = peer->AllocatePacket(sizeof(rs));
+			peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::SystemAddress(SERVER_IP, SERVER_PORT), false);
+			peer->DeallocatePacket(packet);
+		}
 	}
 
 
