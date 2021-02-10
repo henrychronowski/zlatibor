@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cstring>
 
 
 #include "RakNet/RakPeerInterface.h"
@@ -39,7 +40,7 @@
 #define SERVER_PORT 7777
 #define SERVER_IP "172.16.2.67"
 
-const char REQUEST_USER_LIST[7] = "!users";
+const char REQUEST_USER_LIST[8] = "!users";
 
 enum GameMessages
 {
@@ -163,7 +164,7 @@ int main(int const argc, char const* const argv[])
 		{
 			//Send message to specific user
 		}
-		else if (str == REQUEST_USER_LIST) 
+		else if (strstr(str, REQUEST_USER_LIST)) 
 		{
 			//Request user list from server
 			RakNet::Time time = RakNet::GetTime();
