@@ -29,4 +29,13 @@
 
 
 
+// I hate the fact that I am doing this
+struct node
+{
+	char name[11];
+	struct node* mleft, * mright;
+};
+
+//void insert(node*root)
+
 #endif	// !_GPRO_NET_H_

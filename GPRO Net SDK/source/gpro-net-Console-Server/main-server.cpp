@@ -38,6 +38,13 @@
 #include "RakNet/RakNetTypes.h"
 #include "RakNet/GetTime.h"
 
+
+
+
+
+#include <vector>
+
+
 #define MAX_CLIENTS 10
 #define SERVER_PORT 7777
 
@@ -46,19 +53,19 @@ enum GameMessages
 	ID_PUBLIC_CLIENT_SERVER = ID_USER_PACKET_ENUM + 1,
 	ID_PUBLIC_SERVER_CLIENT,
 	ID_CLIENT_INFO,
-	ID_CLIENT_REQUEST_USERS
+	ID_CLIENT_REQUEST_USERS,
+	ID_PRIVATE_CLIENT_SERVER
 };
 
-struct user
+struct User
 {
 	RakNet::SystemAddress mAddress;
-	char* mUserName;
+	char mUserName[11];
 
-	/*user User(RakNet::SystemAddress address, char name[10])
+	User(RakNet::SystemAddress address, const char* username) : mAddress(address)
 	{
-		mAddress = address;
-		userName = name;
-	}*/
+		snprintf(mUserName, sizeof mUserName, "%s", username);
+	}
 };
 
 
@@ -106,13 +113,26 @@ int logMessage(const char* message, const char* type = "notice\t", const char* d
 	return 0;
 }
 
-RakNet::SystemAddress getAddress(user* users, char* name, int count = MAX_CLIENTS)
+//RakNet::SystemAddress getAddress(User* users, char* name, int count = MAX_CLIENTS)
+//{
+//	RakNet::SystemAddress result = NULL;
+//	for (int i = 0; i < count; i++)
+//	{
+//		if (users[i].mUserName == name)
+//			result = users[i].mAddress;
+//	}
+//
+//	return result;
+//}
+
+// returns -1 on not found
+int getClientIndex(std::vector<User>& users, RakNet::SystemAddress address)
 {
-	RakNet::SystemAddress result = NULL;
-	for (int i = 0; i < count; i++)
+	int result = -1;
+	for (int i = 0; i < users.size(); i++)
 	{
-		if (users[i].mUserName == name)
-			result = users[i].mAddress;
+		if (users.at(i).mAddress == address)
+			result = i;
 	}
 
 	return result;
@@ -141,10 +161,12 @@ int main(int const argc, char const* const argv[])
 	printf("Server starting.\n");
 	peer->SetMaximumIncomingConnections(MAX_CLIENTS);
 
-	//user users[MAX_CLIENTS];
-	user* users;
-	users = new user[MAX_CLIENTS];
-	int currentUsers = 0;
+	////user users[MAX_CLIENTS];
+	//user* users;
+	//users = new user[MAX_CLIENTS];
+	//int currentUsers = 0;
+
+	std::vector<User> users;
 
 
 	while (true)
@@ -173,12 +195,12 @@ int main(int const argc, char const* const argv[])
 				RakNet::BitStream bsIn(packet->data, packet->length, false);
 				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
 				bsIn.Read(rs);
-				users[currentUsers].mAddress = packet->systemAddress;
-				char buf[256];
-				snprintf(buf, sizeof buf, "%s", rs.C_String());
-				users[currentUsers].mUserName = buf;
-				currentUsers++;
+				char bufName[11];
+				snprintf(bufName, sizeof bufName, "%s", rs.C_String());
+				users.push_back(User(packet->systemAddress, bufName));
 
+				char buf[256];
+				snprintf(buf, sizeof buf, "%s", bufName);
 				snprintf(buf, sizeof buf, "%s%s", buf, " has connected\n");
 				rs = buf;
 				RakNet::BitStream bsOut;
@@ -186,6 +208,8 @@ int main(int const argc, char const* const argv[])
 				bsOut.Write(rs);
 
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
+
+				//delete[] bufName;
 			}
 				break;
 			case ID_NEW_INCOMING_CONNECTION:
@@ -235,6 +259,16 @@ int main(int const argc, char const* const argv[])
 				RakNet::BitStream bsOut;
 				bsOut.Write((RakNet::MessageID)ID_PUBLIC_SERVER_CLIENT);
 				bsOut.Write(rs);
+				
+				int result = getClientIndex(users, packet->systemAddress);
+				if(result != -1)
+					users.erase(users.begin() + result);
+
+				for (auto food : users)
+				{
+					printf("%s\n", food.mUserName);
+				}
+				printf("\n\n");
 
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true); // To all but sender
 			}
@@ -268,12 +302,23 @@ int main(int const argc, char const* const argv[])
 				RakNet::BitStream bsOut;
 				char buf[102];
 				bsOut.Write((RakNet::MessageID)ID_CLIENT_REQUEST_USERS);
-				snprintf(buf, sizeof buf, "%s%s", buf, users[0].mUserName);
-				for (int i = 1; i <= currentUsers; i++)
+				snprintf(buf, sizeof buf, "%s", users.at(0).mUserName);
+				/*for (int i = 1; i < currentUsers; i++)
 				{
 					snprintf(buf, sizeof buf, "%s|%s", buf, users[i].mUserName);
+				}*/
+				//for (int i = 0; i < users.size(); i++)
+				//{
+				//	//rs = 
+				//	bsOut.Write(users.at(i).mUserName);
+				//}
+				for (int i = 1; i < users.size(); i++)
+				{
+					snprintf(buf, sizeof buf, "%s|%s", buf, users.at(i).mUserName);
 				}
 
+				//bsOut.Write("yellow");
+				bsOut.Write(buf);
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false); // To only sender
 			}
 				break;
@@ -299,7 +344,8 @@ int main(int const argc, char const* const argv[])
 
 	RakNet::RakPeerInterface::DestroyInstance(peer);
 	logMessage("Server shutting down\n");
-	delete[] users;
+	//delete[] users;
+	users.clear();
 	system("pause");
 	return EXIT_SUCCESS;
 }
