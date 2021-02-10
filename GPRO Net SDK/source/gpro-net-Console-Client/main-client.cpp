@@ -45,7 +45,8 @@ enum GameMessages
 {
 	ID_PUBLIC_CLIENT_SERVER = ID_USER_PACKET_ENUM + 1,
 	ID_PUBLIC_SERVER_CLIENT,
-	ID_CLIENT_INFO
+	ID_CLIENT_INFO,
+	ID_CLIENT_REQUEST_USERS
 };
 
 int main(int const argc, char const* const argv[])
@@ -129,6 +130,15 @@ int main(int const argc, char const* const argv[])
 				printf("%s\n", rs.C_String());
 			}
 			break;
+			case ID_CLIENT_REQUEST_USERS:
+			{
+				RakNet::RakString rs;
+				RakNet::BitStream bsIn(packet->data, packet->length, false);
+				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+				bsIn.Read(rs);
+				printf("%s\n", rs.C_String());
+			}
+			break;
 
 			default:
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
@@ -156,6 +166,12 @@ int main(int const argc, char const* const argv[])
 		else if (str == REQUEST_USER_LIST) 
 		{
 			//Request user list from server
+			RakNet::Time time = RakNet::GetTime();
+			RakNet::BitStream bsOut;
+			bsOut.Write((RakNet::MessageID)ID_CLIENT_REQUEST_USERS);
+			bsOut.Write(time);
+
+			peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::SystemAddress(SERVER_IP, SERVER_PORT), false);
 		}
 		else
 		{
