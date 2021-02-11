@@ -81,6 +81,11 @@ extern "C"
 				uTex_nm, uTex_hm,			// named texture map handles for intermediate shading
 				uTex_ramp_dm, uTex_ramp_sm,	// named texture map handles for ramps
 				uImage00, uImage01, uImage02, uImage03, uImage04, uImage05, uImage06, uImage07;	// generic texture handles
+
+			a3i32
+				// Lighting uniforms
+				uLightPos,
+				uLightRadius;
 		};
 
 		// uniform blocks
@@ -90,7 +95,8 @@ extern "C"
 				ubTransformBlend,	// blending transforms
 				ubTransformStack,	// matrix stack block
 				ubTransformMVPB,	// model-view-projection-bias matrix block
-				ubTransformMVP;		// model-view-projection matrix block
+				ubTransformMVP,		// model-view-projection matrix block
+				ubLightPos;
 		};
 
 		// ****TO-DO: 

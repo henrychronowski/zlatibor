@@ -657,7 +657,9 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 
 		// ****TO-DO: 
 		//	-> set lighting uniform and block handles and defaults
-
+		a3demo_setUniformDefaultVec4(currentDemoProg, uLightPos, a3vec4_one.v);
+		a3demo_setUniformDefaultDouble(currentDemoProg, uLightRadius, defaultDouble);
+		a3demo_setUniformDefaultBlock(currentDemoProg, ubLightPos, 0);
 	}
 
 
@@ -769,9 +771,9 @@ inline void a3_refreshDrawable_internal(a3_VertexDrawable *drawable, a3_VertexAr
 //	...or just set new function pointers!
 void a3demo_loadValidate(a3_DemoState* demoState)
 {
-	// ****TO-DO: 
+	// ****DONE: 
 	//	-> uncomment
-/*	a3_BufferObject* currentBuff = demoState->drawDataBuffer,
+	a3_BufferObject* currentBuff = demoState->drawDataBuffer,
 		* const endBuff = currentBuff + demoStateMaxCount_drawDataBuffer;
 	a3_VertexArrayDescriptor* currentVAO = demoState->vertexArray,
 		* const endVAO = currentVAO + demoStateMaxCount_vertexArray;
@@ -813,7 +815,7 @@ void a3demo_loadValidate(a3_DemoState* demoState)
 
 	currentVAO = demoState->vao_tangentbasis_texcoord;
 	currentVAO->vertexBuffer = currentBuff;
-	a3_refreshDrawable_internal(demoState->draw_teapot, currentVAO, currentBuff);*/
+	a3_refreshDrawable_internal(demoState->draw_teapot, currentVAO, currentBuff);
 
 	a3demo_initDummyDrawable_internal(demoState);
 }
