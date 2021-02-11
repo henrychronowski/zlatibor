@@ -570,9 +570,9 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawPhong_fs->shader);
 
 
-	// ****TO-DO: 
+	// ****DONE: 
 	//	-> uncomment program linking and validation
-/*	// activate a primitive for validation
+	// activate a primitive for validation
 	// makes sure the specified geometry can draw using programs
 	// good idea to activate the drawable with the most attributes
 	a3vertexDrawableActivate(demoState->draw_axes);
@@ -588,7 +588,7 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 		flag = a3shaderProgramValidate(currentDemoProg->program);
 		if (flag == 0)
 			printf("\n ^^^^ PROGRAM %u '%s' FAILED TO VALIDATE \n\n", i, currentDemoProg->program->handle->name);
-	}*/
+	}
 
 	// if linking fails, contingency plan goes here
 	// otherwise, release shaders
@@ -601,7 +601,7 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 
 	// ****TO-DO: 
 	//	-> uncomment uniform setup and default value assignment
-/*	// prepare uniforms algorithmically instead of manually for all programs
+	// prepare uniforms algorithmically instead of manually for all programs
 	// get uniform and uniform block locations and set default values for all 
 	//	programs that have a uniform that will either never change or is
 	//	consistent for all programs
@@ -658,7 +658,7 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 		// ****TO-DO: 
 		//	-> set lighting uniform and block handles and defaults
 
-	}*/
+	}
 
 
 	// ****LATER
@@ -676,9 +676,9 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 // utility to load textures
 void a3demo_loadTextures(a3_DemoState* demoState)
 {	
-	// ****TO-DO: 
+	// ****DONE: 
 	//	-> uncomment texture loading
-/*	// indexing
+	// indexing
 	a3_Texture* tex;
 	a3ui32 i;
 
@@ -719,11 +719,11 @@ void a3demo_loadTextures(a3_DemoState* demoState)
 		a3textureCreateFromFile(texturePtr->texture, texturePtr->textureName, texturePtr->filePath);
 		a3textureActivate(texturePtr->texture, a3tex_unit00);
 		a3textureDefaultSettings();
-	}*/
+	}
 
-	// ****TO-DO: 
+	// ****DONE: 
 	//	-> uncomment texture configuration
-/*	// change settings on a per-texture or per-type basis
+	// change settings on a per-texture or per-type basis
 	tex = demoState->texture;
 	// skyboxes
 	for (i = 0; i < 2; ++i, ++tex)
@@ -736,7 +736,7 @@ void a3demo_loadTextures(a3_DemoState* demoState)
 	{
 		a3textureActivate(tex, a3tex_unit00);
 		a3textureChangeRepeatMode(a3tex_repeatClamp, a3tex_repeatClamp);	// clamp both axes
-	}*/
+	}
 
 
 	// done
