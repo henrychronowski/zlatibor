@@ -103,7 +103,7 @@ a3real4x4r a3demo_setAtlasTransform_internal(a3real4x4p m_out,
 // initialize dummy drawable
 inline void a3demo_initDummyDrawable_internal(a3_DemoState *demoState)
 {
-	// ****TO-DO: 
+	// ****DONE: 
 	//	-> uncomment
 	// dummy drawable for point drawing: copy any of the existing ones, 
 	//	set vertex count to 1 and primitive to points (0x0000)
@@ -505,9 +505,9 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 	//	- create program object
 	//	- attach shader objects
 
-	// ****TO-DO: 
+	// ****DONE: 
 	//	-> uncomment base program setup
-/*	// base programs: 
+	// base programs: 
 	// transform-only program
 	currentDemoProg = demoState->prog_transform;
 	a3shaderProgramCreate(currentDemoProg->program, "prog:transform");
@@ -547,19 +547,27 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-tb-inst");
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_transform_instanced_vs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawTangentBasis_gs->shader);
-	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawColorAttrib_fs->shader);*/
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawColorAttrib_fs->shader);
 
-	// ****TO-DO: 
+	// ****DONE: 
 	//	-> set up missing shader programs, using hints above: 
 	//		-> texturing, Lambert and Phong
-/*	// 00-common programs: 
+	// 00-common programs: 
 	// texturing
 	currentDemoProg = demoState->prog_drawTexture;
-	//...
+	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-tex");
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTexcoord_transform_vs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawTexture_fs->shader);
 	// Lambert
-	//...
+	currentDemoProg = demoState->prog_drawLambert;
+	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-Lambert");
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passColor_transform_vs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawLambert_fs->shader);
 	// Phong
-	//...*/
+	currentDemoProg = demoState->prog_drawPhong;
+	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-Phong");
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passColor_transform_vs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawPhong_fs->shader);
 
 
 	// ****TO-DO: 
