@@ -17,6 +17,8 @@
 /*
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
+
+	Referencing the OpenGL Blue Book
 	
 	drawPhong_fs4x.glsl
 	Output Phong shading.
@@ -33,7 +35,10 @@
 layout (location = 0) out vec4 rtFragColor;
 
 uniform vec4 uLightPos[4]; // World/camera
-uniform float uLightRadius;
+uniform vec3 uDiffuseAlbedo;
+uniform vec3 uSpecularAlbedo;
+uniform float uSpecularPower;
+uniform vec3 uAmbient;
 
 in vec4 vNormal;
 in vec4 vPosition;
@@ -47,23 +52,23 @@ uniform vec4 uColor;
 void main()
 {
 	vec4 N, L;
-	float kd = 0.0f;
-	float spec;
+	vec3 kd = {0.0f, 0.0f, 0.0f};
+	vec3 spec = {0.0f, 0.0f, 0.0f};
 	for(int i = 0; i < 4; i++)
 	{
 		N = normalize(vNormal);
 		L = normalize(uLightPos[i] - vPosition);
-		kd += dot(N,L) * uLightRadius;
-
-		//float specular = 0.0f;
-		vec4 reflection = reflect(-L, N); //https://learnopengl.com/Lighting/Basic-Lighting, https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
 		vec4 view = normalize(-vPosition);
 
-		spec += dot(reflection, view);
+		kd += max(dot(N,L), 0.0) * uDiffuseAlbedo;	// using max to ensure positivity (OpenGL blue book)
+
+		vec4 reflection = reflect(-L, N); //https://learnopengl.com/Lighting/Basic-Lighting, https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
+
+		spec += pow(max(dot(reflection, view), 0.0f), uSpecularPower) * uSpecularAlbedo;  // see 63 (OpenGL blue book)
 	}
 	
 	// Output
 	vec4 color = uColor * texture2D(uImage00, vTexcoord);
-	float ks = kd * spec;
-	rtFragColor = ks * color;
+	vec4 ks = {kd.x + spec.x, kd.y + spec.y, kd.z + spec.z, 0.0f};
+	rtFragColor = ks + color;
 }
