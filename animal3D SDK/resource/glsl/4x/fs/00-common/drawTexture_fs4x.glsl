@@ -37,9 +37,10 @@ in vec2 vTexcoord;
 
 uniform sampler2D uImage00;
 
+uniform vec4 uColor;
 
 void main()
 {
-	vec4 color = texture2D(uImage00, vTexcoord);
+	vec4 color = uColor * texture2D(uImage00, vTexcoord);
 	rtFragColor = color;
 }
