@@ -95,8 +95,7 @@ extern "C"
 				ubTransformBlend,	// blending transforms
 				ubTransformStack,	// matrix stack block
 				ubTransformMVPB,	// model-view-projection-bias matrix block
-				ubTransformMVP,		// model-view-projection matrix block
-				ubLightPos;
+				ubTransformMVP;		// model-view-projection matrix block
 		};
 
 		// ****TO-DO: 

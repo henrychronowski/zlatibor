@@ -32,8 +32,38 @@
 
 layout (location = 0) out vec4 rtFragColor;
 
+uniform vec4 uLightPos[4]; // World/camera
+uniform float uLightRadius;
+
+in vec4 vNormal;
+in vec4 vPosition;
+
+in vec2 vTexcoord;
+
+uniform sampler2D uImage00;
+
+uniform vec4 uColor;
+
 void main()
 {
-	// DUMMY OUTPUT: all fragments are OPAQUE GREEN
-	rtFragColor = vec4(0.0, 1.0, 0.0, 1.0);
+	vec4 N, L;
+	float kd = 0.0f;
+	float spec;
+	for(int i = 0; i < 4; i++)
+	{
+		N = normalize(vNormal);
+		L = normalize(uLightPos[i] - vPosition);
+		kd += dot(N,L) * uLightRadius;
+
+		//float specular = 0.0f;
+		vec4 reflection = reflect(-L, N); //https://learnopengl.com/Lighting/Basic-Lighting, https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
+		vec4 view = normalize(-vPosition);
+
+		spec += dot(reflection, view);
+	}
+	
+	// Output
+	vec4 color = uColor * texture2D(uImage00, vTexcoord);
+	float ks = kd * spec;
+	rtFragColor = ks * color;
 }
