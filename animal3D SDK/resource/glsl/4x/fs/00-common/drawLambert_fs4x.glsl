@@ -25,17 +25,18 @@
 #version 450
 
 // ****TO-DO: 
-//	-> declare varyings to receive lighting and shading variables
+//	-> declare varyings to receive lighting and shading variables\
 //	-> declare lighting uniforms
 //		(hint: in the render routine, consolidate lighting data 
 //		into arrays; read them here as arrays)
-//	-> calculate Lambertian coefficient
+//	-> calculate Lambertian coefficient\
 //	-> implement Lambertian shading model and assign to output
 //		(hint: coefficient * attenuation * light color * surface color)
 //	-> implement for multiple lights
 //		(hint: there is another uniform for light count)
 
 uniform vec4 uLightPos; // World/camera
+//uniform double uLightRadius;
 
 layout (location = 0) out vec4 rtFragColor;
 

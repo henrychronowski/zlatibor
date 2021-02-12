@@ -24,40 +24,41 @@
 
 #version 450
 
-// ****TO-DO: 
-//	-> declare matrices
+// ****DoNE?: 
+//	-> declare matrices/
 //		(hint: not MVP this time, made up of multiple; see render code)
-//	-> transform input position correctly, assign to output
+//	-> transform input position correctly, assign to output\
 //		(hint: this may be done in one or more steps)
-//	-> declare attributes for lighting and shading
+//	-> declare attributes for lighting and shading/
 //		(hint: normal and texture coordinate locations are 2 and 8)
-//	-> declare additional matrix for transforming normal
-//	-> declare varyings for lighting and shading
-//	-> calculate final normal and assign to varying
-//	-> assign texture coordinate to varying
+//	-> declare additional matrix for transforming normal\
+//	-> declare varyings for lighting and shading/?
+//	-> calculate final normal and assign to varying\
+//	-> assign texture coordinate to varying/
 
 uniform mat4 uMV, uMV_nrm, uP;
 
 layout (location = 0) in vec4 aPosition;
 layout (location = 2) in vec3 aNormal;
+layout (location = 8) in vec2 aTexCoord;
 
 flat out int vVertexID;
 flat out int vInstanceID;
 
+out vec2 vTexCoord;
+
+// Lighting and shading varyings
 out vec4 vNormal;
 out vec4 vPosition;
 
 void main()
 {
-	// DUMMY OUTPUT: directly assign input position to output position
-	//gl_Position = aPosition;
-
-	//vVertexID = gl_VertexID;
-	//vInstanceID = gl_InstanceID;
-
 	// Get position and normal in camera space
 	vPosition = uMV * aPosition;
 	vNormal = uMV_nrm * vec4(aNormal, 0.0f);
+
+	// Assign texture coordinate to varying
+	vTexCoord = aTexCoord;
 
 	gl_Position = uP * vPosition; // clip-space
 	
