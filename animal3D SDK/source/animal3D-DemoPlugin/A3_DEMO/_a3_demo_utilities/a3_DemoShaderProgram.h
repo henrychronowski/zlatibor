@@ -84,11 +84,11 @@ extern "C"
 
 			a3i32
 				// Lighting uniforms
-				uLightPos,
-				uDiffuseAlbedo,
-				uSpecularAlbedo,
-				uSpecularPower,
-				uAmbient;
+				uLightPos,                  // position of point light source
+				uDiffuseAlbedo,             // albedo for diffusion
+				uSpecularAlbedo,            // albedo for specular
+				uSpecularPower,             // make specular look good when number high
+				uAmbient;                   // amount of ambient light
 		};
 
 		// uniform blocks

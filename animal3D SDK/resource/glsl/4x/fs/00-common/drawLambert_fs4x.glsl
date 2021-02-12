@@ -61,11 +61,10 @@ void main()
 		N = normalize(vNormal);
 		L = normalize(uLightPos[i] - vPosition);
 
-		kd += max(dot(N,L), 0.0) * uDiffuseAlbedo;
+		kd += max(dot(N,L), 0.0) * uDiffuseAlbedo;	// Using max to force positive
 	}
 
-	// Output
+	// Output color modified by diffuse and ambient factors
 	vec4 color = uColor * texture2D(uImage00, vTexcoord);
 	rtFragColor = kd * color + uAmbient;
-	//rtFragColor = kd + color;
 }

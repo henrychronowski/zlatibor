@@ -59,15 +59,16 @@ void main()
 		N = normalize(vNormal);
 		L = normalize(uLightPos[i] - vPosition);
 		vec4 view = normalize(-vPosition);
-
-		kd += max(dot(N,L), 0.0) * uDiffuseAlbedo;	// using max to ensure positivity (OpenGL blue book)
-
 		vec4 reflection = reflect(-L, N); //https://learnopengl.com/Lighting/Basic-Lighting, https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
 
+		// Calculate diffuse value
+		kd += max(dot(N,L), 0.0) * uDiffuseAlbedo;	// using max to ensure positivity (OpenGL blue book)
+
+		// Calculate specular value
 		spec += pow(max(dot(reflection, view), 0.0f), uSpecularPower) * uSpecularAlbedo;  // see 63 (OpenGL blue book)
 	}
 	
-	// Output
+	// Output color modified by diffuse, specular, and ambient values
 	vec4 color = uColor * texture2D(uImage00, vTexcoord);
 	vec4 ks = kd + spec;
 
