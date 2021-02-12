@@ -76,6 +76,13 @@ void a3intro_update_scene(a3_DemoState* demoState, a3_DemoMode0_Intro* demoMode,
 	// ****DONE: 
 	//	-> update the remaining scene objects and their matrix stacks
 
+	// update ground
+	a3demo_updateSceneObject(demoMode->obj_ground, 0);
+	a3demo_updateSceneObjectStack(demoMode->obj_ground, projector);
+
+	a3demo_updateSceneObject(demoMode->objgroup_world_root, 0);
+	a3demo_updateSceneObjectStack(demoMode->objgroup_world_root, projector);
+
 	// update cylinder
 	a3demo_update_defaultAnimation((dt * 15.0), demoMode->obj_cylinder,
 		(a3ui32)(demoMode->obj_ground - demoMode->obj_cylinder), 2, demoState->updateAnimation);
