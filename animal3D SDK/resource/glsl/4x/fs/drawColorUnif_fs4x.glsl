@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> declare color uniform
 //		(hint: correct name is used in codebase)
 //	-> assign uniform directly to output

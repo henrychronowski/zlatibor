@@ -238,8 +238,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 
 	// ****TO-DO: 
 	//	-> send lighting uniforms and bind blocks where appropriate
-	a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, 1, a3vec4_one.v);
-	//a3shaderUniformSendDouble(a3unif_single, currentDemoProgram->uLightRadius, 1, lightRadius);
+	a3shaderUniformSendFloat(a3unif_vec4, 0, currentDemoProgram->uLightPos, (a3ui32)1U, demoMode->pointLightData->position.v);
 	
 
 
