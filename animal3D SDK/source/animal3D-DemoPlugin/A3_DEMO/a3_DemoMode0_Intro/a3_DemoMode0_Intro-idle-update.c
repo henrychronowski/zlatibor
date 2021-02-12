@@ -84,30 +84,26 @@ void a3intro_update_scene(a3_DemoState* demoState, a3_DemoMode0_Intro* demoMode,
 	a3demo_updateSceneObjectStack(demoMode->objgroup_world_root, projector);
 
 	// update cylinder
-
 	a3demo_updateSceneObject(demoMode->obj_cylinder, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_cylinder, projector);
 
 	// update capsule
-
 	a3demo_updateSceneObject(demoMode->obj_capsule, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_capsule, projector);
 
 	// update torus
-
 	a3demo_updateSceneObject(demoMode->obj_torus, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_torus, projector);
 
 	// update cone
-
 	a3demo_updateSceneObject(demoMode->obj_cone, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_cone, projector);
 
 	// update teapot
-
 	a3demo_updateSceneObject(demoMode->obj_teapot, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_teapot, projector);
 
+	//Update lights
 	a3real4Real4x4Product(demoMode->pointLightData->position.v,
 		projector->sceneObjectPtr->modelMatrixStackPtr->modelMatInverse.m, demoMode->pointLightData->worldPos.v);
 }

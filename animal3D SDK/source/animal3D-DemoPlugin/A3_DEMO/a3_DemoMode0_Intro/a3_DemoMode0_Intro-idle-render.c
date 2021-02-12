@@ -82,16 +82,16 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 	a3ui32 i = 0, j = 0;
 
 	//Diffuse albedo
-	const a3vec4 diffuseAlbedo[] = {0.25f, 0.25f, 0.25f};//{ 0.5f, 0.2f, 0.7f };
+	const a3vec4 diffuseAlbedo[] = {0.25f, 0.25f, 0.25f};
 
 	//Specular albedo
-	const a3vec4 specularAlbedo[] = { 0.4f, 0.4f, 0.4f };//7 7 7 
+	const a3vec4 specularAlbedo[] = { 0.4f, 0.4f, 0.4f };
 
 	//Specular power
 	const a3f32 specularPower = 128.0f;
 
 	//Ambient
-	const a3vec4 ambient[] = {0.05f, 0.05f, 0.05f};//{ 0.1f, 0.1f, 0.1f };
+	const a3vec4 ambient[] = {0.05f, 0.05f, 0.05f};
 
 	// RGB
 	const a3vec4 rgba4[] = {
@@ -245,9 +245,9 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 	if (demoState->updateAnimation)
 		a3shaderUniformSendDouble(a3unif_single, currentDemoProgram->uTime, 1, &demoState->timer_display->totalTime);
 
-	// ****TO-DO: 
+	// ****DONE: 
 	//	-> send lighting uniforms and bind blocks where appropriate
-	a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, 1, demoMode->pointLightData->position.v);
+	a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, 1, demoMode->pointLightData->position.v); //Light position
 	
 	// Create vector of lights
 	a3vec4 lights[introMaxCount_pointLight];
@@ -273,10 +273,10 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			//	-> uncomment texture activation
 			a3textureActivate(texture_dm[j], a3tex_unit01);
 
-			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uDiffuseAlbedo, 1, diffuseAlbedo->v);
-			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uSpecularAlbedo, 1, specularAlbedo->v);
-			a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uSpecularPower, 1, &specularPower);
-			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uAmbient, 1, ambient->v);
+			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uDiffuseAlbedo, 1, diffuseAlbedo->v); //Diffuse Albedo
+			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uSpecularAlbedo, 1, specularAlbedo->v); //Specular Albedo
+			a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uSpecularPower, 1, &specularPower); //Specular Power
+			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uAmbient, 1, ambient->v); //Ambient
 
 			// ****PRO-TIP: 
 			//	-> no break statement here because we can "fall through" the cases; this is convenient 
@@ -292,7 +292,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uDiffuseAlbedo, 1, diffuseAlbedo->v);
 			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uAmbient, 1, ambient->v);
 			
-			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, introMaxCount_pointLight, lights->v);
+			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, introMaxCount_pointLight, lights->v); //Lights
 
 		case intro_renderModeTexture:
 			// activate diffuse map, fall through to solid color

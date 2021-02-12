@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> declare varyings to receive lighting and shading variables\
 //	-> declare lighting uniforms
 //		(hint: in the render routine, consolidate lighting data 
