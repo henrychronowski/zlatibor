@@ -240,7 +240,12 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 	//	-> send lighting uniforms and bind blocks where appropriate
 	a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, 1, demoMode->pointLightData->position.v);
 	
-
+	// Create vector of lights
+	a3vec4 lights[introMaxCount_pointLight];
+	for (size_t i = 0; i < introMaxCount_pointLight; i++)
+	{
+		lights[i] = demoMode->pointLightData[i].position;
+	}
 
 	// select pipeline algorithm
 	glDisable(GL_BLEND);
@@ -270,7 +275,8 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			//		(hint: the correct uniform location is in the shader header)
 			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMV_nrm, 1, modelViewMat.mm);
 			a3shaderUniformSendDouble(a3unif_single, currentDemoProgram->uLightRadius, 1, &lightRadius);
-			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, 1, demoMode->pointLightData->position.v);
+			
+			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, introMaxCount_pointLight, lights->v);
 
 		case intro_renderModeTexture:
 			// activate diffuse map, fall through to solid color
