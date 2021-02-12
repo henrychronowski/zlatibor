@@ -82,7 +82,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 	a3ui32 i = 0, j = 0;
 
 	//Light radius
-	const a3f64 lightRadius = 1.0f;
+	const a3f32 lightRadius = 0.3f;
 
 	// RGB
 	const a3vec4 rgba4[] = {
@@ -274,7 +274,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			//	-> send "normal matrix": the inverse-transpose of the model-view matrix
 			//		(hint: the correct uniform location is in the shader header)
 			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMV_nrm, 1, modelViewMat.mm);
-			a3shaderUniformSendDouble(a3unif_single, currentDemoProgram->uLightRadius, 1, &lightRadius);
+			a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uLightRadius, 1, &lightRadius);
 			
 			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, introMaxCount_pointLight, lights->v);
 
