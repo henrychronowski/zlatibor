@@ -85,7 +85,10 @@ extern "C"
 			a3i32
 				// Lighting uniforms
 				uLightPos,
-				uLightRadius;
+				uDiffuseAlbedo,
+				uSpecularAlbedo,
+				uSpecularPower,
+				uAmbient;
 		};
 
 		// uniform blocks

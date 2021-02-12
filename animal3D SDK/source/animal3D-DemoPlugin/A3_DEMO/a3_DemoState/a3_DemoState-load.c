@@ -658,7 +658,10 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 		// ****TO-DO: 
 		//	-> set lighting uniform and block handles and defaults
 		a3demo_setUniformDefaultVec4(currentDemoProg, uLightPos, a3vec4_one.v);
-		a3demo_setUniformDefaultFloat(currentDemoProg, uLightRadius, defaultFloat);
+		a3demo_setUniformDefaultFloat(currentDemoProg, uDiffuseAlbedo, a3vec4_one.v);
+		a3demo_setUniformDefaultFloat(currentDemoProg, uSpecularAlbedo, a3vec4_one.v);
+		a3demo_setUniformDefaultFloat(currentDemoProg, uSpecularPower, defaultFloat);
+		a3demo_setUniformDefaultFloat(currentDemoProg, uAmbient, a3vec4_one.v);
 	}
 
 

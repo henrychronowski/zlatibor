@@ -81,8 +81,17 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 	// indices
 	a3ui32 i = 0, j = 0;
 
-	//Light radius
-	const a3f32 lightRadius = 0.3f;
+	//Diffuse albedo
+	const a3vec4 diffuseAlbedo[] = { 0.5f, 0.2f, 0.7f };
+
+	//Specular albedo
+	const a3vec4 specularAlbedo[] = { 0.7f, 0.7f, 0.7f };
+
+	//Specular power
+	const a3f32 specularPower = 128.0f;
+
+	//Ambient
+	const a3vec4 ambient[] = { 0.1f, 0.1f, 0.1 };
 
 	// RGB
 	const a3vec4 rgba4[] = {
@@ -263,6 +272,12 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			// ****DONE: 
 			//	-> uncomment texture activation
 			a3textureActivate(texture_dm[j], a3tex_unit01);
+
+			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uDiffuseAlbedo, 1, diffuseAlbedo->v);
+			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uSpecularAlbedo, 1, specularAlbedo->v);
+			a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uSpecularPower, 1, &specularPower);
+			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uAmbient, 1, ambient->v);
+
 			// ****PRO-TIP: 
 			//	-> no break statement here because we can "fall through" the cases; this is convenient 
 			//		here because Phong does everything Lambert does, plus the additional step above
@@ -274,7 +289,8 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			//	-> send "normal matrix": the inverse-transpose of the model-view matrix
 			//		(hint: the correct uniform location is in the shader header)
 			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMV_nrm, 1, modelViewMat.mm);
-			a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uLightRadius, 1, &lightRadius);
+			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uDiffuseAlbedo, 1, diffuseAlbedo->v);
+			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uAmbient, 1, ambient->v);
 			
 			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, introMaxCount_pointLight, lights->v);
 
