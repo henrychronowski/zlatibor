@@ -35,10 +35,10 @@
 layout (location = 0) out vec4 rtFragColor;
 
 uniform vec4 uLightPos[4]; // World/camera
-uniform vec3 uDiffuseAlbedo;
-uniform vec3 uSpecularAlbedo;
+uniform vec4 uDiffuseAlbedo;
+uniform vec4 uSpecularAlbedo;
 uniform float uSpecularPower;
-uniform vec3 uAmbient;
+uniform vec4 uAmbient;
 
 in vec4 vNormal;
 in vec4 vPosition;
@@ -52,8 +52,8 @@ uniform vec4 uColor;
 void main()
 {
 	vec4 N, L;
-	vec3 kd = {0.0f, 0.0f, 0.0f};
-	vec3 spec = {0.0f, 0.0f, 0.0f};
+	vec4 kd = vec4(0.0f);
+	vec4 spec = vec4(0.0f);
 	for(int i = 0; i < 4; i++)
 	{
 		N = normalize(vNormal);
@@ -69,6 +69,7 @@ void main()
 	
 	// Output
 	vec4 color = uColor * texture2D(uImage00, vTexcoord);
-	vec4 ks = {kd.x + spec.x, kd.y + spec.y, kd.z + spec.z, 0.0f};
-	rtFragColor = ks + color;
+	vec4 ks = kd + spec;
+
+	rtFragColor = ks * color + uAmbient;
 }

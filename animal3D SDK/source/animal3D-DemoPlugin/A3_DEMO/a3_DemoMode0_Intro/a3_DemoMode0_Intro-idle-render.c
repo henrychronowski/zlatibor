@@ -82,16 +82,16 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 	a3ui32 i = 0, j = 0;
 
 	//Diffuse albedo
-	const a3vec4 diffuseAlbedo[] = { 0.5f, 0.2f, 0.7f };
+	const a3vec4 diffuseAlbedo[] = {0.25f, 0.25f, 0.25f};//{ 0.5f, 0.2f, 0.7f };
 
 	//Specular albedo
-	const a3vec4 specularAlbedo[] = { 0.7f, 0.7f, 0.7f };
+	const a3vec4 specularAlbedo[] = { 0.4f, 0.4f, 0.4f };//7 7 7 
 
 	//Specular power
 	const a3f32 specularPower = 128.0f;
 
 	//Ambient
-	const a3vec4 ambient[] = { 0.1f, 0.1f, 0.1 };
+	const a3vec4 ambient[] = {0.05f, 0.05f, 0.05f};//{ 0.1f, 0.1f, 0.1f };
 
 	// RGB
 	const a3vec4 rgba4[] = {

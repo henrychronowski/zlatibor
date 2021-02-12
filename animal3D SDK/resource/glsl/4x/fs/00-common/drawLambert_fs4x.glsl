@@ -36,7 +36,8 @@
 //		(hint: there is another uniform for light count)
 
 uniform vec4 uLightPos[4]; // World/camera
-uniform float uLightRadius;
+uniform vec4 uDiffuseAlbedo;
+uniform vec4 uAmbient;
 
 layout (location = 0) out vec4 rtFragColor;
 
@@ -52,16 +53,19 @@ uniform vec4 uColor;
 void main()
 {
 	vec4 N, L;
-	float kd = 0.0f;
+	vec4 kd = vec4(0.0f);
+
 	// diffuse coefficient = dot(unit surface normal, unit light normal)
 	for(int i = 0; i < 4; i++)
 	{
 		N = normalize(vNormal);
 		L = normalize(uLightPos[i] - vPosition);
-		kd += dot(N,L) * uLightRadius;
+
+		kd += max(dot(N,L), 0.0) * uDiffuseAlbedo;
 	}
 
 	// Output
 	vec4 color = uColor * texture2D(uImage00, vTexcoord);
-	rtFragColor = kd * color;
+	rtFragColor = kd * color + uAmbient;
+	//rtFragColor = kd + color;
 }
