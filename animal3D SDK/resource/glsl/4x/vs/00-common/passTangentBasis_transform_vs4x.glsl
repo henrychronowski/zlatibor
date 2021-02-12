@@ -40,12 +40,12 @@ uniform mat4 uMV, uMV_nrm, uP;
 
 layout (location = 0) in vec4 aPosition;
 layout (location = 2) in vec3 aNormal;
-layout (location = 8) in vec2 aTexCoord;
+layout (location = 8) in vec2 aTexcoord;
 
 flat out int vVertexID;
 flat out int vInstanceID;
 
-out vec2 vTexCoord;
+out vec2 vTexcoord;
 
 // Lighting and shading varyings
 out vec4 vNormal;
@@ -58,7 +58,7 @@ void main()
 	vNormal = uMV_nrm * vec4(aNormal, 0.0f);
 
 	// Assign texture coordinate to varying
-	vTexCoord = aTexCoord;
+	vTexcoord = aTexcoord;
 
 	gl_Position = uP * vPosition; // clip-space
 	
