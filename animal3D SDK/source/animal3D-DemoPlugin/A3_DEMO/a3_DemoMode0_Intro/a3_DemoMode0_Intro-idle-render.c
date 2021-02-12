@@ -273,6 +273,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			//	-> uncomment texture activation
 			a3textureActivate(texture_dm[j], a3tex_unit01);
 
+			//Send lighting uniforms
 			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uDiffuseAlbedo, 1, diffuseAlbedo->v); //Diffuse Albedo
 			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uSpecularAlbedo, 1, specularAlbedo->v); //Specular Albedo
 			a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uSpecularPower, 1, &specularPower); //Specular Power
@@ -288,10 +289,11 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			// ****DONE: 
 			//	-> send "normal matrix": the inverse-transpose of the model-view matrix
 			//		(hint: the correct uniform location is in the shader header)
+
+			//Send lighting uniforms
 			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMV_nrm, 1, modelViewMat.mm);
 			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uDiffuseAlbedo, 1, diffuseAlbedo->v);
-			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uAmbient, 1, ambient->v);
-			
+			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uAmbient, 1, ambient->v);	
 			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, introMaxCount_pointLight, lights->v); //Lights
 
 		case intro_renderModeTexture:
@@ -305,7 +307,6 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			// ****DONE: 
 			//	-> send model-view-projection matrix
 			//	-> send solid color (not a matrix)
-
 			viewProjectionMat = currentSceneObject->modelMatrixStackPtr->modelViewProjectionMat;
 			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMVP, 1, viewProjectionMat.mm);
 			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor, 1, rgba4[i].v);
