@@ -26,7 +26,7 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> start with list from "drawLambert_fs4x"
 //		(hint: can put common stuff in "utilCommon_fs4x" to avoid redundancy)
 //	-> calculate view vector, reflection vector and Phong coefficient

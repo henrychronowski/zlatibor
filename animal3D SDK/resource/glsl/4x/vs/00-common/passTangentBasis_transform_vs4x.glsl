@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****DoNE?: 
+// ****DONE: 
 //	-> declare matrices/
 //		(hint: not MVP this time, made up of multiple; see render code)
 //	-> transform input position correctly, assign to output\
