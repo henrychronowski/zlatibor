@@ -836,8 +836,8 @@ void a3demo_loadTextures(a3_DemoState* demoState)
 void a3demo_loadFramebuffers(a3_DemoState* demoState)
 {
 	// create framebuffers and change their texture settings if need be
-	//a3_Framebuffer* fbo;
-	//a3ui32 i, j;
+	a3_Framebuffer* fbo;
+	a3ui32 i, j;
 
 	// frame sizes
 	const a3ui16 frameWidth1 = demoState->frameWidth, frameHeight1 = demoState->frameHeight;
@@ -864,17 +864,19 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 	//		-> depth only
 	//		-> set of full-size MRT-color only
 	//		-> set of half/quarter/eighth-size color only
-/*	// initialize framebuffers: MRT, color and depth formats, size
+	// initialize framebuffers: MRT, color and depth formats, size
 	fbo = demoState->fbo_c16x4_d24s8;
 	a3framebufferCreate(fbo, "fbo:c16x4;d24s8",
 		4, a3fbo_colorRGBA16, a3fbo_depth24_stencil8,
 		frameWidth1, frameHeight1);
-	//...*/
+	fbo = demoState->fbo_d32;
+	a3framebufferCreate(fbo, "fbo:d32", 0, a3fbo_colorDisable, a3fbo_depth32, shadowMapSize, shadowMapSize); //Shadow buffer, depth only
+	//...
 
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment global framebuffer configuration
-/*	// change texture settings for all framebuffers
+	// change texture settings for all framebuffers
 	for (i = 0, fbo = demoState->framebuffer;
 		i < demoStateMaxCount_framebuffer;
 		++i, ++fbo)
@@ -894,7 +896,7 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 			a3textureChangeRepeatMode(a3tex_repeatClamp, a3tex_repeatClamp);
 			a3textureChangeFilterMode(a3tex_filterLinear);
 		}
-	}*/
+	}
 
 
 	// deactivate texture
