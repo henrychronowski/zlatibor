@@ -40,7 +40,7 @@
 #include "RakNet/GetTime.h"
 
 #define SERVER_PORT 7777
-#define SERVER_IP "172.16.2.67"
+#define SERVER_IP "172.16.2.59"
 
 const char REQUEST_USER_LIST[8] = "!users";
 
@@ -60,6 +60,8 @@ int main(int const argc, char const* const argv[])
 {
 	char str[512];
 	char userName[11];
+
+	//gpro_consoleDrawTestPatch();
 
 	//Initialize RakNet peer
 	RakNet::RakPeerInterface* peer = RakNet::RakPeerInterface::GetInstance();

@@ -26,6 +26,8 @@
 #define _GPRO_NET_H_
 
 #include "RakNet/MessageIdentifiers.h"
+#include "gpro-net-common/gpro-net-console.h"
+#include "gpro-net-common/gpro-net-gamestate.h"
 
 //Enum for all common client-server messages
 enum GameMessages
@@ -38,5 +40,16 @@ enum GameMessages
 	ID_PRIVATE_SERVER_CLIENT
 };
 
+//typedef unsigned short CardData;
+//
+//typedef struct Card
+//{
+//	CardData suite, value;
+//}Card;
+//
+//const int NUM_DECK_CARDS = 52;
+//const int NUM_SUITE_CARDS = 13;
+//
+//extern Card drawCard();
 
 #endif	// !_GPRO_NET_H_
