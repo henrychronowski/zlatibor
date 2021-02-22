@@ -25,8 +25,22 @@
 #include "gpro-net/gpro-net.h"
 #include <stdlib.h>
 
+char randSeeded = '0';
+
+// Seeds the pseudo random number generator once
+void seedRand()
+{
+	if (randSeeded == '0')
+	{
+		srand(time(NULL));
+		randSeeded = '1';
+	}
+}
+
 Card drawCard()
 {
+	seedRand();
+
 	int randCard = (rand() % NUM_DECK_CARDS) + 1;
 
 	Card card;

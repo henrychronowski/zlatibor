@@ -25,11 +25,6 @@
 #ifndef _GPRO_NET_H_
 #define _GPRO_NET_H_
 
-//#ifdef __cplusplus
-//extern "C" {
-//#endif // _cplusplus
-
-
 #include "RakNet/MessageIdentifiers.h"
 #include "gpro-net-common/gpro-net-console.h"
 #include "gpro-net-common/gpro-net-gamestate.h"
