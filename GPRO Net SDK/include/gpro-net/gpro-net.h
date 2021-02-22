@@ -29,6 +29,12 @@
 #include "gpro-net-common/gpro-net-console.h"
 #include "gpro-net-common/gpro-net-gamestate.h"
 
+#include "gpro-net-common/Cards.h"
+#include "gpro-net-common/CardBST.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+
 	//Enum for all common client-server messages
 	enum GameMessages
 	{
@@ -40,6 +46,7 @@
 		ID_PRIVATE_SERVER_CLIENT
 	};
 
+<<<<<<< HEAD
 	const int NUM_DECK_CARDS = 52;
 	const int NUM_SUITE_CARDS = 13;
 
@@ -57,4 +64,6 @@
 	Card drawCard();
 
 
+=======
+>>>>>>> 97fb568051ec8a39e1ce7efab2737e83ee7076e6
 #endif	// !_GPRO_NET_H_

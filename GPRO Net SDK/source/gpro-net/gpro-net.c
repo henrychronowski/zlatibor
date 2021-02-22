@@ -45,7 +45,7 @@ Card drawCard()
 	int randCard = (rand() % NUM_DECK_CARDS) + 1;
 
 	Card card;
-	card.suite = (CardData)(randCard / NUM_SUITE_CARDS);
+	card.suit = (CardData)(randCard / NUM_SUITE_CARDS);
 	card.value = (CardData)(randCard % NUM_SUITE_CARDS);
 
 	return card;
