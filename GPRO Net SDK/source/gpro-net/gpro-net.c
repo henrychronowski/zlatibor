@@ -23,7 +23,7 @@
 */
 
 #include "gpro-net/gpro-net.h"
-#include <stdlib.h>
+#include <time.h>
 
 char randSeeded = '0';
 
@@ -32,7 +32,7 @@ void seedRand()
 {
 	if (randSeeded == '0')
 	{
-		srand(time(NULL));
+		srand((unsigned) time(NULL));
 		randSeeded = '1';
 	}
 }
@@ -44,7 +44,7 @@ Card drawCard()
 	int randCard = (rand() % NUM_DECK_CARDS) + 1;
 
 	Card card;
-	card.suite = (CardData)(randCard / NUM_SUITE_CARDS);
+	card.suit = (CardData)(randCard / NUM_SUITE_CARDS);
 	card.value = (CardData)(randCard % NUM_SUITE_CARDS);
 
 	return card;
