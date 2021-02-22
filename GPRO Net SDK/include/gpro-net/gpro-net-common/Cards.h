@@ -1,4 +1,5 @@
 #ifndef CARDS_H
+#define CARDS_H
 
 
 const int NUM_DECK_CARDS = 52;
