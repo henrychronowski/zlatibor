@@ -46,4 +46,24 @@
 		ID_PRIVATE_SERVER_CLIENT
 	};
 
+<<<<<<< HEAD
+	const int NUM_DECK_CARDS = 52;
+	const int NUM_SUITE_CARDS = 13;
+
+	typedef unsigned short CardData;
+
+
+	typedef struct _Card
+	{
+		CardData suite;
+		CardData value;
+
+		//Function to display card?
+	}Card;
+
+	Card drawCard();
+
+
+=======
+>>>>>>> 97fb568051ec8a39e1ce7efab2737e83ee7076e6
 #endif	// !_GPRO_NET_H_

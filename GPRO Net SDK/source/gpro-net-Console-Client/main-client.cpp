@@ -24,14 +24,18 @@
 	Main source for console client application.
 */
 
+#ifdef __cplusplus
+extern "C" {
 #include "gpro-net/gpro-net.h"
+}
+#endif // __cplusplus
 
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <cstring>
-
+#include <vector>
 
 #include "RakNet/RakPeerInterface.h"
 #include "RakNet/MessageIdentifiers.h"
@@ -44,6 +48,8 @@
 
 const char REQUEST_USER_LIST[8] = "!users";
 
+std::vector<Card> clientHand;
+
 
 //Removes newline character from name (can't think of abetter solution at the moment)
 void removeNewline(char* str) 
@@ -55,13 +61,27 @@ void removeNewline(char* str)
 	}
 }
 
+void printCurrentHand(std::vector<Card> hand) 
+{
+	for (int i = 0; i < hand.size(); i++)
+	{
+		
+	}
+}
+
+void updateLocalGameState()
+{
+	gpro_consoleSetColor(gpro_consoleColor_cyan, gpro_consoleColor_black);
+	//print current hand
+
+	//Ask draw or hold
+}
+
 //CLIENT
 int main(int const argc, char const* const argv[])
 {
 	char str[512];
 	char userName[11];
-
-	//gpro_consoleDrawTestPatch();
 
 	//Initialize RakNet peer
 	RakNet::RakPeerInterface* peer = RakNet::RakPeerInterface::GetInstance();
@@ -79,7 +99,9 @@ int main(int const argc, char const* const argv[])
 	//Get client username
 	char c = 0;
 
+	gpro_consoleSetColor(gpro_consoleColor_cyan, gpro_consoleColor_black);
 	printf("Enter Username (10 Characters): ");
+	gpro_consoleSetColor(gpro_consoleColor_yellow, gpro_consoleColor_black);
 	fgets(userName, 10, stdin);
 	fflush(stdin);
 
@@ -164,6 +186,8 @@ int main(int const argc, char const* const argv[])
 				break;
 			}
 		}
+
+		updateLocalGameState();
 
 		//Get message from user
 		printf("%s: ", userName);

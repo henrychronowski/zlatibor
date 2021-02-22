@@ -23,6 +23,7 @@
 */
 
 #include "gpro-net/gpro-net.h"
+#include <stdlib.h>
 #include <time.h>
 
 char randSeeded = '0';
@@ -32,7 +33,7 @@ void seedRand()
 {
 	if (randSeeded == '0')
 	{
-		srand((unsigned) time(NULL));
+		srand((unsigned)time(NULL));
 		randSeeded = '1';
 	}
 }
