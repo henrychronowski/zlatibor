@@ -50,6 +50,8 @@
 	{
 		CardData suite;
 		CardData value;
+
+		//Function to display card?
 	}Card;
 
 	Card drawCard();
