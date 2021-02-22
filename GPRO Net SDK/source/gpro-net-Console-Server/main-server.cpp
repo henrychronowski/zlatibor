@@ -29,7 +29,11 @@
 	https://www.gnu.org/software/libc/manual/html_node/Formatted-Output-Functions.html
 */
 
+#ifdef __cplusplus
+extern "C" {
 #include "gpro-net/gpro-net.h"
+}
+#endif // __cplusplus
 
 
 #include <stdio.h>
@@ -150,6 +154,8 @@ int main(int const argc, char const* const argv[])
 
 	// If this were entirely in c I would likely implement a binary search tree rather than using vector
 	std::vector<User> users;
+
+	drawCard();
 
 	// Main loop, runs until server is shut down
 	while (true)

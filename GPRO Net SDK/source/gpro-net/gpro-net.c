@@ -25,13 +25,13 @@
 #include "gpro-net/gpro-net.h"
 #include <stdlib.h>
 
-//Card drawCard()
-//{
-//	int randCard = (rand() % NUM_DECK_CARDS) + 1;
-//
-//	Card card;
-//	card.suite = (CardData)(randCard / NUM_SUITE_CARDS);
-//	card.value = (CardData)(randCard % NUM_SUITE_CARDS);
-//
-//	return card;
-//}
+Card drawCard()
+{
+	int randCard = (rand() % NUM_DECK_CARDS) + 1;
+
+	Card card;
+	card.suite = (CardData)(randCard / NUM_SUITE_CARDS);
+	card.value = (CardData)(randCard % NUM_SUITE_CARDS);
+
+	return card;
+}

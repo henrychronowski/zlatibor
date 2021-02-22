@@ -25,31 +25,39 @@
 #ifndef _GPRO_NET_H_
 #define _GPRO_NET_H_
 
+//#ifdef __cplusplus
+//extern "C" {
+//#endif // _cplusplus
+
+
 #include "RakNet/MessageIdentifiers.h"
 #include "gpro-net-common/gpro-net-console.h"
 #include "gpro-net-common/gpro-net-gamestate.h"
 
-//Enum for all common client-server messages
-enum GameMessages
-{
-	ID_PUBLIC_CLIENT_SERVER = ID_USER_PACKET_ENUM + 1,
-	ID_PUBLIC_SERVER_CLIENT,
-	ID_CLIENT_INFO,
-	ID_CLIENT_REQUEST_USERS,
-	ID_PRIVATE_CLIENT_SERVER,
-	ID_PRIVATE_SERVER_CLIENT
-};
+	//Enum for all common client-server messages
+	enum GameMessages
+	{
+		ID_PUBLIC_CLIENT_SERVER = ID_USER_PACKET_ENUM + 1,
+		ID_PUBLIC_SERVER_CLIENT,
+		ID_CLIENT_INFO,
+		ID_CLIENT_REQUEST_USERS,
+		ID_PRIVATE_CLIENT_SERVER,
+		ID_PRIVATE_SERVER_CLIENT
+	};
 
-//typedef unsigned short CardData;
-//
-//typedef struct Card
-//{
-//	CardData suite, value;
-//}Card;
-//
-//const int NUM_DECK_CARDS = 52;
-//const int NUM_SUITE_CARDS = 13;
-//
-//extern Card drawCard();
+	const int NUM_DECK_CARDS = 52;
+	const int NUM_SUITE_CARDS = 13;
+
+	typedef unsigned short CardData;
+
+
+	typedef struct _Card
+	{
+		CardData suite;
+		CardData value;
+	}Card;
+
+	Card drawCard();
+
 
 #endif	// !_GPRO_NET_H_
