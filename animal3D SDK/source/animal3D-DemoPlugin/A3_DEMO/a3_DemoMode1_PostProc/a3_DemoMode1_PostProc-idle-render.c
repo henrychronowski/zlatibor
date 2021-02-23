@@ -230,15 +230,24 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 		1,
 	};
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment FBO target array
 	//	-> add pointer to target FBO for each pass
 	//		(hint: choose the most relevant one for each; all are unique)
 	// framebuffer target for each pass
 	const a3_Framebuffer* writeFBO[postproc_renderPass_max] = {
-		demoState->fbo_d32,
-		demoState->fbo_c16x4_d24s8,
-		//...
+		demoState->fbo_d32, // shadow
+		demoState->fbo_c16x4_d24s8, // scene
+		demoState->fbo_c16_szHalf, // half bright
+		demoState->fbo_c16_szHalf + 1, // half bright first axis (horizontal)
+		demoState->fbo_c16_szHalf + 2, // half bright second axis (vertical)
+		demoState->fbo_c16_szQuarter, // quarter bright
+		demoState->fbo_c16_szQuarter + 1, // quarter bright first axis (horizontal)
+		demoState->fbo_c16_szQuarter + 2, // quarter bright second axis (vertical)
+		demoState->fbo_c16_szEighth, // eighth bright
+		demoState->fbo_c16_szEighth + 1, // eighth bright first axis (horizontal)
+		demoState->fbo_c16_szEighth + 2, // eighth bright second axis (vertical)
+		demoState->fbo_c16x4 // composite, don't need depth for final pass
 	};
 
 	// target info
@@ -262,7 +271,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	};
 
 	// pixel size and effect axis
-	//a3vec2 pixelSize = a3vec2_one;
+	a3vec2 pixelSize = a3vec2_one;
 
 
 	//-------------------------------------------------------------------------
@@ -414,13 +423,23 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	//	-> uncomment first post-processing pass
 	//	-> implement bloom pipeline following the above algorithm
 	//		(hint: this is the entirety of the first bright pass)
-/*	currentDemoProgram = demoState->prog_postBright;
+	currentDemoProgram = demoState->prog_postBright;
 	a3shaderProgramActivate(currentDemoProgram->program);
-	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
-	currentWriteFBO = writeFBO[postproc_renderPassBright2];
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0); //Selecting texture to draw to
+	currentWriteFBO = writeFBO[postproc_renderPassBright2]; //Select FBO to write to
 	a3framebufferActivate(currentWriteFBO);
-	a3vertexDrawableRenderActive();
-	//...*/
+	a3vertexDrawableRenderActive(); //Draws the FSQ off-screen
+
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 1.0f / (float)currentWriteFBO->frameWidth;
+	pixelSize.y = 0.0f;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0); //Selecting texture to draw to
+	currentWriteFBO = writeFBO[postproc_renderPassBlurH2]; //Select FBO to write to
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive(); //Draws the FSQ off-screen
+	//...
 
 
 	//-------------------------------------------------------------------------
@@ -493,13 +512,13 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	if ((demoState->displayGrid || demoState->displayTangentBases || demoState->displayWireframe) &&
 		renderPass != postproc_renderPassShadow)
 	{
-		// ****TO-DO:
+		// ****DONE:
 		//	-> uncomment overlay FBO activation and configuration
-	/*	// activate scene FBO and clear color; reuse depth
+		// activate scene FBO and clear color; reuse depth
 		currentWriteFBO = demoState->fbo_c16x4_d24s8;
 		a3framebufferActivate(currentWriteFBO);
 		glDisable(GL_STENCIL_TEST);
-		glClear(GL_COLOR_BUFFER_BIT);*/
+		glClear(GL_COLOR_BUFFER_BIT);
 
 		// draw grid aligned to world
 		if (demoState->displayGrid)
