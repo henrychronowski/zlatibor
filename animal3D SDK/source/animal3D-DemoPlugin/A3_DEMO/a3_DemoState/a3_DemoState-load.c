@@ -871,6 +871,28 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 		frameWidth1, frameHeight1);
 	fbo = demoState->fbo_d32;
 	a3framebufferCreate(fbo, "fbo:d32", 0, a3fbo_colorDisable, a3fbo_depth32, shadowMapSize, shadowMapSize); //Shadow buffer, depth only
+
+	fbo = demoState->fbo_c16_szHalf;
+	for (int i = 0; i < 3; i++)
+	{
+		a3framebufferCreate(fbo, "fbo:c16szHalf", 4, a3fbo_colorRGB16, a3fbo_depthDisable, frameWidth2, frameHeight2); //Half Bright
+	}
+
+	fbo = demoState->fbo_c16_szQuarter;
+	for (int j = 0; j < 3; j++)
+	{
+		a3framebufferCreate(fbo, "fbo:c16szQuarter", 4, a3fbo_colorRGB16, a3fbo_depthDisable, frameWidth4, frameHeight4); //Quarter Bright
+	}
+
+	fbo = demoState->fbo_c16_szEighth;
+	for (int k = 0; k < 3; k++)
+	{
+		a3framebufferCreate(fbo, "fbo:c16szEighth", 4, a3fbo_colorRGB16, a3fbo_depthDisable, frameWidth8, frameHeight8); //Eighth Bright
+	}
+
+	fbo = demoState->fbo_c16x4;
+	a3framebufferCreate(fbo, "fbo:c16x4", targets_composite, colorType_composite, depthType_composite, frameWidth1, frameHeight1); //composite
+
 	//...
 
 
@@ -931,10 +953,10 @@ void a3demo_loadValidate(a3_DemoState* demoState)
 		* const endUBO = currentUBO + demoStateMaxCount_uniformBuffer;
 	a3_Texture* currentTex = demoState->texture,
 		* const endTex = currentTex + demoStateMaxCount_texture;
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment framebuffer pointers
-/*	a3_Framebuffer* currentFBO = demoState->framebuffer,
-		* const endFBO = currentFBO + demoStateMaxCount_framebuffer;*/
+	a3_Framebuffer* currentFBO = demoState->framebuffer,
+		* const endFBO = currentFBO + demoStateMaxCount_framebuffer;
 
 	// set pointers to appropriate release callback for different asset types
 	while (currentBuff < endBuff)
@@ -947,10 +969,10 @@ void a3demo_loadValidate(a3_DemoState* demoState)
 		a3bufferHandleUpdateReleaseCallback(currentUBO++);
 	while (currentTex < endTex)
 		a3textureHandleUpdateReleaseCallback(currentTex++);
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment framebuffer update
-/*	while (currentFBO < endFBO)
-		a3framebufferHandleUpdateReleaseCallback(currentFBO++);*/
+	while (currentFBO < endFBO)
+		a3framebufferHandleUpdateReleaseCallback(currentFBO++);
 
 	// re-link specific object pointers for different asset types
 	currentBuff = demoState->vbo_staticSceneObjectDrawBuffer;
