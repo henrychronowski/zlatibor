@@ -16,5 +16,6 @@ typedef struct _Card
 
 Card drawCard();
 
+void printCard(Card card);
 
 #endif // !CARDS_H

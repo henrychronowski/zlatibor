@@ -65,16 +65,99 @@ void printCurrentHand(std::vector<Card> hand)
 {
 	for (int i = 0; i < hand.size(); i++)
 	{
-		
+		printCard(clientHand.at(i));
 	}
 }
 
-void updateLocalGameState()
+void checkScore()
+{
+	CardData total = 0;
+	bool clear = false;
+	bool aceHigh = false;
+
+	for (int i = 0; i < clientHand.size(); i++)
+	{
+		if (clientHand.at(i).value > 10 && clientHand.at(i).value < 14) 
+		{
+			total += 10;
+		}
+		else if (clientHand.at(i).value == 14)
+		{
+			aceHigh = true;
+			total += 11;
+		}
+		else 
+		{
+			total += clientHand.at(i).value;
+		}
+	}
+
+	if (total > BLACKJACK)
+	{
+		//Bust
+		if (aceHigh)
+		{
+			for (int i = 0; i < clientHand.size(); i++)
+			{
+				if (clientHand.at(i).value == 14)
+					clientHand.at(i).value = 1;
+			}
+			checkScore();
+			return;
+		}
+
+		clear = true;
+		gpro_consoleSetColor(gpro_consoleColor_red, gpro_consoleColor_black);
+		printCurrentHand(clientHand);
+		gpro_consoleResetColor();
+		printf("\nBust! :(\n");
+	}
+	else if (total == BLACKJACK)
+	{
+		//Black Jack
+		clear = true;
+		gpro_consoleSetColor(gpro_consoleColor_green, gpro_consoleColor_black);
+		printCurrentHand(clientHand);
+		gpro_consoleResetColor();
+		printf("\nBlackjack! :)\n");
+	}
+	else
+	{
+		//end turn
+	}
+
+	if(clear)
+		clientHand.clear();
+}
+
+void updateLocalGameState(const char* username)
 {
 	gpro_consoleSetColor(gpro_consoleColor_cyan, gpro_consoleColor_black);
 	//print current hand
+	printf("%s's Hand: ", username);
+	gpro_consoleResetColor();
+	gpro_consoleSetColor(gpro_consoleColor_magenta, gpro_consoleColor_black);
+	printCurrentHand(clientHand);
+	gpro_consoleResetColor();
+	printf("\n");
 
 	//Ask draw or hold
+	char c;
+	printf("Draw (D) or Hold (H)?: ");
+	c = std::getchar();
+
+	if (c == 'D' || c == 'd')
+	{
+		//Draw
+		clientHand.push_back(drawCard());
+	}
+	else if (c == 'H' || c == 'h')
+	{
+		//hold
+	}
+
+	//check score
+	checkScore();
 }
 
 //CLIENT
@@ -101,12 +184,17 @@ int main(int const argc, char const* const argv[])
 
 	gpro_consoleSetColor(gpro_consoleColor_cyan, gpro_consoleColor_black);
 	printf("Enter Username (10 Characters): ");
+	gpro_consoleResetColor();
 	gpro_consoleSetColor(gpro_consoleColor_yellow, gpro_consoleColor_black);
 	fgets(userName, 10, stdin);
 	fflush(stdin);
 
 	removeNewline(userName);
 
+	//Initial game hand
+	clientHand.push_back(drawCard());
+	clientHand.push_back(drawCard());
+	
 	//Main loop, runs until client is shut down
 	while (true)
 	{
@@ -187,10 +275,10 @@ int main(int const argc, char const* const argv[])
 			}
 		}
 
-		updateLocalGameState();
+		updateLocalGameState(userName);
 
 		//Get message from user
-		printf("%s: ", userName);
+		//printf("%s: ", userName);
 		fgets(str, 512, stdin);
 		removeNewline(str);
 		

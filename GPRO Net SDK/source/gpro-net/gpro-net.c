@@ -46,7 +46,58 @@ Card drawCard()
 
 	Card card;
 	card.suit = (CardData)(randCard / NUM_SUITE_CARDS);
-	card.value = (CardData)(randCard % NUM_SUITE_CARDS);
+	card.value = (CardData)(randCard % NUM_SUITE_CARDS) + 1;
+
+	if (card.value == 1)
+		card.value = 14;
 
 	return card;
+}
+
+void printCard(Card card)
+{
+	char cardSuit = ' ';
+	switch (card.suit)
+	{
+	case 0:
+		cardSuit = 'S';
+		break;
+	case 1:
+		cardSuit = 'C';
+		break;
+	case 2:
+		cardSuit = 'H';
+		break;
+	case 3:
+		cardSuit = 'D';
+		break;
+	default:
+		cardSuit = (char)card.suit;
+		break;
+	}
+
+	char cardValue = ' ';
+	switch (card.value)
+	{
+	case 11:
+		cardValue = 'J';
+		printf("%c, %c | ", cardSuit, cardValue);
+		break;
+	case 12:
+		cardValue = 'Q';
+		printf("%c, %c | ", cardSuit, cardValue);
+		break;
+	case 13:
+		cardValue = 'K';
+		printf("%c, %c | ", cardSuit, cardValue);
+		break;
+	case 1:
+	case 14:
+		cardValue = 'A';
+		printf("%c, %c | ", cardSuit, cardValue);
+		break;
+	default:
+		printf("%c, %u | ",  cardSuit, card.value);
+		break;
+	}
 }
