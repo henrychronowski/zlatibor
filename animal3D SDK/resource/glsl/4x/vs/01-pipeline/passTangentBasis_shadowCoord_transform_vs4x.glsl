@@ -49,10 +49,10 @@ layout (location = 8) in vec2 aTexcoord;
 flat out int vVertexID;
 flat out int vInstanceID;
 
-out vec4 vShadowCoord;
 out vec4 vNormal;
 out vec4 vPosition;
 out vec2 vTexcoord;
+out vec4 vShadowCoord;
 
 uniform int uIndex;
 
@@ -97,13 +97,14 @@ uniform ubTransformStack
 void main()
 {
 	vPosition = uModel[uIndex].modelViewMat * aPosition;
-	//vNormal = uModel[uIndex].modelViewMat * vec4(aNormal, 0.0f);
+	vNormal = uModel[uIndex].modelViewMat * vec4(aNormal, 0.0f);
 
 	vTexcoord = aTexcoord;
 
 	gl_Position = uCamera.projectionMat * vPosition;//uModel[uIndex].modelViewMat * aPosition;
-
+	
 	vShadowCoord = uCamera.viewProjectionBiasMat * gl_Position;
+
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;
