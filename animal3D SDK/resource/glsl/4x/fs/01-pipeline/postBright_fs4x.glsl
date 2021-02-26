@@ -32,20 +32,27 @@
 
 layout (location = 0) out vec4 rtFragColor;
 
-in vec4 vTexcoord;
+//in vec4 vTexcoord;
 
 //uniform float uBrightThreshold;
 
-uniform sampler2D uImage00;
+//uniform sampler2D uImage00;
 
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE ORANGE
-	rtFragColor = vec4(1.0, 0.5, 0.0, 1.0);
-
-	vec4 color = texture2D(uImage00, vTexcoord.xy);
+	//rtFragColor = vec4(1.0, 0.5, 0.0, 1.0);
 
 	vec3 luminanceFormula = vec3(0.2126, 0.7152, 0.0722);	// https://en.wikipedia.org/wiki/Relative_luminance
 
+
+	//vec4 color = texture2D(uImage00, vTexcoord.xy);
+	//float luminance = dot(luminanceFormula, color.xyz);
+	//luminance = max (0.0, luminance);	
+	//// luminance = max(0.0, luminance - uBrightThreshold); // Allows for a threshold value
+	//color.xyz *= sign(luminance);
+
+	//gl_FragColor = color;
+	gl_FragColor = vec4(1.0, 0.5, 0.0, 1.0);
 
 }
