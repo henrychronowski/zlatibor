@@ -68,7 +68,7 @@ void main()
 
 	//Phong code from project 1, slightly modified to work with proj 2 structure
 	vec4 N, L;
-	vec4 color;
+	vec4 lightResult;
 	vec4 kd = vec4(0.0f);
 	vec4 spec = vec4(0.0f);
 	for(int i = 0; i < uCount; i++)
@@ -85,12 +85,10 @@ void main()
 
 		//Calculate specular value
 		spec += pow(max(dot(reflection, view), 0.0f), 128) * attenuationAlbedo; //see 63 (OpenGL blue book)
-		color = uLights[i].color * texture2D(uImage00, vTexcoord);
+		lightResult += (kd * uLights[i].color * texture2D(uImage00, vTexcoord)) + (spec* uLights[i].color * texture2D(uImage00, vTexcoord));
 	}
 	
 	//Output color modified by diffuse, specular, and ambient values
-	
-	vec4 ks = kd + spec;
 
 	//Shadow Mapping
 	vec4 shadowCoordDiv = vShadowCoord / vShadowCoord.w; //Perspective divide
@@ -101,7 +99,5 @@ void main()
 	float shadowVisability = 1.0;
 	shadowVisability = shadowTexture.r < shadowCoordDiv.z - bias ? 0.5 : 1.0;
 
-	vec4 phong = ks * color;
-
-	rtFragColor = shadowVisability * phong;
+	rtFragColor = shadowVisability * lightResult;
 }
