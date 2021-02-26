@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO:
+// ****DONE:
 // 1) core transformation and lighting setup:
 //	-> declare data structures for projector and model matrix stacks
 //		(hint: copy and slightly modify demo object descriptors)
@@ -43,7 +43,7 @@
 //	-> declare and write varying for shadow coordinate
 
 layout (location = 0) in vec4 aPosition;
-layout (location = 2) in vec3 aNormal;
+layout (location = 2) in vec4 aNormal;
 layout (location = 8) in vec2 aTexcoord;
 
 flat out int vVertexID;
@@ -96,15 +96,15 @@ uniform ubTransformStack
 
 void main()
 {
+	//Lighting varyings
 	vPosition = uModel[uIndex].modelViewMat * aPosition;
-	vNormal = uModel[uIndex].modelViewMat * vec4(aNormal, 0.0f);
-
+	vNormal = uModel[uIndex].modelViewMatInverseTranspose * aNormal;
 	vTexcoord = aTexcoord;
 
-	gl_Position = uCamera.projectionMat * vPosition;//uModel[uIndex].modelViewMat * aPosition;
+	gl_Position = uCamera.projectionMat * vPosition;
 	
-	vShadowCoord = uCamera.viewProjectionBiasMat * gl_Position;
-
+	//Generate shadow coordiante
+	vShadowCoord = uLight.viewProjectionBiasMat * uModel[uIndex].modelMat * aPosition;
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;

@@ -26,7 +26,7 @@
 
 #version 450
 
-// ****TO-DO:
+// ****DONE:
 // 1) Phong shading
 //	-> identical to outcome of last project
 // 2) shadow mapping
@@ -45,9 +45,6 @@ struct sPointLight
 	vec4 worldPosition;
 	vec4 color;
 	float radius;
-	float radiusSq;
-	float radiusInv;
-	float radiusInvSq;
 };
 
 uniform ubLight {
@@ -55,6 +52,7 @@ uniform ubLight {
 };
 
 uniform sampler2D uImage00;
+uniform sampler2D uTex_shadow;
 
 uniform vec4 uColor;
 
@@ -70,6 +68,7 @@ void main()
 
 	//Phong code from project 1, slightly modified to work with proj 2 structure
 	vec4 N, L;
+	vec4 color;
 	vec4 kd = vec4(0.0f);
 	vec4 spec = vec4(0.0f);
 	for(int i = 0; i < uCount; i++)
@@ -86,11 +85,23 @@ void main()
 
 		//Calculate specular value
 		spec += pow(max(dot(reflection, view), 0.0f), 128) * attenuationAlbedo; //see 63 (OpenGL blue book)
+		color = uLights[i].color * texture2D(uImage00, vTexcoord);
 	}
 	
 	//Output color modified by diffuse, specular, and ambient values
-	vec4 color = uColor * texture2D(uImage00, vTexcoord);
+	
 	vec4 ks = kd + spec;
 
-	rtFragColor = ks * color;
+	//Shadow Mapping
+	vec4 shadowCoordDiv = vShadowCoord / vShadowCoord.w; //Perspective divide
+	vec4 shadowTexture = texture(uTex_shadow, shadowCoordDiv.xy);
+
+	//Shadow test - looked at these sources for inspiration: https://fabiensanglard.net/shadowmapping/index.php, http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/
+	float bias = 0.005;
+	float shadowVisability = 1.0;
+	shadowVisability = shadowTexture.r < shadowCoordDiv.z - bias ? 0.5 : 1.0;
+
+	vec4 phong = ks * color;
+
+	rtFragColor = shadowVisability * phong;
 }
