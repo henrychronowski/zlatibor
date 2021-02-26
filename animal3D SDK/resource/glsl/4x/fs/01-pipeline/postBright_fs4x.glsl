@@ -18,13 +18,16 @@
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
 	
+	Shader written by Henry Chronowski
+	Based on information in the GLSL blue book
+
 	postBright_fs4x.glsl
 	Bright pass filter.
 */
 
 #version 450
 
-// ****TO-DO:
+// ****DONE:
 //	-> declare texture coordinate varying and input texture
 //	-> implement relative luminance function
 //	-> implement simple "tone mapping" such that the brightest areas of the 
@@ -32,23 +35,20 @@
 
 layout (location = 0) out vec4 rtFragColor;
 
-in vec2 vTexcoord;
 in vec4 vTexcoord_atlas;
 
-//uniform float uBrightThreshold;
-
-//uniform sampler2D uImage00;
 uniform sampler2D uTex_dm;
 
 void main()
 {
-	// vec3 luminanceFormula = vec3(0.2126, 0.7152, 0.0722);	// https://en.wikipedia.org/wiki/Relative_luminance
-	vec3 luminanceFormula = vec3(0.299, 0.587, 0.144);	// From the blue book listing 9.26
+	// Factors to get relative luminance, from the blue book listing 9.26
+	vec3 luminanceFormula = vec3(0.299, 0.587, 0.144);
 
-
+	// Get color from sampler, use luminace function to get relative luminance
 	vec3 color = texture2D(uTex_dm, vTexcoord_atlas.xy).rgb;
 	float luminance = dot(luminanceFormula, color.xyz);
-	color *= 3.0 * luminance * luminance; // This was found too look cool from experimentation initially based on the formula in the blue book
+	color *= 3.0 * luminance * luminance; // This was found too look cool from experimentation, initially based on the formula in the blue book
 
+	// Apply color to fragment
 	rtFragColor = vec4(color, 1.0f);
 }

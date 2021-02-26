@@ -18,6 +18,7 @@
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
 
+	Shader written by Henry Chronowski
 	Based off of information in the blue book
 	
 	postBlur_fs4x.glsl
@@ -26,21 +27,18 @@
 
 #version 450
 
-// ****TO-DO:
+// ****DONE:
 //	-> declare texture coordinate varying and input texture
 //	-> declare sampling axis uniform (see render code for clue)
 //	-> declare Gaussian blur function that samples along one axis
 //		(hint: the efficiency of this is described in class)
 
-in vec2 vTexcoord;
+layout (location = 0) out vec4 rtFragColor;
+
 in vec4 vTexcoord_atlas;
 
 uniform vec2 uAxis;
-
-layout (location = 0) out vec4 rtFragColor;
-
 uniform sampler2D uTex_dm;
-uniform sampler2D uImage00;
 
 // From the blue book listing 9.27
 const float weights[] = float[](0.0024499299678342,
@@ -79,15 +77,17 @@ void main()
 
 	int i;
 	vec3 col = vec3(0.0);
+
 	// Get displacement vector
 	vec2 offset = vTexcoord_atlas.xy - (uAxis * 14.0);
 
-	// Add offset samples to the fragment color
+	// Add weighted offset samples to the fragment color
 	for(i = 0; i < weights.length(); i++)
 	{
 		//Tried to use texelFetch as the blue book does, but it was uncooperative so switched to just texture
 		col += texture(uTex_dm, offset + (uAxis * i)).rgb * weights[i];
 	}
 
+	// Set resulting fragment color
 	rtFragColor = vec4(col, 1.0);
 }
