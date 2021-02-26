@@ -872,28 +872,30 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 	fbo = demoState->fbo_d32;
 	a3framebufferCreate(fbo, "fbo:d32", 0, a3fbo_colorDisable, a3fbo_depth32, shadowMapSize, shadowMapSize); //Shadow buffer, depth only
 
+	//Initialize half bright FBOs
 	fbo = demoState->fbo_c16_szHalf;
 	for (int i = 0; i < 3; i++)
 	{
 		a3framebufferCreate(fbo+i, "fbo:c16szHalf", 1, a3fbo_colorRGB16, a3fbo_depthDisable, frameWidth2, frameHeight2); //Half Bright
 	}
 
+	//Initialize quarter bright FBOs
 	fbo = demoState->fbo_c16_szQuarter;
 	for (int j = 0; j < 3; j++)
 	{
 		a3framebufferCreate(fbo + j, "fbo:c16szQuarter", 1, a3fbo_colorRGB16, a3fbo_depthDisable, frameWidth4, frameHeight4); //Quarter Bright
 	}
 
+	//Initialize eighth bright FBOs
 	fbo = demoState->fbo_c16_szEighth;
 	for (int k = 0; k < 3; k++)
 	{
 		a3framebufferCreate(fbo + k, "fbo:c16szEighth", 1, a3fbo_colorRGB16, a3fbo_depthDisable, frameWidth8, frameHeight8); //Eighth Bright
 	}
 
+	//Initialize composite FBO
 	fbo = demoState->fbo_c16x4;
 	a3framebufferCreate(fbo, "fbo:c16x4", targets_composite, colorType_composite, depthType_composite, frameWidth1, frameHeight1); //composite
-
-	//...
 
 
 	// ****DONE:

@@ -518,6 +518,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	a3shaderProgramActivate(currentDemoProgram->program);
 	currentWriteFBO = writeFBO[postproc_renderPassDisplay];
 
+	//Composite, bind all textures from previous passes
 	a3framebufferBindColorTexture(writeFBO[postproc_renderPassScene], a3tex_unit00, 0);
 	a3framebufferBindColorTexture(writeFBO[postproc_renderPassBlurV2], a3tex_unit01, 0);
 	a3framebufferBindColorTexture(writeFBO[postproc_renderPassBlurV4], a3tex_unit02, 0);
