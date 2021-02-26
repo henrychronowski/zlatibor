@@ -24,15 +24,49 @@
 
 #version 450
 
-// ****TO-DO:
+// ****DONE:
 //	-> declare texture coordinate varying and set of input textures
 //	-> implement some sort of blending algorithm that highlights bright areas
 //		(hint: research some Photoshop blend modes)
 
 layout (location = 0) out vec4 rtFragColor;
 
+uniform sampler2D uImage00, uImage01, uImage02, uImage03;
+
+in vec4 vTexcoord_atlas;
+
+
+// Attempt to implement a proper overlay type blend (https://en.wikipedia.org/wiki/Blend_modes#Overlay), works but does not look great
+//vec3 Overlay_Blend (vec3 a, vec3 b)
+//{
+//	vec3 col;
+//
+//	float lumA = dot(a, vec3(0.299, 0.587, 0.144));
+//	float lumB = dot(b, vec3(0.299, 0.587, 0.144));
+//
+//	// Would convert to a mix
+//	if(lumA < 0.5)
+//	{
+//		col = 2 * (a * b);
+//	}
+//	else
+//	{
+//		col = vec3(1.0) - 2.0 * (vec3(1.0) - a) * (vec3(1.0) - b);
+//	}
+//
+//	return col;
+//}
+
 void main()
 {
-	// DUMMY OUTPUT: all fragments are OPAQUE PURPLE
-	rtFragColor = vec4(0.5, 0.0, 1.0, 1.0);
+	// All resultant textures
+	vec3 col0 = texture(uImage00, vTexcoord_atlas.xy).rgb;
+	vec3 col1 = texture(uImage01, vTexcoord_atlas.xy).rgb;
+	vec3 col2 = texture(uImage02, vTexcoord_atlas.xy).rgb;
+	vec3 col3 = texture(uImage03, vTexcoord_atlas.xy).rgb;
+
+	// Simply additively blend the textures with a scale value for bloom
+	vec3 bloom = col1 + col2 + col3;
+	float bloomScale = 0.4;
+	rtFragColor = vec4(col0 + bloomScale * bloom, 1.0);
 }
