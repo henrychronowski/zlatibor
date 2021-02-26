@@ -47,6 +47,8 @@ layout (location = 0) in vec4 aPosition;
 flat out int vVertexID;
 flat out int vInstanceID;
 
+out vec4 vShadowCoord;
+
 uniform int uIndex;
 
 // matrix stack for a viewer object
@@ -87,8 +89,9 @@ uniform ubTransformStack
 
 void main()
 {
-	// DUMMY OUTPUT: directly assign input position to output position
 	gl_Position = uCamera.projectionMat * uModel[uIndex].modelViewMat * aPosition;
+
+	vShadowCoord = uCamera.viewProjectionBiasMat * gl_Position;
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;

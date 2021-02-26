@@ -419,10 +419,12 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	//		-> blur in other direction (e.g. vertical)
 	//	-> composite original scene result with final blur iteration results
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment first post-processing pass
 	//	-> implement bloom pipeline following the above algorithm
 	//		(hint: this is the entirety of the first bright pass)
+
+	//Bright Pass
 	currentDemoProgram = demoState->prog_postBright;
 	a3shaderProgramActivate(currentDemoProgram->program);
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0); //Selecting texture to draw to
@@ -430,6 +432,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive(); //Draws the FSQ off-screen
 
+	//Horizontal Blur
 	currentDemoProgram = demoState->prog_postBlur;
 	a3shaderProgramActivate(currentDemoProgram->program);
 	pixelSize.x = 1.0f / (float)currentWriteFBO->frameWidth;
@@ -439,7 +442,88 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	currentWriteFBO = writeFBO[postproc_renderPassBlurH2]; //Select FBO to write to
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive(); //Draws the FSQ off-screen
-	//...
+
+	//Vertical Blur
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 0.0f;
+	pixelSize.y = 1.0f / (float)currentWriteFBO->frameHeight;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0); //Selecting texture to draw to
+	currentWriteFBO = writeFBO[postproc_renderPassBlurV2]; //Select FBO to write to
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive(); //Draws the FSQ off-screen
+
+	//Bright Pass (Quarter)
+	currentDemoProgram = demoState->prog_postBright;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0); //Selecting texture to draw to
+	currentWriteFBO = writeFBO[postproc_renderPassBright4]; //Select FBO to write to
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive(); //Draws the FSQ off-screen
+
+	//Horizontal Blur (Quarter)
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 1.0f / (float)currentWriteFBO->frameWidth;
+	pixelSize.y = 0.0f;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0); //Selecting texture to draw to
+	currentWriteFBO = writeFBO[postproc_renderPassBlurH4]; //Select FBO to write to
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive(); //Draws the FSQ off-screen
+
+	//Vertical Blur (Quarter)
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 0.0f;
+	pixelSize.y = 1.0f / (float)currentWriteFBO->frameHeight;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0); //Selecting texture to draw to
+	currentWriteFBO = writeFBO[postproc_renderPassBlurV4]; //Select FBO to write to
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive(); //Draws the FSQ off-screen
+
+	//Bright Pass (Eighth)
+	currentDemoProgram = demoState->prog_postBright;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0); //Selecting texture to draw to
+	currentWriteFBO = writeFBO[postproc_renderPassBright8]; //Select FBO to write to
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive(); //Draws the FSQ off-screen
+
+	//Horizontal Blur (Eighth)
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 1.0f / (float)currentWriteFBO->frameWidth;
+	pixelSize.y = 0.0f;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0); //Selecting texture to draw to
+	currentWriteFBO = writeFBO[postproc_renderPassBlurH8]; //Select FBO to write to
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive(); //Draws the FSQ off-screen
+
+	//Vertical Blur (Eighth)
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 0.0f;
+	pixelSize.y = 1.0f / (float)currentWriteFBO->frameHeight;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0); //Selecting texture to draw to
+	currentWriteFBO = writeFBO[postproc_renderPassBlurV8]; //Select FBO to write to
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive(); //Draws the FSQ off-screen
+
+	currentDemoProgram = demoState->prog_postBlend;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	currentWriteFBO = writeFBO[postproc_renderPassDisplay];
+
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassScene], a3tex_unit00, 0);
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassBlurV2], a3tex_unit01, 0);
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassBlurV4], a3tex_unit02, 0);
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassBlurV8], a3tex_unit03, 0);
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive(); //Draws the FSQ off-screen
 
 
 	//-------------------------------------------------------------------------
