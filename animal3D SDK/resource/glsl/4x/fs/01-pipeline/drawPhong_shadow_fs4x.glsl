@@ -36,9 +36,48 @@
 layout (location = 0) out vec4 rtFragColor;
 
 uniform int uCount;
+uniform vec4 uLightPos[4]; // World/camera
+uniform vec4 uDiffuseAlbedo;
+uniform vec4 uSpecularAlbedo;
+uniform float uSpecularPower;
+uniform vec4 uAmbient;
+
+uniform sampler2D uImage00;
+
+uniform vec4 uColor;
+
+in vec4 vNormal;
+in vec4 vPosition;
+
+in vec2 vTexcoord;
+
 
 void main()
 {
-	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
-	rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
+
+	//Phong code from project 1
+	vec4 N, L;
+	vec4 kd = vec4(0.0f);
+	vec4 spec = vec4(0.0f);
+	for(int i = 0; i < 4; i++)
+	{
+		N = normalize(vNormal);
+		L = normalize(uLightPos[i] - vPosition);
+		vec4 view = normalize(-vPosition);
+		vec4 reflection = reflect(-L, N); //https://learnopengl.com/Lighting/Basic-Lighting, https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
+
+		// Calculate diffuse value
+		kd += max(dot(N,L), 0.0) * uDiffuseAlbedo;	// using max to ensure positivity (OpenGL blue book)
+
+		// Calculate specular value
+		spec += pow(max(dot(reflection, view), 0.0f), uSpecularPower) * uSpecularAlbedo;  // see 63 (OpenGL blue book)
+	}
+	
+	// Output color modified by diffuse, specular, and ambient values
+	vec4 color = uColor * texture2D(uImage00, vTexcoord);
+	vec4 ks = kd + spec;
+
+	rtFragColor = ks * color + uAmbient;
+
+	//rtFragColor = vec4(1.0, 0.5, 0.0, 1.0);
 }

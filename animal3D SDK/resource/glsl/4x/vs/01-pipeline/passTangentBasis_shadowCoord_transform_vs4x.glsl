@@ -43,13 +43,20 @@
 //	-> declare and write varying for shadow coordinate
 
 layout (location = 0) in vec4 aPosition;
+layout (location = 2) in vec3 aNormal;
+layout (location = 8) in vec2 aTexcoord;
 
 flat out int vVertexID;
 flat out int vInstanceID;
 
 out vec4 vShadowCoord;
+out vec4 vNormal;
+out vec4 vPosition;
+out vec2 vTexcoord;
 
 uniform int uIndex;
+
+//uniform mat4 uMV_nrm;
 
 // matrix stack for a viewer object
 struct sProjectorMatrixStack
@@ -89,7 +96,12 @@ uniform ubTransformStack
 
 void main()
 {
-	gl_Position = uCamera.projectionMat * uModel[uIndex].modelViewMat * aPosition;
+	vPosition = uModel[uIndex].modelViewMat * aPosition;
+	//vNormal = uModel[uIndex].modelViewMat * vec4(aNormal, 0.0f);
+
+	vTexcoord = aTexcoord;
+
+	gl_Position = uCamera.projectionMat * vPosition;//uModel[uIndex].modelViewMat * aPosition;
 
 	vShadowCoord = uCamera.viewProjectionBiasMat * gl_Position;
 
