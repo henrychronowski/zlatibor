@@ -36,6 +36,8 @@ uniform vec2 uAxis;
 
 layout (location = 0) out vec4 rtFragColor;
 
+
+
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE AQUA
