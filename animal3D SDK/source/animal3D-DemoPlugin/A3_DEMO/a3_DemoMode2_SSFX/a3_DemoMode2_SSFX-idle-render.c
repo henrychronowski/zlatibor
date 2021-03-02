@@ -383,24 +383,24 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		//		(hint: all outputs from previous passes)
 		//	-> activate and send pertinent uniform blocks and values
 		//		(hint: light buffer, light count, inverse bias-projection)
-	/*	// deferred shading
+		// deferred shading
 		//	- similar to light pre-pass but all at once on FSQ
 		currentDemoProgram = demoState->prog_postDeferredShading;
 		a3shaderProgramActivate(currentDemoProgram->program);
 		a3textureActivate(demoState->tex_atlas_dm, a3tex_unit00); // diffuse texture atlas
-		//...*/
+		//...
 		break;
 	case ssfx_renderModePhongDL:
 		// ****TO-DO:
 		//	-> uncomment deferred lighting composite program and diffuse texture activations
 		//	-> activate pertinent textures for deferred lighting composition
 		//		(hint: all outputs from previous passes)
-	/*	// deferred lighting composite
+		// deferred lighting composite
 		//	- simple composition: multiply lighting colors by respective texture sample
 		currentDemoProgram = demoState->prog_postDeferredLightingComposite;
 		a3shaderProgramActivate(currentDemoProgram->program);
 		a3textureActivate(demoState->tex_atlas_dm, a3tex_unit00); // diffuse texture atlas
-		//...*/
+		//...
 		break;
 	}
 
