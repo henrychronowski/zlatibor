@@ -42,11 +42,41 @@
 in vec4 vTexcoord_atlas;
 
 uniform int uCount;
+uniform sampler2D uImage00; //Diffuse atlas
+uniform sampler2D uImage01; //Specular atlas
+
+uniform sampler2D uImage04; //Texcoord g-buffer
+uniform sampler2D uImage05; //Normal g-buffer
+uniform sampler2D uImage06; //Position g-buffer
+uniform sampler2D uImage07; //depth g-buffer
+
+//testing
+//uniform sampler2D uImage02, uImage03; //rnm, ht
 
 layout (location = 0) out vec4 rtFragColor;
 
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE ORANGE
-	rtFragColor = vec4(1.0, 0.5, 0.0, 1.0);
+	//rtFragColor = vec4(1.0, 0.5, 0.0, 1.0);
+
+	vec4 sceneSample = texture(uImage04, vTexcoord_atlas.xy);
+	vec4 diffuseSample = texture(uImage00, sceneSample.xy);
+	vec4 specularSample = texture(uImage01, sceneSample.xy);
+
+	//Phong Shading:
+	// ambient + diffuse color * diffuse light + specular color * specular light
+	//have:
+	// -> colors
+	//have not:
+	// -> light stuff
+	//		-> light data -> light data struct -> uniform buffer (ubo_light)
+	//		-> normals, view position, depth -> geometry buffers
+	// -> texture coordinates -> g-buffer
+
+
+	rtFragColor = diffuseSample;
+
+	//DEBUG
+	//rtFragColor = texture(uImage07, vTexcoord_atlas.xy);
 }
