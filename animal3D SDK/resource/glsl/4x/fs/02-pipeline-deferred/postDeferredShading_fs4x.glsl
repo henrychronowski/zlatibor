@@ -47,8 +47,10 @@ uniform sampler2D uImage01; //Specular atlas
 
 uniform sampler2D uImage04; //Texcoord g-buffer
 uniform sampler2D uImage05; //Normal g-buffer
-uniform sampler2D uImage06; //Position g-buffer
+//uniform sampler2D uImage06; //Position g-buffer
 uniform sampler2D uImage07; //depth g-buffer
+
+uniform mat4 uPB_inv; //inverse bias projection
 
 //testing
 //uniform sampler2D uImage02, uImage03; //rnm, ht
@@ -64,6 +66,16 @@ void main()
 	vec4 diffuseSample = texture(uImage00, sceneSample.xy);
 	vec4 specularSample = texture(uImage01, sceneSample.xy);
 
+	vec4 position_screen = vTexcoord_atlas;
+	position_screen.z = texture(uImage07, vTexcoord_atlas.xy).r;
+
+	vec4 position_view = uPB_inv * position_screen;
+	position_view / position_view.w;
+
+
+	vec4 normal = texture(uImage05, vTexcoord_atlas.xy);
+	normal = (normal - 0.5) * 2.0;
+
 	//Phong Shading:
 	// ambient + diffuse color * diffuse light + specular color * specular light
 	//have:
@@ -75,8 +87,14 @@ void main()
 	// -> texture coordinates -> g-buffer
 
 
-	rtFragColor = diffuseSample;
+	//rtFragColor = diffuseSample;
 
 	//DEBUG
 	//rtFragColor = texture(uImage07, vTexcoord_atlas.xy);
+	//rtFragColor = position_screen;
+	rtFragColor = position_view;
+	//rtFragColor = normal;
+
+	// final transparency
+	rtFragColor.a = diffuseSample.a;
 }

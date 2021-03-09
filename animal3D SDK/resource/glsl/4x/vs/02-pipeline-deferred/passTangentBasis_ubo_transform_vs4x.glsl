@@ -43,6 +43,15 @@ out vec4 vPosition;
 out vec4 vNormal;
 out vec4 vTexcoord;
 
+out vec4 vPosition_screen;
+
+const mat4 bias = mat4(
+	0.5, 0.0, 0.0, 0.0,
+	0.0, 0.5, 0.0, 0.0,
+	0.0, 0.0, 0.5, 0.0,
+	0.5, 0.5, 0.5, 1.0
+);
+
 struct sModelMatrixStack
 {
 	mat4 modelMat;						// model matrix (object -> world)
@@ -66,6 +75,7 @@ flat out int vInstanceID;
 void main()
 {
 	gl_Position = uModelMatrixStack[uIndex].modelViewProjectionMat * aPosition;
+	vPosition_screen = bias * gl_Position;
 
 	//transform things to common space
 	vPosition = uModelMatrixStack[uIndex].modelViewMat * aPosition;

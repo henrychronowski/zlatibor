@@ -37,12 +37,16 @@
 //		(hint: same as deferred shading)
 //	-> calculate final diffuse and specular shading for current light only
 
-flat in int vInstanceID;
+flat in int vInstanceID; // Current light
 
-layout (location = 0) out vec4 rtFragColor;
+// 1 sphere = 1 light
+
+//layout (location = 0) out vec4 rtFragColor;
+layout (location = 0) out vec4 rtDiffuseLight;
+layout (location = 1) out vec4 rtSpecularLight;
 
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
-	rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
+	//rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
 }
