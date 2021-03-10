@@ -40,6 +40,28 @@ uniform int uCount;
 
 layout (location = 0) out vec4 rtFragColor;
 
+in vec4 vPosition;
+in vec4 vNormal;
+in vec4 vTexcoord;
+
+in vec4 vPosition_screen;
+
+uniform sampler2D uImage00; //Diffuse atlas
+uniform sampler2D uImage01; //Specular atlas
+uniform sampler2D uImage04; //Texcoord g-buffer
+uniform sampler2D uImage05; //Normal g-buffer
+
+struct sPointLight
+{
+	vec4 viewPos, worldPos, color;
+	float radius, radiusSq, radiusInv, radiusInvSq;
+};
+
+uniform ubLight
+{
+	sPointLight uLights[MAX_LIGHTS];
+};
+
 // location of viewer in its own space is the origin
 const vec4 kEyePos_view = vec4(0.0, 0.0, 0.0, 1.0);
 
@@ -63,5 +85,7 @@ void calcPhongPoint(
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
-	rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
+	//rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
+
+	vec4 normal = texture(uImage05, vTexcoord.xy);
 }

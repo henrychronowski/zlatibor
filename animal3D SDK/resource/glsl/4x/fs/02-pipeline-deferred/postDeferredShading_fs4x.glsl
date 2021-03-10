@@ -70,7 +70,7 @@ void main()
 	position_screen.z = texture(uImage07, vTexcoord_atlas.xy).r;
 
 	vec4 position_view = uPB_inv * position_screen;
-	position_view / position_view.w;
+	position_view /= position_view.w;
 
 
 	vec4 normal = texture(uImage05, vTexcoord_atlas.xy);
@@ -87,12 +87,12 @@ void main()
 	// -> texture coordinates -> g-buffer
 
 
-	//rtFragColor = diffuseSample;
+	rtFragColor = diffuseSample;
 
 	//DEBUG
 	//rtFragColor = texture(uImage07, vTexcoord_atlas.xy);
 	//rtFragColor = position_screen;
-	rtFragColor = position_view;
+	//rtFragColor = position_view;
 	//rtFragColor = normal;
 
 	// final transparency
