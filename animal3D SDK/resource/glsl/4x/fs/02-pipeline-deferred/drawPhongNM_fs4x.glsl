@@ -53,8 +53,8 @@ uniform sampler2D uImage05; //Normal g-buffer
 
 struct sPointLight
 {
-	vec4 viewPos, worldPos, color;
-	float radius, radiusSq, radiusInv, radiusInvSq;
+	vec4 viewPosition, worldPosition, color;
+	float radius;//, radiusSq, radiusInv, radiusInvSq;
 };
 
 uniform ubLight
@@ -87,5 +87,34 @@ void main()
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
 	//rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
 
-	vec4 normal = texture(uImage05, vTexcoord.xy);
+	//vec4 normal = texture(uImage05, vTexcoord.xy);
+
+
+	//Phong code from project 1, slightly modified to work with proj 2 structure
+	vec4 N, L;
+	vec4 lightResult;
+	vec4 kd = vec4(0.0f);
+	vec4 spec = vec4(0.0f);
+	for(int i = 0; i < uCount; i++)
+	{
+		N = normalize(texture(uImage05, vTexcoord.xy));
+		L = normalize(uLights[i].viewPosition - vPosition);
+		vec4 view = normalize(-vPosition);
+		vec4 reflection = reflect(-L, N); //https://learnopengl.com/Lighting/Basic-Lighting, https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
+
+		//Calculate diffuse value
+		float attenuation = length(uLights[i].viewPosition) / uLights[i].radius * 3;
+		float attenuationAlbedo = 1.0f / ((attenuation * attenuation) + 1);
+		kd += max(dot(N,L), 0.0) * attenuationAlbedo;	 //using max to ensure positivity(OpenGL blue book)
+
+		//Calculate specular value
+		spec += pow(max(dot(reflection, view), 0.0f), 128) * attenuationAlbedo; //see 63 (OpenGL blue book)
+		lightResult += (kd * uLights[i].color * texture2D(uImage00, vTexcoord.xy)) + (spec* uLights[i].color * texture2D(uImage00, vTexcoord.xy));
+	}
+	
+	//Output color modified by diffuse, specular, and ambient values
+
+	
+
+	rtFragColor = lightResult;
 }
