@@ -83,7 +83,9 @@ void calcPhongPoint(
 
 void main()
 {
-	vec4 normal = texture(uImage05, vTexcoord.xy);
+	vec4 normal = normalize(texture(uImage05, vTexcoord.xy)) + normalize(vNormal);
+
+	normal = normalize(normal);
 
 	vec4 diffTotal = vec4(0.0f);
 	vec4 specTotal = vec4(0.0f);
@@ -111,7 +113,9 @@ void main()
 	}
 
 	rtFragColor = diffTotal * texture2D(uImage00, vTexcoord.xy) + specTotal * texture2D(uImage01, vTexcoord.xy);
-	//rtFragColor = texture(uImage05, vTexcoord.xy);
+
+
+	rtFragColor = normal;
 
 	rtFragColor.a = 1.0;
 
