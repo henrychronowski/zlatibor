@@ -111,6 +111,7 @@ void main()
 	}
 
 	rtFragColor = diffTotal * texture2D(uImage00, vTexcoord.xy) + specTotal * texture2D(uImage01, vTexcoord.xy);
+	//rtFragColor = texture(uImage05, vTexcoord.xy);
 
 	rtFragColor.a = 1.0;
 
