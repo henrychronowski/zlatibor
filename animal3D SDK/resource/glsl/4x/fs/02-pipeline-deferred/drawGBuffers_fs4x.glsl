@@ -49,7 +49,12 @@ in vec4 vPosition_screen;
 void main()
 {
 	rtTexcoord = vTexcoord;
-	rtNormal = vec4((vNormal.xyz * texture2D(uImage05, vTexcoord.xy).xyz) * 0.5 + 0.5, 1.0);
+
+	vec4 normal = normalize(vNormal) * 0.5 + 0.5;
+	vec4 normalMap = texture(uImage05, vTexcoord.xy);
+	
+
+	rtNormal = normal;
 	//rtPosition = vPosition;
 	//rtPosition = vPosition_screen / vPosition_screen.w;
 }

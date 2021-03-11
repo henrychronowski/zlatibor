@@ -93,7 +93,7 @@ void main()
 	//rtFragColor = texture(uImage07, vTexcoord_atlas.xy);
 	//rtFragColor = position_screen;
 	//rtFragColor = position_view;
-	//rtFragColor = normal;
+	rtFragColor = normal;
 
 	// final transparency
 	rtFragColor.a = diffuseSample.a;

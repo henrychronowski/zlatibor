@@ -43,8 +43,11 @@ layout (location = 0) out vec4 rtFragColor;
 in vec4 vPosition;
 in vec4 vNormal;
 in vec4 vTexcoord;
+in vec4 vTangent;
+in vec4 vBitangent;
 
 in vec4 vPosition_screen;
+in mat4 vTBN;
 
 uniform sampler2D uImage00; //Diffuse atlas
 uniform sampler2D uImage01; //Specular atlas
@@ -85,12 +88,11 @@ void calcPhongPoint(
 
 void main()
 {
-	vec4 normal = normalize(texture(uImage05, vTexcoord.xy)) + normalize(vNormal);
+	vec4 normal = texture(uImage05, vTexcoord.xy); //normalize(vNormal);//texture(uImage05, vTexcoord.xy) + normalize(vNormal);
+	normal = normal * 2.0 - 1.0; //0.5 + 0.5;
+	normal = normalize(vTBN * normal) * 0.5 + 0.5;
 
-	normal = normalize(normal);
-
-	normal *=0.5 + 0.5;
-	normal = vec4(normal.xyz, 1.0);
+	//normal = normalize(normal);
 
 	vec4 diffTotal = vec4(0.0f);
 	vec4 specTotal = vec4(0.0f);
