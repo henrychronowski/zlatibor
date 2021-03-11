@@ -51,6 +51,8 @@ uniform sampler2D uImage01; //Specular atlas
 uniform sampler2D uImage04; //Texcoord g-buffer
 uniform sampler2D uImage05; //Normal g-buffer
 
+//uniform mat4 u
+
 struct sPointLight
 {
 	vec4 viewPosition, worldPosition, color, radius;//, radiusSq, radiusInv, radiusInvSq;
@@ -86,6 +88,9 @@ void main()
 	vec4 normal = normalize(texture(uImage05, vTexcoord.xy)) + normalize(vNormal);
 
 	normal = normalize(normal);
+
+	normal *=0.5 + 0.5;
+	normal = vec4(normal.xyz, 1.0);
 
 	vec4 diffTotal = vec4(0.0f);
 	vec4 specTotal = vec4(0.0f);
