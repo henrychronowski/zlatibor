@@ -74,6 +74,8 @@ int testUtility()
 }
 
 
+// Master Server Address CONST
+
 int main(int const argc, char const* const argv[])
 {
 	testUtility();

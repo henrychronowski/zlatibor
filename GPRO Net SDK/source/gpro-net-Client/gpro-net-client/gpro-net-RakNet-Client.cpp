@@ -77,6 +77,21 @@ namespace gproNet
 			peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 		}	return true;
 
+
+//		Custom messages
+		// Case: Server/client query
+			// Send message that it is a client
+
+		// Case: Game server list from master server
+			// Prints out the server list to the console and waits for user input
+
+		// Case: Server responds to client selection request
+			// store game server address from the master server
+			// connect to game server
+
+			// enter: game logic
+
+
 			// test message
 		case ID_GPRO_MESSAGE_COMMON_BEGIN:
 		{

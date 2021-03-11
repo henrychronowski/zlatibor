@@ -31,6 +31,7 @@ int main(int const argc, char const* const argv[])
 
 	while (1)
 	{
+		server.UpdateGameInformation();
 		server.MessageLoop();
 	}
 

@@ -43,6 +43,13 @@ namespace gproNet
 		ID_GPRO_MESSAGE_SERVER_END
 	};
 
+	// Struct client
+	//	address
+	//	username
+
+	// Struct game server
+	//	address
+	//	description(player count, game, ping)
 
 	// cRakNetServer
 	//	RakNet peer management for server.
@@ -53,6 +60,11 @@ namespace gproNet
 		// cRakNetServer
 		//	Default constructor.
 		cRakNetServer();
+
+		// UpdateGameInformation
+		//	Query all connected game servers for their state
+		void UpdateGameInformation();
+
 
 		// ~cRakNetServer
 		//	Destructor.
@@ -67,6 +79,10 @@ namespace gproNet
 		//		param msgID: message identifier
 		//		return: was message processed
 		virtual bool ProcessMessage(RakNet::BitStream& bitstream, RakNet::SystemAddress const sender, RakNet::Time const dtSendToReceive, RakNet::MessageID const msgID);
+
+	private:
+		// BST of game servers
+		// BST of game clients
 	};
 
 }

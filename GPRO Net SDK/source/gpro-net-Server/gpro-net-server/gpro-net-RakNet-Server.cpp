@@ -34,6 +34,8 @@ namespace gproNet
 
 		peer->Startup(MAX_CLIENTS, &sd, 1);
 		peer->SetMaximumIncomingConnections(MAX_CLIENTS);
+
+		// initialize storage containers
 	}
 
 	cRakNetServer::~cRakNetServer()
@@ -51,6 +53,8 @@ namespace gproNet
 		{
 		case ID_NEW_INCOMING_CONNECTION:
 			//printf("A connection is incoming.\n");
+
+			// Send "what are you" query- figure out if client or server
 			return true;
 		case ID_NO_FREE_INCOMING_CONNECTIONS:
 			//printf("The server is full.\n");
@@ -61,6 +65,25 @@ namespace gproNet
 		case ID_CONNECTION_LOST:
 			//printf("A client lost the connection.\n");
 			return true;
+
+//		Added messages
+			// case: "what are you" query response
+				// if client:
+				// add to list of clients
+				// send server list message
+
+				// if server:
+				// add to list of servers
+				// send server information query message
+
+			// case: Client selection message
+				// if response DNE send error message and list of servers again
+				// if response is asking for server refresh send list of servers again
+				// if response is selecting a server send address of given server
+
+			// case: Server information query response
+				// update server's information in the list
+
 
 			// test message
 		case ID_GPRO_MESSAGE_COMMON_BEGIN:
@@ -74,5 +97,11 @@ namespace gproNet
 
 		}
 		return false;
+	}
+
+	void cRakNetServer::UpdateGameInformation()
+	{
+		// Iterate through list of servers
+		// Send server information query message to all servers
 	}
 }
