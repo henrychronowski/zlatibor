@@ -34,8 +34,15 @@ in vec4 vTexcoord_atlas;
 
 layout (location = 0) out vec4 rtFragColor;
 
+uniform sampler2D uImage00; //Diffuse atlas
+uniform sampler2D uImage01; //Specular atlas
+uniform sampler2D uImage04; //Texcoord g-buffer
+uniform sampler2D uImage05; //Normal g-buffer
+uniform sampler2D uImage07; //depth g-buffer
+
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE AQUA
-	rtFragColor = vec4(0.0, 1.0, 0.5, 1.0);
+	//rtFragColor = vec4(0.0, 1.0, 0.5, 1.0);
+	rtFragColor = texture(uImage04, vTexcoord_atlas.xy);
 }
