@@ -24,11 +24,11 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> comment out dummy content; this shader should literally do nothing
 
 void main()
 {
 	// DUMMY OUTPUT: center of near plane
-	gl_Position = vec4(0.0, 0.0, -1.0, 1.0);
+	//gl_Position = vec4(0.0, 0.0, -1.0, 1.0);
 }
