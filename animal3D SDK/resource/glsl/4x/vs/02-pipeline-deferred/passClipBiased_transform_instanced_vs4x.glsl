@@ -35,8 +35,27 @@
 
 layout (location = 0) in vec4 aPosition;
 
+out vec4 vBaisedClipPos;
+
 flat out int vVertexID;
 flat out int vInstanceID;
+
+struct sModelMatrixStack
+{
+	mat4 modelMat;						// model matrix (object -> world)
+	mat4 modelMatInverse;				// model inverse matrix (world -> object)
+	mat4 modelMatInverseTranspose;		// model inverse-transpose matrix (object -> world skewed)
+	mat4 modelViewMat;					// model-view matrix (object -> viewer)
+	mat4 modelViewMatInverse;			// model-view inverse matrix (viewer -> object)
+	mat4 modelViewMatInverseTranspose;	// model-view inverse transpose matrix (object -> viewer skewed)
+	mat4 modelViewProjectionMat;		// model-view-projection matrix (object -> clip)
+	mat4 atlasMat;						// atlas matrix (texture -> cell)
+};
+uniform ubTransformStack
+{
+	sModelMatrixStack uModelMatrixStack[MAX_INSTANCES];
+};
+uniform int uIndex;
 
 // bias matrix
 const mat4 bias = mat4(
@@ -48,8 +67,8 @@ const mat4 bias = mat4(
 
 void main()
 {
-	// DUMMY OUTPUT: directly assign input position to output position
-	gl_Position = aPosition;
+	gl_Position = uModelMatrixStack[uIndex].modelViewProjectionMat * aPosition;
+	vBaisedClipPos = bias * gl_Position;
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;

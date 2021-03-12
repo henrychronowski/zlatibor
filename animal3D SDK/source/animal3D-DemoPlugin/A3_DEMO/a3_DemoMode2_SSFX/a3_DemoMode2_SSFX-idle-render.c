@@ -326,10 +326,14 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		//	-> activate and send pertinent uniform blocks and values
 		//		(hint: light buffer, light transforms, inverse bias-projection)
 		//		(hint: inverse bias-projection variable is commented out above)
-	/*	// draw light volumes
+	// draw light volumes
 		currentDemoProgram = demoState->prog_drawPhongPointLight_instanced;
 		a3shaderProgramActivate(currentDemoProgram->program);
-		//...*/
+		a3textureActivate(demoState->tex_atlas_dm, a3tex_unit00); // diffuse texture atlas
+		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit04, 0); // Texcoord
+		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit05, 1); // Normal
+		a3framebufferBindDepthTexture(demoState->fbo_c16x4_d24s8, a3tex_unit07); // Depth
+		//...
 
 		currentWriteFBO = writeFBO[ssfx_renderPassLights];
 		a3framebufferActivate(currentWriteFBO);
