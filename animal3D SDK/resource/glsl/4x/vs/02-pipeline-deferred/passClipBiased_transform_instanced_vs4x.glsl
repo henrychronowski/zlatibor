@@ -68,7 +68,7 @@ const mat4 bias = mat4(
 
 void main()
 {
-	gl_Position = uLight[uIndex].projectionBiasMatInverse * aPosition;
+	gl_Position = uLight[uIndex].viewProjectionMat * aPosition;
 	vBaisedClipPos = bias * gl_Position;
 
 	vVertexID = gl_VertexID;

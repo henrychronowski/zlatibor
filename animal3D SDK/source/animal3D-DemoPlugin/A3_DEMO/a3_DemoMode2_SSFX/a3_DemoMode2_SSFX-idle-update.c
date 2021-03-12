@@ -131,6 +131,14 @@ void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a
 		// update and transform light matrix
 		//...
 		//a3real4Real4x4Product(pointLightData->position.v, projector->sceneObjectPtr->modelMatrixStackPtr->modelViewProjectionMat.m, pointLightData->worldPos.v);
+		a3mat4 lightModel;
+		a3real4x4SetScale(&lightModel, pointLightData->radius); //Set scale
+
+		//Append positon to light matrix
+		a3vec4 lightPos = pointLightData->position;
+		lightModel.v3 = lightPos;
+
+		a3real4Real4x4Product(pointLightMVP, projector->projectorMatrixStackPtr->viewProjectionMat.m, lightModel.m);
 	}
 }
 
