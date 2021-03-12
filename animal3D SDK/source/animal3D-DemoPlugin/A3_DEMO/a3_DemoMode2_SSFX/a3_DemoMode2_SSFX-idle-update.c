@@ -41,7 +41,7 @@
 
 void a3ssfx_update_graphics(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode)
 {
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment transformation and light data uploads
 	//	-> add line to upload light transformations
 	//		(hint: just individual matrices, see scene update)
@@ -134,7 +134,7 @@ void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a
 		a3mat4 lightModel;
 		a3real4x4SetScale(&lightModel, pointLightData->radius); //Set scale
 
-		//Append positon to light matrix
+		//Append position to light matrix
 		a3vec4 lightPos = pointLightData->position;
 		lightModel.v3 = lightPos;
 

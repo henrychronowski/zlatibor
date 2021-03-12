@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO:
+// ****DONE:
 //	-> declare view-space varyings from vertex shader
 //	-> declare MRT for pertinent surface data (incoming attribute info)
 //		(hint: at least normal and texcoord are needed)
@@ -48,13 +48,13 @@ in vec4 vPosition_screen;
 
 void main()
 {
+	//Send texcoord
 	rtTexcoord = vTexcoord;
 
+	//Calculate normal
 	vec4 normal = normalize(vNormal) * 0.5 + 0.5;
 	vec4 normalMap = texture(uImage05, vTexcoord.xy);
 	
-
+	//Send normal
 	rtNormal = normal;
-	//rtPosition = vPosition;
-	//rtPosition = vPosition_screen / vPosition_screen.w;
 }

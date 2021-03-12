@@ -26,7 +26,7 @@
 
 #define MAX_OBJECTS 128
 
-// ****TO-DO:
+// ****DONE:
 //	-> declare attributes related to lighting
 //		(hint: normal [2], texcoord [8], tangent [10], bitangent [11])
 //	-> declare view-space varyings related to lighting
@@ -88,9 +88,9 @@ void main()
 	vNormal = uModelMatrixStack[uIndex].modelViewMatInverseTranspose * vec4(aNormal, 0.0);
 	vTexcoord = uModelMatrixStack[uIndex].atlasMat * aTexcoord;
 
+	//Attempt at normal mapping
 	vTangent = normalize(aTangent); //https://learnopengl.com/Advanced-Lighting/Normal-Mapping
 	vBitangent = normalize(aBitangent);
-
 	vTBN = mat4(vTangent, vBitangent, vNormal, vec4(0.0));
 
 	vVertexID = gl_VertexID;

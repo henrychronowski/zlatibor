@@ -386,7 +386,7 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor, 1, a3vec4_one.v);
 		break;
 	case ssfx_renderModePhongDS:
-		// ****TO-DO:
+		// ****DONE:
 		//	-> uncomment deferred shading program and diffuse texture activations
 		//	-> activate pertinent textures for deferred lighting composition
 		//		(hint: all outputs from previous passes)

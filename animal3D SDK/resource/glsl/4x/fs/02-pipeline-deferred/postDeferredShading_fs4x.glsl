@@ -89,18 +89,21 @@ void calcPhongPoint(
 
 void main()
 {
+	//texture samples
 	vec4 sceneSample = texture(uImage04, vTexcoord_atlas.xy);
 	vec4 diffuseSample = texture(uImage00, sceneSample.xy);
 	vec4 specularSample = texture(uImage01, sceneSample.xy);
 	vec4 depthSample = texture(uImage07, vTexcoord_atlas.xy);
 
+	//Calculate screen position
 	vec4 position_screen = vTexcoord_atlas;
 	position_screen.z = depthSample.r;
 
+	//Calculate view position
 	vec4 position_view = uPB_inv * position_screen;
 	position_view /= position_view.w;
 
-
+	//Calculate normals
 	vec4 normal = texture(uImage05, vTexcoord_atlas.xy);
 	normal = (normal - 0.5) * 2.0;
 
@@ -118,6 +121,7 @@ void main()
 	vec4 diff;
 	vec4 spec;
 
+	//Calculate phong for each light
 	for(int i = 0; i < uCount; i++)
 	{
 		

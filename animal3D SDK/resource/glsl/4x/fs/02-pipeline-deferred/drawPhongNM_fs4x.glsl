@@ -26,7 +26,7 @@
 
 #define MAX_LIGHTS 1024
 
-// ****TO-DO:
+// ****DONE:
 //	-> declare view-space varyings from vertex shader
 //	-> declare point light data structure and uniform block
 //	-> declare uniform samplers (diffuse, specular & normal maps)
@@ -88,18 +88,17 @@ void calcPhongPoint(
 
 void main()
 {
-	vec4 normal = texture(uImage05, vTexcoord.xy) + normalize(vNormal); // texture(uImage05, vTexcoord.xy); //normalize(vNormal);//texture(uImage05, vTexcoord.xy) + normalize(vNormal);
+	//Calculate normals
+	vec4 normal = texture(uImage05, vTexcoord.xy) + normalize(vNormal);
 	normal = normalize(normal *  2.0 - 1.0);
 	//normal = normalize(vTBN * normal) * 0.5 + 0.5; //https://learnopengl.com/Advanced-Lighting/Normal-Mapping
-
-	//normal = normalize(normal) * 0.5 + 0.5;
 
 	vec4 diffTotal = vec4(0.0f);
 	vec4 specTotal = vec4(0.0f);
 	vec4 diff;
 	vec4 spec;
 
-
+	//Calculate phong for each light
 	for(int i = 0; i < uCount; i++)
 	{
 		
@@ -119,13 +118,8 @@ void main()
 		specTotal += spec;
 	}
 
+	//Combine specular & diffuse
 	rtFragColor = diffTotal * texture2D(uImage00, vTexcoord.xy) + specTotal * texture2D(uImage01, vTexcoord.xy);
 
-
-	//rtFragColor = normal;
-
 	rtFragColor.a = 1.0;
-
-//	rtFragColor = normal;
-//	rtFragColor.a = 1.0;
 }

@@ -84,14 +84,17 @@ void calcPhongPoint(
 
 void main()
 {
+	//Calculate screen position 
 	vec4 position_screen = vBaisedClipPos / vBaisedClipPos.w;
 
+	//Texture samples
 	vec4 diffuseSample = texture(uImage00, position_screen.xy);
 	vec4 specularSample = texture(uImage01, position_screen.xy);
 	vec4 normal = texture(uImage05, position_screen.xy);
 
 	vec4 depthSample = texture(uImage07, position_screen.xy);
 
+	//Calcualte view position
 	vec4 position_view = position_screen;
 	position_view.z = depthSample.r;
 
@@ -100,6 +103,7 @@ void main()
 	vec4 diff;
 	vec4 spec;
 
+	//Calculate phong for current light
 	calcPhongPoint(
 			diff,
 			spec, 
@@ -112,9 +116,9 @@ void main()
 			uLights[vInstanceID].color
 		);
 
-		diffTotal += diff;
-		specTotal += spec;
+	diffTotal += diff;
+	specTotal += spec;
 
-		rtDiffuseLight = diffuseSample * diffTotal;
-		rtSpecularLight = specularSample * specTotal;
+	rtDiffuseLight = diffuseSample * diffTotal;
+	rtSpecularLight = specularSample * specTotal;
 }
