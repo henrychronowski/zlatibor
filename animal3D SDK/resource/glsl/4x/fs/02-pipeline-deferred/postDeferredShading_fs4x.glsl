@@ -144,13 +144,6 @@ void main()
 
 	rtFragColor = diffuseSample * diffTotal + specularSample * specTotal;
 
-	//DEBUG
-	//rtFragColor = texture(uImage07, vTexcoord_atlas.xy);
-	//rtFragColor = position_screen;
-	//rtFragColor = depthSample;
-	//rtFragColor = position_view;
-	//rtFragColor = normal;
-
 	// final transparency
 	rtFragColor.a = diffuseSample.a;
 }
