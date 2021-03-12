@@ -88,11 +88,11 @@ void calcPhongPoint(
 
 void main()
 {
-	vec4 normal = texture(uImage05, vTexcoord.xy); //normalize(vNormal);//texture(uImage05, vTexcoord.xy) + normalize(vNormal);
+	vec4 normal = texture(uImage05, vTexcoord.xy) + normalize(vNormal); // texture(uImage05, vTexcoord.xy); //normalize(vNormal);//texture(uImage05, vTexcoord.xy) + normalize(vNormal);
 	normal = normalize(normal *  2.0 - 1.0);
-	normal = normalize(vTBN * normal) * 0.5 + 0.5; //https://learnopengl.com/Advanced-Lighting/Normal-Mapping
+	//normal = normalize(vTBN * normal) * 0.5 + 0.5; //https://learnopengl.com/Advanced-Lighting/Normal-Mapping
 
-	//normal = normalize(normal);
+	//normal = normalize(normal) * 0.5 + 0.5;
 
 	vec4 diffTotal = vec4(0.0f);
 	vec4 specTotal = vec4(0.0f);
