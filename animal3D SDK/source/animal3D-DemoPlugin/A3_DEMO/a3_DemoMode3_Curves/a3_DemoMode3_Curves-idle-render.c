@@ -146,6 +146,14 @@ a3ret a3vertexDrawableRenderTriPatches(a3_VertexDrawable const* drawable)
 		//	-> copy regular rendering algorithm
 		//	-> replace primitive type with "patches" keyword
 		// draw
+
+		//Tell OpenGl to draw triangles
+		glPatchParameteri(GL_PATCH_VERTICES, 3);
+
+		glBindVertexArray(drawable->vertexArray->handle->handle);
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, drawable->indexBuffer->handle->handle);
+		glDrawElements(GL_PATCHES, drawable->count, drawable->indexType, drawable->indexing);
 		
 		return 1;
 	}
