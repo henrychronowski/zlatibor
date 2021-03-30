@@ -41,13 +41,46 @@
 // (2 verts/axis * 3 axes/basis * (3 vertex bases + 1 face basis) + 4 to 8 wireframe verts = 28 to 32 verts)
 #define MAX_VERTICES 32
 
-layout (triangles) in;
+layout (triangles) in; // Recieving triangles
+// gl_in[3]
 
-layout (line_strip, max_vertices = MAX_VERTICES) out;
+layout (line_strip, max_vertices = MAX_VERTICES) out; // Outputting line strip
+
+in vbVertexData {
+	mat4 vTangentBasis_view;
+	vec4 vTexcoord_atlas;
+} vVertexData[];
 
 out vec4 vColor;
 
+void drawWireframe()
+{
+	vColor = vec4(1.0, 0.0f, 0.0f, 1.0f);
+
+	// Get vertex info
+	// v0, v1, v2, v0
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[1].gl_Position;
+	EmitVertex();
+	EndPrimitive();
+
+	vColor = vec4(0.0, 1.0f, 0.0f, 1.0f);
+	gl_Position = gl_in[1].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[2].gl_Position;
+	EmitVertex();
+	EndPrimitive();
+
+	vColor = vec4(0.0, 0.0f, 1.0f, 1.0f);
+	gl_Position = gl_in[2].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+	EndPrimitive();
+};
+
 void main()
 {
-	
+	drawWireframe();
 }

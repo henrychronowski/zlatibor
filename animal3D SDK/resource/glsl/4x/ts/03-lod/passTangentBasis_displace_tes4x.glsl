@@ -47,5 +47,6 @@ out vbVertexData {
 
 void main()
 {
-	
+	//gl_TessCoord -> barycentric
+	//gl_Position = ???
 }
