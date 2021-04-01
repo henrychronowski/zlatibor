@@ -63,7 +63,10 @@ vec3 calcParallaxCoord(in vec3 coord, in vec3 viewVec, const int steps)
 	// ****TO-DO:
 	//	-> step along view vector until intersecting height map
 	//	-> determine precise intersection point, return resulting coordinate
-	
+	float height = texture(uTex_hm, vec2(coord.xy)).r;
+	vec2 p = viewVec.xy / viewVec.z * (height);	// Could add a scaling factor here
+	coord = vec3(coord.xy + p.xy, coord.z);
+
 	// done
 	return coord;
 }
@@ -89,11 +92,13 @@ void main()
 	//		(hint: the above TBN bases convert tangent to view, figure out 
 	//		an efficient way of representing the required matrix operation)
 	// tangent-space view vector
-	vec3 viewVec_tan = vec3(
-		0.0,
-		0.0,
-		0.0
-	);
+
+	mat3 TBN = transpose(mat3(tan_view, bit_view, nrm_view));
+	vec3 viewVec_tan = viewVec.xyz * TBN;//vec3(
+//		0.0,
+//		0.0,
+//		0.0
+//	);
 	
 	// parallax occlusion mapping
 	vec3 texcoord = vec3(vTexcoord_atlas.xy, uSize);
