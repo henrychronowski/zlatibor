@@ -141,7 +141,7 @@ a3ret a3vertexDrawableRenderTriPatches(a3_VertexDrawable const* drawable)
 	// https://www.khronos.org/opengl/wiki/Tessellation 
 	if (drawable)
 	{
-		// ****TO-DO: 
+		// ****DONE: 
 		//	-> set patch vertices parameter for triangles
 		//	-> copy regular rendering algorithm
 		//	-> replace primitive type with "patches" keyword

@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> declare uniform block for spline waypoint and handle data
 //	-> implement spline interpolation algorithm based on scene object's path
 //	-> interpolate along curve using correct inputs and project result
@@ -45,17 +45,29 @@ out vec4 vColor;
 
 void main()
 {
-	int i0 = gl_PrimitiveID; //Current Patch
-	int i1 = (i0 + 1) % uCount;
+	int i0 = gl_PrimitiveID; // Current Patch
+	int i1 = (i0 + 1) % uCount; // Next Patch
+	int i2 = (i0 - 1) % uCount; // Previous Patch
+	int i3 = (i1 + 1) % uCount; // Patch After Next
 
 	float t = gl_TessCoord.x;
+	float t2 = t * t;
 
-	vec4 point = mix(uCurveWaypoint[i0], uCurveWaypoint[i1], t);
+	vec4 p0 = uCurveWaypoint[i2]; // Previous point
+	vec4 p1 = uCurveWaypoint[i0]; // Start point
+	vec4 p2 = uCurveWaypoint[i1]; // Next point 
+	vec4 p3 = uCurveWaypoint[i3]; // Point after next
 
-	//vec4 point = vec4(gl_TessCoord.xy, -1.0, 1.0);
+	//Cubic Interpolation: http://paulbourke.net/miscellaneous/interpolation/
+	vec4 a0 = p3 - p2 - p0 + p1;
+	vec4 a1 = p0 - p1 - a0;
+	vec4 a2 = p2 - p0;
+	vec4 a3 = p1;
 
+	vec4 point = a0 * t * t2 + a1 * t2 + a2 * t + a3;
+
+	//Project result
 	gl_Position = uP *  point;
-
 
 	vColor = vec4(0.5, 0.5, t, 1.0);
 }

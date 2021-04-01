@@ -68,6 +68,15 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 		//     t -= duration
 		//	   istart = iend
 		//	   iend = (istart + 1) % count
+
+		a3ui32 iStart = demoMode->curveSegmentIndex;
+		a3ui32 iEnd = (iStart + 1) % demoMode->curveWaypointCount;
+
+		demoMode->curveSegmentTime += (a3f32)dt;
+		if (demoMode->curveSegmentTime > demoMode->curveSegmentDuration)
+		{
+			demoMode->curveSegmentTime -= demoMode->curveSegmentDuration;
+		}
 	}
 }
 
