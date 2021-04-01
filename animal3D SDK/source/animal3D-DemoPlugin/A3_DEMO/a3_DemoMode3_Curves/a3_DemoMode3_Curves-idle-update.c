@@ -69,13 +69,39 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 		//	   istart = iend
 		//	   iend = (istart + 1) % count
 
+		// Waypoint indicies
 		a3ui32 iStart = demoMode->curveSegmentIndex;
+		a3ui32 iPrev = (iStart - 1) % demoMode->curveWaypointCount;
 		a3ui32 iEnd = (iStart + 1) % demoMode->curveWaypointCount;
+		a3ui32 iNextEnd = (iEnd + 1) % demoMode->curveWaypointCount;
 
+		// Waypoints based off of indices
+		a3vec4 p0 = demoMode->curveWaypoint[iPrev];
+		a3vec4 p1 = demoMode->curveWaypoint[iStart];
+		a3vec4 p2 = demoMode->curveWaypoint[iEnd];
+		a3vec4 p3 = demoMode->curveWaypoint[iNextEnd];
+
+		// Cubic Interpolation based on interp in tessellation shader
+		a3vec4 a0 = { p3.x - p2.x - p0.x + p1.x, p3.y - p2.y - p0.y + p1.y, p3.z - p2.z - p0.z + p1.z, p3.w - p2.w - p0.w + p1.w };
+		a3vec4 a1 = { p0.x - p1.x - a0.x, p0.y - p1.y - a0.y , p0.z - p1.z - a0.z , p0.w - p1.w - a0.w };
+		a3vec4 a2 = { p2.x - p0.x, p2.y - p0.y, p2.z - p0.z, p2.w - p0.w };
+		a3vec4 a3 = { p1.x, p1.y, p1.z, p1.w };
+
+		a3f64 dt2 = dt * dt;
+
+		a3vec4 point = { (a0.x * (a3real)dt * (a3real)dt2 + a1.x * (a3real)dt2 + a2.x * (a3real)dt + a3.x), (a0.y * (a3real)dt * (a3real)dt2 + a1.y * (a3real)dt2 + a2.y * (a3real)dt + a3.y),
+			(a0.z * (a3real)dt * (a3real)dt2 + a1.z * (a3real)dt2 + a2.z * (a3real)dt + a3.z), (a0.w * (a3real)dt * (a3real)dt2 + a1.w * (a3real)dt2 + a2.w * (a3real)dt + a3.w) };
+
+		// Update teapot transform
+		a3real4Real4x4Product(sceneObjectData->position.v, demoMode->modelMatrixStack->modelMatInverse.m, point.v);
+
+		// Update animation timer
 		demoMode->curveSegmentTime += (a3f32)dt;
 		if (demoMode->curveSegmentTime > demoMode->curveSegmentDuration)
 		{
 			demoMode->curveSegmentTime -= demoMode->curveSegmentDuration;
+			iStart = iEnd;
+			iEnd = (iStart + 1) % demoMode->curveWaypointCount;
 		}
 	}
 }
