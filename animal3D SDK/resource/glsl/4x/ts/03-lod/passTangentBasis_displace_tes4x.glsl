@@ -45,8 +45,33 @@ out vbVertexData {
 	vec4 vTexcoord_atlas;
 };
 
+uniform mat4 uP;
+uniform sampler2D uTex_hm;
+
 void main()
 {
-	//gl_TessCoord -> barycentric
-	//gl_Position = ???
+	// Blend the vertex offset into the attributes of vTangentBasis_view
+	for(int i = 0; i < 4; i++)
+	{
+		vTangentBasis_view[i] = (gl_TessCoord.x * vVertexData_tess[0].vTangentBasis_view[i] +
+								gl_TessCoord.y * vVertexData_tess[1].vTangentBasis_view[i] +
+								gl_TessCoord.z * vVertexData_tess[2].vTangentBasis_view[i]);
+	}
+	
+	// Blend the vertex offset into the texcoords
+	vTexcoord_atlas = (gl_TessCoord.x * vVertexData_tess[0].vTexcoord_atlas +
+					   gl_TessCoord.y * vVertexData_tess[1].vTexcoord_atlas +
+					   gl_TessCoord.z * vVertexData_tess[2].vTexcoord_atlas);
+
+	// Get normal, position, and height at current vertex
+	vec4 normal = normalize(vTangentBasis_view[2]);
+	vec4 pos = vTangentBasis_view[3];
+	float height = texture(uTex_hm, vTexcoord_atlas.xy).x;
+
+	// Scale position by a factor of height in the direction of the normal
+	pos += normal * height; // Could implement a scaling factor on height to control the strength of displacement
+
+	// Update position with displaced vertices
+	vTangentBasis_view[3] = pos;
+	 gl_Position = uP * vTangentBasis_view[3];
 }
