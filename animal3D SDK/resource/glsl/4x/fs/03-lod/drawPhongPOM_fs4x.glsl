@@ -57,25 +57,57 @@ layout (location = 1) out vec4 rtFragNormal;
 void calcPhongPoint(out vec4 diffuseColor, out vec4 specularColor, in vec4 eyeVec,
 	in vec4 fragPos, in vec4 fragNrm, in vec4 fragColor,
 	in vec4 lightPos, in vec4 lightRadiusInfo, in vec4 lightColor);
-	
+
+// Referenced the class powerpoint and the following article	
+// https://learnopengl.com/Advanced-Lighting/Parallax-Mapping
 vec3 calcParallaxCoord(in vec3 coord, in vec3 viewVec, const int steps)
 {
-	// ****TO-DO:
+	// ****D0NE:
 	//	-> step along view vector until intersecting height map
 	//	-> determine precise intersection point, return resulting coordinate
-	float height = texture(uTex_hm, vec2(coord.xy)).r;
-	vec2 p = viewVec.xy / viewVec.z * (height);	// Could add a scaling factor here
-	coord = vec3(coord.xy + p.xy, coord.z);
 
-	// done
+	// Sample height map
+	float height = texture(uTex_hm, coord.xy).r;
+	vec2 p = viewVec.xy / viewVec.z * uSize;
+	coord.z = 1.0;
+
+	// Set initial end from heightmap sample and declare variables for stepping
+	vec3 end = vec3(coord.xy - p, 0.0);
+	vec3 offsetCoord;
+	float dt = 1.0 / float(steps);
+	float bPrev = height, bCur;
+	vec3 hPrev = coord;
+
+	// Step through ray, checking if heightmap is larger than the current sample
+	for(int i = 0; i < steps; i++)
+	{
+		// Interp to get the offstep coord for this step
+		offsetCoord = mix(coord, end, float(i) * dt);
+
+		// Sample the heightmap at the current offstep coord
+		bCur = texture(uTex_hm, offsetCoord.xy).r;
+
+		// Check if the heightmap is taller than the current offset coord
+		if(offsetCoord.z < bCur)
+		{
+			// Get the x coordinate of the intersection point between the ray and the heightmap
+			float x = (hPrev.p - bPrev)/ ((bCur - bPrev) - (offsetCoord.b - hPrev.z));
+
+			// Interp using the calculated x coordinate to get the final offset coordinate
+			coord = mix(hPrev, offsetCoord, x);
+			break;
+		}
+
+		// Iterate the previous height and coordinate variables
+		bPrev = bCur;
+		hPrev = offsetCoord;
+	}
+
 	return coord;
 }
 
 void main()
 {
-	// DUMMY OUTPUT: all fragments are OPAQUE GREEN
-//	rtFragColor = vec4(0.0, 1.0, 0.0, 1.0);
-
 	vec4 diffuseColor = vec4(0.0), specularColor = diffuseColor, dd, ds;
 	
 	// view-space tangent basis
@@ -87,18 +119,14 @@ void main()
 	// view-space view vector
 	vec4 viewVec = normalize(kEyePos - pos_view);
 	
-	// ****TO-DO:
+	// ****D0N3:
 	//	-> convert view vector into tangent space
 	//		(hint: the above TBN bases convert tangent to view, figure out 
 	//		an efficient way of representing the required matrix operation)
 	// tangent-space view vector
 
-	mat3 TBN = transpose(mat3(tan_view, bit_view, nrm_view));
-	vec3 viewVec_tan = viewVec.xyz * TBN;//vec3(
-//		0.0,
-//		0.0,
-//		0.0
-//	);
+	mat4 invTBN = transpose(mat4(tan_view, bit_view, nrm_view, vec4(vec3(0.0),1.0)));
+	vec3 viewVec_tan = (invTBN * viewVec).xyz;
 	
 	// parallax occlusion mapping
 	vec3 texcoord = vec3(vTexcoord_atlas.xy, uSize);
@@ -126,7 +154,4 @@ void main()
 	
 	// MRT
 	rtFragNormal = vec4(nrm_view.xyz * 0.5 + 0.5, 1.0);
-	
-	// DEBUGGING
-	//rtFragColor.rgb = texcoord;
 }
