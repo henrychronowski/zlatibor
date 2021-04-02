@@ -85,20 +85,29 @@ vec4 getFacePoint()
 // Referencing lecture 10
 mat4 getFaceTBN()
 {
-	mat4 result;
-	vec3 del1 = (gl_in[1].gl_Position - gl_in[0].gl_Position).xyz;
-	vec3 del2 = (gl_in[2].gl_Position - gl_in[0].gl_Position).xyz;
-	vec2 delU = vec2(del1.x - gl_in[0].gl_Position.x, del2.x - gl_in[0].gl_Position.x); //vec2(del1.x, del2.x);
-	vec2 delV = vec2(del1.y - gl_in[0].gl_Position.y, del2.y - gl_in[0].gl_Position.y); //vec2(del1.y, del2.y);
+	// view coord(s)
+	vec3 p0 = vVertexData[0].vTangentBasis_view[3].xyz;
+	vec3 p1 = vVertexData[1].vTangentBasis_view[3].xyz;
+	vec3 p2 = vVertexData[2].vTangentBasis_view[3].xyz;
+
+	// Texcoords
+	vec2 point0 = vVertexData[0].vTexcoord_atlas.xy;
+	vec2 point1 = vVertexData[1].vTexcoord_atlas.xy;
+	vec2 point2 = vVertexData[2].vTexcoord_atlas.rg;
+
+	// Calculate components of normal, tangent, and bitangent
+	vec3 del1 = (p1 - p0);
+	vec3 del2 = (p2 - p0);
+	vec2 delU = vec2(point1.x - point0.x, point2.x - point0.x);
+	vec2 delV = vec2(point1.y - point0.y, point2.y - point0.y);
 	mat2x3 delP = mat2x3(del1, del2);
 	mat2 delUV = mat2(vec2(delU.x, delV.x), vec2(delU.y, delV.y));
 
+	// Calculate the face normal and TB
 	vec3 normFace = normalize(cross(del1, del2));
 	mat2x3 tb = delP * inverse(delUV);
 
-	
-
-
+	// Combine and return TBN
 	return uP * mat4(vec4(tb[0], 0.0), vec4(tb[1], 0.0), vec4(normFace, 0.0), vec4(0.0.xxx, 1.0));
 }
 
@@ -128,9 +137,6 @@ void drawTangentBases()
 	drawBasisVector(gl_in[2].gl_Position, uP * vVertexData[2].vTangentBasis_view[2], vec4(0.0, 0.0f, 1.0f, 1.0f));
 			 
 	// Draw tangent bases on the face points
-//	drawBasisVector(getFacePoint(), uP * vVertexData[0].vTangentBasis_view[0], vec4(1.0, 0.0f, 0.0f, 1.0f));
-//	drawBasisVector(getFacePoint(), uP * vVertexData[0].vTangentBasis_view[1], vec4(0.0, 1.0f, 0.0f, 1.0f));
-//	drawBasisVector(getFacePoint(), uP * vVertexData[0].vTangentBasis_view[2], vec4(0.0, 0.0f, 1.0f, 1.0f));
 	drawBasisVector(getFacePoint(), getFaceTBN()[0], vec4(1.0, 0.0f, 0.0f, 1.0f));
 	drawBasisVector(getFacePoint(), getFaceTBN()[1], vec4(0.0, 1.0f, 0.0f, 1.0f));
 	drawBasisVector(getFacePoint(), getFaceTBN()[2], vec4(0.0, 0.0f, 1.0f, 1.0f));
