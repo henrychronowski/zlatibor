@@ -57,17 +57,43 @@ layout (location = 1) out vec4 rtFragNormal;
 void calcPhongPoint(out vec4 diffuseColor, out vec4 specularColor, in vec4 eyeVec,
 	in vec4 fragPos, in vec4 fragNrm, in vec4 fragColor,
 	in vec4 lightPos, in vec4 lightRadiusInfo, in vec4 lightColor);
-	
+
+// Referenced the class powerpoint and the following article	
+// https://learnopengl.com/Advanced-Lighting/Parallax-Mapping
 vec3 calcParallaxCoord(in vec3 coord, in vec3 viewVec, const int steps)
 {
-	// ****TO-DO:
+	// ****D0NE:
 	//	-> step along view vector until intersecting height map
 	//	-> determine precise intersection point, return resulting coordinate
-	float height = texture(uTex_hm, vec2(coord.xy)).r;
-	vec2 p = viewVec.xy / viewVec.z * (height);	// Could add a scaling factor here
-	coord = vec3(coord.xy + p.xy, coord.z);
 
-	// done
+	float height = texture(uTex_hm, coord.xy).r;
+	vec2 p = viewVec.xy / viewVec.z * uSize;
+
+	vec3 end = vec3(coord.xy - p, 0.0);
+	vec3 offsetCoord;
+	float dt = 1.0 / float(steps);
+	float bPrev = height, bCur;
+	vec3 hPrev = coord;
+
+	coord.z = 1.0;
+
+	for(int i = 0; i < steps; i++)
+	{
+		offsetCoord = mix(coord, end, float(i) * dt);
+
+		bCur = texture(uTex_hm, offsetCoord.xy).r;
+
+		if(offsetCoord.z < bCur)
+		{
+			float x = (hPrev.p - bPrev)/ ((bCur - bPrev) - (offsetCoord.b - hPrev.z));
+			coord = mix(hPrev, offsetCoord, x);
+			break;
+		}
+
+		bPrev = bCur;
+		hPrev = offsetCoord;
+	}
+
 	return coord;
 }
 
@@ -93,12 +119,11 @@ void main()
 	//		an efficient way of representing the required matrix operation)
 	// tangent-space view vector
 
-	mat3 TBN = transpose(mat3(tan_view, bit_view, nrm_view));
-	vec3 viewVec_tan = viewVec.xyz * TBN;//vec3(
-//		0.0,
-//		0.0,
-//		0.0
-//	);
+	mat4 invTBN = transpose(mat4(tan_view, bit_view, nrm_view, vec4(vec3(0.0),1.0)));
+	vec3 viewVec_tan = (invTBN * viewVec).xyz;
+
+
+	//viewVec_tan = vec3(0.0);
 	
 	// parallax occlusion mapping
 	vec3 texcoord = vec3(vTexcoord_atlas.xy, uSize);
@@ -128,5 +153,6 @@ void main()
 	rtFragNormal = vec4(nrm_view.xyz * 0.5 + 0.5, 1.0);
 	
 	// DEBUGGING
-	//rtFragColor.rgb = texcoord;
+	//rtFragColor.rgb = viewVec_tan;
+	//rtFragColor.rgb = vec3(texture(uTex_hm, texcoord.xy).g);
 }
