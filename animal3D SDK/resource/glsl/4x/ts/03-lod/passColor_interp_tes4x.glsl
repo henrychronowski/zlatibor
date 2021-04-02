@@ -59,10 +59,10 @@ void main()
 	vec4 p3 = uCurveWaypoint[i3]; // Point after next
 
 	//Cubic Interpolation: http://paulbourke.net/miscellaneous/interpolation/
-	vec4 a0 = p3 - p2 - p0 + p1;
-	vec4 a1 = p0 - p1 - a0;
-	vec4 a2 = p2 - p0;
-	vec4 a3 = p1;
+	vec4 a0 = -0.5 * p0 + 1.5 * p1 - 1.5* p2 + 0.5 * p3;
+    vec4 a1 = p0 - 2.5 * p1 + 2 * p2 - 0.5 * p3;
+    vec4 a2 = -0.5 * p0 + 0.5 * p2;
+    vec4 a3 = p1;
 
 	vec4 point = a0 * t * t2 + a1 * t2 + a2 * t + a3;
 
