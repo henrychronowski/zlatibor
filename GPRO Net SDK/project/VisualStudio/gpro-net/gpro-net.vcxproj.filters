@@ -42,6 +42,9 @@
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net\gpro-net-RakNet.hpp">
       <Filter>Header Files\gpro-net</Filter>
     </ClInclude>
+    <ClInclude Include="Spatial.h">
+      <Filter>Header Files\gpro-net\gpro-net-util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\gpro-net\gpro-net.c">
