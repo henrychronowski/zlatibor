@@ -76,17 +76,27 @@ inline int a3animate_updateSkeletonLocalSpace(a3_Hierarchy const* hierarchy,
 			++j, ++p0, ++p1, ++pBase, ++localSpaceArray)
 		{
 			// testing: copy base pose
-			tmpPose = *pBase;
+			//tmpPose = *pBase;
 
 			// ****TO-DO:
 			// interpolate channels
+			a3real3Lerp(tmpPose.position.v, p0->position.v, p1->position.v, u);
+			a3real3Lerp(tmpPose.scale.v, p0->scale.v, p1->scale.v, u);
+			a3real3Lerp(tmpPose.euler.v, p0->euler.v, p1->euler.v, u);
 
 			// ****TO-DO:
 			// concatenate base pose
+			a3real3Add(tmpPose.position.v, pBase->position.v);
+			a3real3Add(tmpPose.euler.v, pBase->euler.v);
+			a3real3MulComp(tmpPose.scale.v, pBase->scale.v);
+
+			//a3clamp()
 
 			// ****TO-DO:
 			// convert to matrix
-
+			//localSpaceArray[0] = a3mat4_identity;
+			//a3real4x4SetMajors(localSpaceArray, a3vec4)
+			a3real4x4SetIdentity(localSpaceArray->m);
 		}
 
 		// done
