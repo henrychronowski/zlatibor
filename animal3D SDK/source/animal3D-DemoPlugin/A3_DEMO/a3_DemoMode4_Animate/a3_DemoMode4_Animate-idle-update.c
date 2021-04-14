@@ -75,41 +75,29 @@ inline int a3animate_updateSkeletonLocalSpace(a3_Hierarchy const* hierarchy,
 			j < hierarchy->numNodes;
 			++j, ++p0, ++p1, ++pBase, ++localSpaceArray)
 		{
-			// ****TO-DO:
+			// ****DONE:
 			// interpolate channels
 			a3real4Lerp(tmpPose.position.v, p0->position.v, p1->position.v, u);
 			a3real4Lerp(tmpPose.scale.v, p0->scale.v, p1->scale.v, u);
 			a3real4Lerp(tmpPose.euler.v, p0->euler.v, p1->euler.v, u);
 
-			// ****TO-DO:
+			// ****DONE:
 			// concatenate base pose
 			a3real4Add(tmpPose.position.v, pBase->position.v);
 			a3real4Add(tmpPose.euler.v, pBase->euler.v);
 			a3real4MulComp(tmpPose.scale.v, pBase->scale.v);
 
-			//a3clamp()
-
-			// ****TO-DO:
+			// ****DONE:
 			// convert to matrix
-			//localSpaceArray[0] = a3mat4_identity;
 			
-			//a3real4x4SetIdentity(localSpaceArray->m);
 			a3real4x4SetRotateXYZ(localSpaceArray->m, tmpPose.euler.x, tmpPose.euler.y, tmpPose.euler.z);
 			
 			localSpaceArray->v3.xyz = tmpPose.position.xyz;
 			localSpaceArray->m33 = a3real_one;
 
-			if (tmpPose.scaleMode == a3scale_uniform)
-			{
-				a3real4x4SetScale(localSpaceArray->m, tmpPose.scale.x);
-			}
-			else if (tmpPose.scaleMode == a3scale_nonuniform)
-			{
-				a3real3MulS(localSpaceArray->m[0], tmpPose.scale.x);
-				a3real3MulS(localSpaceArray->m[1], tmpPose.scale.y);
-				a3real3MulS(localSpaceArray->m[2], tmpPose.scale.z);
-			}
-
+			a3real3MulS(localSpaceArray->m[0], tmpPose.scale.x);
+			a3real3MulS(localSpaceArray->m[1], tmpPose.scale.y);
+			a3real3MulS(localSpaceArray->m[2], tmpPose.scale.z);
 			
 		}
 		return 1;
@@ -122,7 +110,7 @@ inline int a3animate_updateSkeletonObjectSpace(a3_Hierarchy const* hierarchy,
 {
 	if (hierarchy && objectSpaceArray && localSpaceArray)
 	{
-		// ****TO-DO: 
+		// ****DONE: 
 		// forward kinematics
 		a3ui32 j;
 		a3i32 jp;
