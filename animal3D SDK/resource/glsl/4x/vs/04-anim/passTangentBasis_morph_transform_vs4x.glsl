@@ -17,6 +17,8 @@
 /*
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
+
+	Completed by Henry Chronowski and Ethan Heil
 	
 	passTangentBasis_morph_transform_vs4x.glsl
 	Calculate and pass morphed tangent basis.
@@ -26,7 +28,7 @@
 
 #define MAX_OBJECTS 128
 
-// ****TO-DO: 
+// ****D0N3: 
 //	-> declare morph target attributes
 //	-> declare and implement morph target interpolation algorithm
 //	-> declare interpolation time/param/keyframe uniform
@@ -34,21 +36,16 @@
 //		(hint: results can be stored in local variables named after the 
 //		complete tangent basis attributes provided before any changes)
 
-/*
-layout (location = 0) in vec4 aPosition;
-layout (location = 2) in vec3 aNormal;
-layout (location = 8) in vec4 aTexcoord;
-layout (location = 10) in vec3 aTangent;
-layout (location = 11) in vec3 aBitangent;
-*/
+// Struct to represent morph targets
+struct sMorp
+{
+	vec3 position;
+	vec3 normal;
+	vec3 tangent;
+}; 
 
-// What is part of a single morph target:
-// -> position, normal, tangent
-// -> 16 available, 16 / 3 = 5 targets (int) + texcoord
-
-// What is not part of a single morph target:
-// -> texcoord: shared beacause always the same in 2D
-// -> bitangent: cross product of normal & tangent (normal x tangent) 
+layout (location = 0) in sMorp aMorp[5];
+layout (location = 15) in vec2 aTexcoord;
 
 struct sModelMatrixStack
 {
@@ -66,7 +63,9 @@ uniform ubTransformStack
 {
 	sModelMatrixStack uModelMatrixStack[MAX_OBJECTS];
 };
+
 uniform int uIndex;
+uniform float uTime;
 
 out vbVertexData {
 	mat4 vTangentBasis_view;
@@ -78,23 +77,30 @@ flat out int vInstanceID;
 
 void main()
 {
-	// DUMMY OUTPUT: directly assign input position to output position
-	//gl_Position = aPosition;
+	// Morph target index and interp parameter
+	int index = int(uTime);
+	float param = uTime - index;
 
-	// Results of morphing
-	vec4 aPosition;
-	vec3 aTangent, aBitangent, aNormal;
+	// Current morph targets
+	sMorp p0 = aMorp[index];
+	sMorp p1 = aMorp[++index % 5];
 
-	// Testing: Copy the first morph target only
+	// Interpolate between morph targets based on interp param and calc bitangent
+	vec3 position = mix(p0.position, p1.position, param);
+	vec3 normal = mix(p0.normal, p1.normal, param);
+	vec3 tangent = mix(p0.tangent, p1.tangent, param);
+	vec3 bitangent = cross(normal, tangent);
+
 	
 	sModelMatrixStack t = uModelMatrixStack[uIndex];
 	
-	vTangentBasis_view = t.modelViewMatInverseTranspose * mat4(aTangent, 0.0, aBitangent, 0.0, aNormal, 0.0, vec4(0.0));
-	vTangentBasis_view[3] = t.modelViewMat * aPosition;
-	gl_Position = t.modelViewProjectionMat * aPosition;
-	
-	vTexcoord_atlas = t.atlasMat * aTexcoord;
+	// Construct TBN matrix
+	vTangentBasis_view = t.modelViewMatInverseTranspose * mat4(tangent, 0.0, bitangent, 0.0, normal, 0.0, vec4(0.0));
 
+	// Transform position and texcoord then pass them through
+	vTangentBasis_view[3] = t.modelViewMat * vec4(position, 1.0);
+	gl_Position = t.modelViewProjectionMat * vec4(position, 1.0);
+	vTexcoord_atlas = t.atlasMat * vec4(aTexcoord, 0.0.xx);
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;
 }
