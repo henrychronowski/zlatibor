@@ -21,11 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\source\gpro-net-Client-Windowed\main-client-win.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\..\source\gpro-net-Client-Windowed\a3_app_utils\a3_app_load.h">
       <Filter>Header Files\a3_app_utils</Filter>
     </ClInclude>
@@ -38,5 +33,10 @@
     <ClInclude Include="..\..\..\source\gpro-net-Client-Windowed\a3_app_utils\Win32\a3_app_window.h">
       <Filter>Header Files\a3_app_utils\Win32</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\source\gpro-net-Client-Windowed\main-client-win.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

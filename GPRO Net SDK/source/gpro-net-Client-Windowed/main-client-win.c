@@ -33,6 +33,7 @@
 
 
 #include "gpro-net/gpro-net/gpro-net-util/gpro-net-console.h"
+#include "gpro-net/gpro-net-client/gpro-net-RakNet-Client.hpp"
 
 
 //-----------------------------------------------------------------------------

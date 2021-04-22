@@ -31,8 +31,7 @@ namespace gproNet
 		: index(-1)
 	{
 		RakNet::SocketDescriptor sd;
-		char SERVER_IP[16] = "127.0.0.1";
-
+		char SERVER_IP[16] = "172.16.6.67";
 		peer->Startup(1, &sd, 1);
 		peer->SetMaximumIncomingConnections(0);
 		peer->Connect(SERVER_IP, SET_GPRO_SERVER_PORT, 0, 0);
