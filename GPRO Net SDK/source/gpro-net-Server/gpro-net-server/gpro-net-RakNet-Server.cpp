@@ -75,7 +75,18 @@ namespace gproNet
 			ReadTest(bitstream);
 			WriteTest(bitstream_w, "Hello client from server");
 			peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
+
+			WriteTimestamp(bitstream_w);
+			bitstream_w.Write((RakNet::MessageID)ID_GPRO_SEND_UNIFORM);
+			peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 		}	return true;
+
+		case ID_GPRO_RECIEVE_UNIFORM:
+		{
+			RakNet::RakString rs;
+			bitstream.Read(rs);
+			printf("%s\n", rs.C_String());
+		}
 
 		}
 		return false;
