@@ -77,6 +77,12 @@ namespace gproNet
 			peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 		}	return true;
 
+		case ID_GPRO_RECIEVE_UNIFORM:
+		{
+			RakNet::BitStream uIn;
+
+		}
+
 		}
 		return false;
 	}
