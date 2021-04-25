@@ -130,7 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN$(PlatformArchitecture);_WINDOWS;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(gpro_net_sdk)include\;$(dev_sdk_dir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(gpro_net_sdk)include\;$(dev_sdk_dir)include\;$(gpro_net_sdk)thirdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -161,9 +161,11 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\source\gpro-net-Server\gpro-net-server.c" />
     <ClCompile Include="..\..\..\source\gpro-net-Server\gpro-net-server\gpro-net-RakNet-Server.cpp" />
+    <ClCompile Include="..\..\..\source\gpro-net-Server\gpro-net-server\Render.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net-server\gpro-net-RakNet-Server.hpp" />
+    <ClInclude Include="..\..\..\include\gpro-net\gpro-net-server\Render.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
