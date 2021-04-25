@@ -47,6 +47,7 @@ void renderer_update_bindSkybox(sSceneObjectComponent const* sceneObject_skybox,
 }
 #endif	// __cplusplus
 
+void sendPositionUniform(sPluginState* state, int index);
 
 //-----------------------------------------------------------------------------
 
@@ -258,6 +259,7 @@ void plugin_update_simulate(sPluginState* pluginState, double const dt)
 		i < j; ++i)
 	{
 		renderer_updateSceneObject(pluginState->obj_client + i, 0);
+		sendPositionUniform(pluginState, i);
 		renderer_updateSceneObjectStack(pluginState->obj_client + i, projector);
 	}
 
@@ -267,6 +269,20 @@ void plugin_update_simulate(sPluginState* pluginState, double const dt)
 
 	// client data buffer
 	a3bufferRefillOffset(pluginState->renderer->ubo_transform + 1, 0, 0, sizeof(pluginState->modelstack_client), pluginState->modelstack_client);
+}
+
+void sendPositionUniform(sPluginState* state, int index)
+{
+	float x = (state->obj_client + index)->dataPtr->position.x;
+	float y = (state->obj_client + index)->dataPtr->position.y;
+	float z = (state->obj_client + index)->dataPtr->position.z;
+
+	float pos[3];
+	pos[0] = x;
+	pos[1] = y;
+	pos[2] = z;
+
+	state->client->SendPositionUniform(pos);
 }
 
 

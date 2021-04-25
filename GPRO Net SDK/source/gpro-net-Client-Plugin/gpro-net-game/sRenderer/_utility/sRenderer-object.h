@@ -25,6 +25,7 @@
 #ifndef _GPRO_NET_SRENDERER_OBJECT_H_
 #define _GPRO_NET_SRENDERER_OBJECT_H_
 
+#include "gpro-net/gpro-net-client/gpro-net-RakNet-Client.hpp"
 
 // math library
 #include "animal3D-A3DM/animal3D-A3DM.h"

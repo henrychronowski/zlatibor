@@ -120,6 +120,8 @@ void renderer_unloadTextures(sRenderer* renderer);
 void renderer_unloadFramebuffers(sRenderer* renderer);
 void renderer_unloadValidate(sRenderer const* renderer);
 
+void network_update_position(sPluginState* state);
+
 #ifdef __cplusplus
 }
 #endif	// __cplusplus
@@ -205,6 +207,11 @@ void plugin_update(sPluginState* state, double const dt)
 {
 	void plugin_update_simulate(sPluginState * pluginState, double const dt);
 	plugin_update_simulate(state, dt);
+}
+
+void network_update_position(sPluginState* state)
+{
+
 }
 
 void plugin_render(sPluginState const* state, double const dt)
@@ -346,6 +353,7 @@ void plugin_idle(sPluginState* state, double const dt)
 	// main idle loop
 	plugin_input(state, dt);
 	plugin_update(state, dt);
+	network_update_position(state);
 	plugin_render(state, dt);
 
 	// network messaging
