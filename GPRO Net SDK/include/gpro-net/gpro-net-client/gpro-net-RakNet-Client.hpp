@@ -38,11 +38,13 @@ namespace gproNet
 	{
 		ID_GPRO_MESSAGE_CLIENT_BEGIN = ID_GPRO_MESSAGE_COMMON_END,
 
+		ID_GPRO_SEND_UNIFORM,
+		ID_GPRO_RECIEVE_UNIFORM,
+		ID_GPRO_PHONG_UNIFORM,
 
-
+		ID_GPRO_RENDER_RESULT,
 		ID_GPRO_MESSAGE_CLIENT_END
 	};
-
 
 	// cRakNetClient
 	//	RakNet peer management for server.
@@ -67,6 +69,8 @@ namespace gproNet
 		// ~cRakNetClient
 		//	Destructor.
 		virtual ~cRakNetClient();
+
+		void SendPositionUniform(const float[3]);
 
 		// protected methods
 	protected:

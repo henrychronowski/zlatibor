@@ -43,6 +43,23 @@ namespace gproNet
 		peer->Shutdown(0, 0, IMMEDIATE_PRIORITY);
 	}
 
+	void cRakNetClient::SendPositionUniform(const float pos[3])
+	{
+		RakNet::BitStream bitstream_w;
+		WriteTimestamp(bitstream_w);
+		bitstream_w.Write((RakNet::MessageID)ID_GPRO_PHONG_UNIFORM);
+
+		float p[3];
+		for (int i = 0; i < 3; i++)
+			p[i] = pos[i];
+		
+		char data[256] = {};
+		snprintf(data, sizeof(data), "%f %f %f", p[0], p[1], p[2]);
+
+		bitstream_w.Write(data);
+		peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, server, false);
+	}
+
 	bool cRakNetClient::ProcessMessage(RakNet::BitStream& bitstream, RakNet::SystemAddress const sender, RakNet::Time const dtSendToReceive, RakNet::MessageID const msgID)
 	{
 		if (cRakNetManager::ProcessMessage(bitstream, sender, dtSendToReceive, msgID))
@@ -77,7 +94,11 @@ namespace gproNet
 
 			// client connects to server, send greeting
 			RakNet::BitStream bitstream_w;
-			WriteTest(bitstream_w, "Hello server from client");
+			//WriteTest(bitstream_w, "Hello server from client");
+			WriteTimestamp(bitstream_w);
+			bitstream_w.Write((RakNet::MessageID)ID_GPRO_RECIEVE_UNIFORM);
+			char const uniforms[] = "Uniform Data :)";
+			bitstream_w.Write(uniforms);
 			peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 		}	return true;
 
@@ -94,7 +115,24 @@ namespace gproNet
 		{
 			// client receives greeting, just print it
 			ReadTest(bitstream);
-		}	return true;
+		}
+
+		case ID_GPRO_SEND_UNIFORM:
+		{
+			RakNet::BitStream bitstream_w;
+			WriteTimestamp(bitstream_w);
+			bitstream_w.Write((RakNet::MessageID)ID_GPRO_RECIEVE_UNIFORM);
+			char const uniforms[] = "Uniform Data :)";
+			bitstream_w.Write(uniforms);
+			peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
+		}return true;
+
+		case ID_GPRO_PHONG_UNIFORM:
+		{
+			RakNet::BitStream bitstream_w;
+			WriteTimestamp(bitstream_w);
+
+		}return true;
 
 		}
 		return false;
