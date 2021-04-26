@@ -139,7 +139,7 @@
       <PreprocessorDefinitions>WIN$(PlatformArchitecture);_WINDOWS;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(gpro_net_sdk)include\;$(dev_sdk_dir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(gpro_net_sdk)include\;$(dev_sdk_dir)include\;$(gpro_net_sdk)thirdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -180,6 +180,7 @@
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net\gpro-net-util\gpro-net-console.h" />
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net\gpro-net-util\gpro-net-gamestate.h" />
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net\gpro-net-util\gpro-net-lib.h" />
+    <ClInclude Include="..\..\..\include\gpro-net\gpro-net\RenderSceneData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\gpro-net\gpro-net.c" />

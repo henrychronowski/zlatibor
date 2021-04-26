@@ -23,7 +23,9 @@
 */
 
 #include "gpro-net/gpro-net-client/gpro-net-RakNet-Client.hpp"
-
+#include "cereal/archives/portable_binary.hpp"
+#include "gpro-net/gpro-net/RenderSceneData.h"
+#include <sstream>
 
 namespace gproNet
 {
@@ -56,7 +58,29 @@ namespace gproNet
 		char data[256] = {};
 		snprintf(data, sizeof(data), "%f %f %f", p[0], p[1], p[2]);
 
-		bitstream_w.Write(data);
+		std::stringstream dataStream;
+												  
+		{
+			RenderSceneData rsd;
+
+			rsd.x = p[0];
+			rsd.y = p[1];
+			rsd.z = p[2];
+
+			cereal::PortableBinaryOutputArchive archive(dataStream); 
+			archive(rsd);
+		}
+
+		bitstream_w.Write(dataStream);
+		//printf(dataStream.str().c_str());
+
+		{
+			cereal::PortableBinaryInputArchive iarchive(dataStream);
+			RenderSceneData rsd;
+			iarchive(rsd);
+			printf("%f %f %f \n", rsd.x, rsd.y, rsd.z);
+		}
+
 		peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, server, false);
 	}
 
