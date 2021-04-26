@@ -23,7 +23,7 @@
 */
 
 #include "gpro-net/gpro-net-server/gpro-net-RakNet-Server.hpp"
-
+#include "gpro-net/gpro-net-server/Render.h"
 
 namespace gproNet
 {
@@ -76,9 +76,10 @@ namespace gproNet
 			WriteTest(bitstream_w, "Hello client from server");
 			peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 
-			WriteTimestamp(bitstream_w);
-			bitstream_w.Write((RakNet::MessageID)ID_GPRO_SEND_UNIFORM);
-			peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
+			RakNet::BitStream trigger;
+			WriteTimestamp(trigger);
+			trigger.Write((RakNet::MessageID)ID_GPRO_SEND_UNIFORM);
+			peer->Send(&trigger, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 		}	return true;
 
 		case ID_GPRO_RECIEVE_UNIFORM:
@@ -86,6 +87,21 @@ namespace gproNet
 			RakNet::RakString rs;
 			bitstream.Read(rs);
 			printf("%s\n", rs.C_String());
+		}	return true;
+		case ID_GPRO_PHONG_UNIFORM:
+		{
+			/*float colour[3];
+			bitstream.Read(colour[0]);
+			bitstream.Read(colour[1]);
+			bitstream.Read(colour[2]);
+			printf("%f, %f, %f\n", colour[0], colour[1], colour[2]);*/
+
+			RakNet::RakString rs;
+			bitstream.Read(rs);
+			printf("%s\n", rs.C_String());
+
+
+			Phong();
 		}
 
 		}
