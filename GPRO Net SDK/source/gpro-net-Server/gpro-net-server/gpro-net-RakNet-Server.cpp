@@ -22,8 +22,11 @@
 	Source for RakNet server management.
 */
 
+#include <sstream>
+
 #include "gpro-net/gpro-net-server/gpro-net-RakNet-Server.hpp"
-#include "gpro-net/gpro-net-server/Render.h"
+#include "gpro-net/gpro-net-server/Physics_Update.h"
+#include "cereal/cereal.hpp"
 
 namespace gproNet
 {
@@ -98,10 +101,18 @@ namespace gproNet
 
 			RakNet::RakString rs;
 			bitstream.Read(rs);
+
+			std::stringstream ss;
+			ss << rs;
+
+			{
+				cereal::BinaryInputArchive iarchive(ss);
+
+			}
+
 			printf("%s\n", rs.C_String());
 
 
-			Phong();
 		}
 
 		}
