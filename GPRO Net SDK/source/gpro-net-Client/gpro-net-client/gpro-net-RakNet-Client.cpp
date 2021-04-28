@@ -53,43 +53,30 @@ namespace gproNet
 
 		std::stringstream dataStream;
 
-		cereal::PortableBinaryOutputArchive archive(dataStream);
-		archive(rsd.objectPositions);
-		/*
-		char data[256] = {};
-		snprintf(data, sizeof(data), "%f %f %f", p[0], p[1], p[2]);*/
+		{
+			cereal::PortableBinaryOutputArchive archive(dataStream);
+			archive(rsd);
+		}
 
-		
-												  
-		//{
-		//	RenderSceneData rsd;
-
-		//	rsd.x = p[0];
-		//	rsd.y = p[1];
-		//	rsd.z = p[2];
-
-		//	cereal::PortableBinaryOutputArchive archive(dataStream); 
-		//	archive(rsd);
-		//}
 
 		bitstream_w.Write(dataStream);
 		//printf(dataStream.str().c_str());
 
-		{
-			cereal::PortableBinaryInputArchive iarchive(dataStream);
-			//RenderSceneData rsd;
-			iarchive(rsd.objectPositions);
+		//{
+		//	cereal::PortableBinaryInputArchive iarchive(dataStream);
+		//	//RenderSceneData rsd;
+		//	iarchive(rsd.objectPositions);
 
-			for (int i = 0; i < MAX_OBJECTS; ++i)
-			{
-				for (int j = 0; j < MAX_COMPONENTS; ++j)
-				{
-					printf("%f ", rsd.objectPositions[i][j]);
-				}
-				printf("\n");
-			}
-			
-		}
+		//	/*for (int i = 0; i < MAX_OBJECTS; ++i)
+		//	{
+		//		for (int j = 0; j < MAX_COMPONENTS; ++j)
+		//		{
+		//			printf("%f ", rsd.objectPositions[i][j]);
+		//		}
+		//		printf("\n");
+		//	}*/
+		//	
+		//}
 
 		peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, server, false);
 	}
