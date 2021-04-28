@@ -65,12 +65,14 @@ namespace gproNet
 	class RenderSceneData
 	{
 	public:
-		float objectPositions[128][3]; // Position of each object in the scene
+		float posX[128]; // Position of each object in the scene
+		float posY[128];
+		float posZ[128];
 
 		template <class Archive>
 		void serialize(Archive& archive)
 		{
-			archive(cereal::binary_data(objectPositions, sizeof(float) * 128 * 3));
+			archive(posX, posY, posZ);//cereal::binary_data(objectPositions, sizeof(float) * 128 * 3));
 		}
 	};
 

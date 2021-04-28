@@ -91,12 +91,16 @@ namespace gproNet
 
 		case ID_GPRO_COMMON_SEND_POSITION:
 		{
-			RakNet::RakString rs;
+			//RakNet::RakString rs;
 			std::stringstream ss;
 			RenderSceneData dat;// = RenderSceneData();
 			//dat;
-			bitstream.Read(rs);
-			ss << rs;
+			bitstream.Read(ss);
+			//ss << rs.C_String();
+
+			printf(ss.str().c_str());
+
+			system("pause");
 
 			{
 				InArchive iarchive(ss);
