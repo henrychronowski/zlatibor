@@ -60,23 +60,6 @@ namespace gproNet
 
 
 		bitstream_w.Write(dataStream);
-		//printf(dataStream.str().c_str());
-
-		//{
-		//	cereal::PortableBinaryInputArchive iarchive(dataStream);
-		//	//RenderSceneData rsd;
-		//	iarchive(rsd.objectPositions);
-
-		//	/*for (int i = 0; i < MAX_OBJECTS; ++i)
-		//	{
-		//		for (int j = 0; j < MAX_COMPONENTS; ++j)
-		//		{
-		//			printf("%f ", rsd.objectPositions[i][j]);
-		//		}
-		//		printf("\n");
-		//	}*/
-		//	
-		//}
 
 		peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, server, false);
 	}
