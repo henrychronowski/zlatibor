@@ -72,7 +72,7 @@ namespace gproNet
 		template <class Archive>
 		void serialize(Archive& archive)
 		{
-			archive(cereal::binary_data(objectPositions, sizeof(float) * 128), cereal::binary_data(objectPositions, sizeof(float) * 128, cereal::binary_data(objectPositions, sizeof(float) * 128);//cereal::binary_data(objectPositions, sizeof(float) * 128 * 3));
+			archive(cereal::binary_data(posX, sizeof(float) * 128), cereal::binary_data(posY, sizeof(float) * 128), cereal::binary_data(posZ, sizeof(float) * 128));//cereal::binary_data(objectPositions, sizeof(float) * 128 * 3));
 		}
 	};
 

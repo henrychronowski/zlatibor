@@ -109,7 +109,7 @@ namespace gproNet
 
 			for (int i = 0; i < 128; ++i)
 			{
-				printf("%f %f %f\n", dat.objectPositions[i][0], dat.objectPositions[i][1], dat.objectPositions[i][2]);
+				printf("%f %f %f\n", dat.posX[i], dat.posY[i], dat.posZ[i]);
 			}
 			/*for (int i = 0; i < MAX_OBJECTS; ++i)
 			{
