@@ -35,7 +35,6 @@
 //extern "C" {
 //#endif	// __cplusplus
 
-#include "gpro-net/gpro-net/gpro-net-RakNet.hpp"
 #include "gpro-net/gpro-net-client/gpro-net-RakNet-Client.hpp"
 
 
