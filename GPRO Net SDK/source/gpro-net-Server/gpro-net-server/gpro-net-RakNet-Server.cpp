@@ -116,7 +116,10 @@ namespace gproNet
 				iarchive(dat);
 			}
 
-			printf("%s\n", rs.C_String());
+			for (int i = 0; i < 128; ++i)
+			{
+				printf("%f %f %f\n", dat.objectPositions[i][0], dat.objectPositions[i][1], dat.objectPositions[i][2]);
+			}
 
 
 		}
