@@ -89,31 +89,18 @@ namespace gproNet
 			peer->Send(&trigger, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 		}	return true;
 
-		case ID_GPRO_RECIEVE_UNIFORM:
+		case ID_GPRO_COMMON_SEND_POSITION:
 		{
-			RakNet::RakString rs;
-			bitstream.Read(rs);
-			printf("%s\n", rs.C_String());
-		}	return true;
-		case ID_GPRO_PHONG_UNIFORM:
-		{
-			/*float colour[3];
-			bitstream.Read(colour[0]);
-			bitstream.Read(colour[1]);
-			bitstream.Read(colour[2]);
-			printf("%f, %f, %f\n", colour[0], colour[1], colour[2]);*/
-
 			RakNet::RakString rs;
 			std::stringstream ss;
-			RenderSceneData dat;
+			RenderSceneData dat = RenderSceneData();
 
 			bitstream.Read(rs);
 			ss << rs;
 
-
 			{
 				InArchive iarchive(ss);
-				iarchive(dat);
+				iarchive(cereal::binary_data(dat, sizeof(float) * MAX_OBJECTS * MAX_COMPONENTS));
 			}
 
 			for (int i = 0; i < 128; ++i)
