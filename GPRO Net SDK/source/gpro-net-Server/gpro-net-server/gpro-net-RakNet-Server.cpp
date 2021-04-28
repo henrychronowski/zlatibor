@@ -93,21 +93,28 @@ namespace gproNet
 		{
 			RakNet::RakString rs;
 			std::stringstream ss;
-			RenderSceneData dat = RenderSceneData();
-
+			RenderSceneData dat;// = RenderSceneData();
+			//dat;
 			bitstream.Read(rs);
 			ss << rs;
 
 			{
 				InArchive iarchive(ss);
-				iarchive(cereal::binary_data(dat, sizeof(float) * MAX_OBJECTS * MAX_COMPONENTS));
+				iarchive(dat);//cereal::binary_data(&dat, sizeof(float) * MAX_OBJECTS * MAX_COMPONENTS));
 			}
 
 			for (int i = 0; i < 128; ++i)
 			{
 				printf("%f %f %f\n", dat.objectPositions[i][0], dat.objectPositions[i][1], dat.objectPositions[i][2]);
 			}
-
+			/*for (int i = 0; i < MAX_OBJECTS; ++i)
+			{
+				for (int j = 0; j < MAX_COMPONENTS; ++j)
+				{
+					printf("%f ", dat.objectPositions[i][j]);
+				}
+				printf("\n");
+			}*/
 
 		}
 
