@@ -16,8 +16,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpro-net-Server", "..\..\gp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpro-net", "..\..\gpro-net\gpro-net.vcxproj", "{CD4ECF74-D2BD-4D5B-97AA-D6922848EE06}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpro-net-Client-Plugin", "..\..\gpro-net-Client-Plugin\gpro-net-Client-Plugin.vcxproj", "{B9DDFAFD-A5C2-4AB9-9D43-23A06CCB17FF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -54,14 +52,6 @@ Global
 		{CD4ECF74-D2BD-4D5B-97AA-D6922848EE06}.Release|x64.Build.0 = Release|x64
 		{CD4ECF74-D2BD-4D5B-97AA-D6922848EE06}.Release|x86.ActiveCfg = Release|Win32
 		{CD4ECF74-D2BD-4D5B-97AA-D6922848EE06}.Release|x86.Build.0 = Release|Win32
-		{B9DDFAFD-A5C2-4AB9-9D43-23A06CCB17FF}.Debug|x64.ActiveCfg = Debug|x64
-		{B9DDFAFD-A5C2-4AB9-9D43-23A06CCB17FF}.Debug|x64.Build.0 = Debug|x64
-		{B9DDFAFD-A5C2-4AB9-9D43-23A06CCB17FF}.Debug|x86.ActiveCfg = Debug|Win32
-		{B9DDFAFD-A5C2-4AB9-9D43-23A06CCB17FF}.Debug|x86.Build.0 = Debug|Win32
-		{B9DDFAFD-A5C2-4AB9-9D43-23A06CCB17FF}.Release|x64.ActiveCfg = Release|x64
-		{B9DDFAFD-A5C2-4AB9-9D43-23A06CCB17FF}.Release|x64.Build.0 = Release|x64
-		{B9DDFAFD-A5C2-4AB9-9D43-23A06CCB17FF}.Release|x86.ActiveCfg = Release|Win32
-		{B9DDFAFD-A5C2-4AB9-9D43-23A06CCB17FF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

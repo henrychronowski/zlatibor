@@ -27,6 +27,10 @@
 #include "gpro-net/gpro-net-server/gpro-net-RakNet-Server.hpp"
 #include "gpro-net/gpro-net-server/Physics_Update.h"
 #include "cereal/cereal.hpp"
+#include "cereal/archives/portable_binary.hpp"
+
+typedef cereal::PortableBinaryOutputArchive OutArchive;
+typedef cereal::PortableBinaryInputArchive InArchive;
 
 namespace gproNet
 {
@@ -100,14 +104,16 @@ namespace gproNet
 			printf("%f, %f, %f\n", colour[0], colour[1], colour[2]);*/
 
 			RakNet::RakString rs;
-			bitstream.Read(rs);
-
 			std::stringstream ss;
+			RenderSceneData dat;
+
+			bitstream.Read(rs);
 			ss << rs;
 
-			{
-				cereal::BinaryInputArchive iarchive(ss);
 
+			{
+				InArchive iarchive(ss);
+				iarchive(dat);
 			}
 
 			printf("%s\n", rs.C_String());

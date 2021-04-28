@@ -27,16 +27,16 @@
     <ClCompile Include="..\..\..\source\gpro-net-Server\gpro-net-server\gpro-net-RakNet-Server.cpp">
       <Filter>Source Files\gpro-net-server</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\gpro-net-Server\gpro-net-server\Render.cpp">
-      <Filter>Source Files\gpro-net-server</Filter>
+    <ClCompile Include="..\..\..\source\gpro-net-Server\gpro-net-server\Physics_Update.cpp">
+      <Filter>Header Files\gpro-net-server</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net-server\gpro-net-RakNet-Server.hpp">
       <Filter>Header Files\gpro-net-server</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\gpro-net\gpro-net-server\Render.h">
-      <Filter>Header Files\gpro-net-server</Filter>
+    <ClInclude Include="..\..\..\include\gpro-net\gpro-net-server\Physics_Update.h">
+      <Filter>Source Files\gpro-net-server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
