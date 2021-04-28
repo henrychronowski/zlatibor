@@ -132,6 +132,8 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(gpro_net_sdk)include\;$(dev_sdk_dir)include\;$(gpro_net_sdk)thirdparty\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <ShowIncludes>true</ShowIncludes>
+      <UseFullPaths>true</UseFullPaths>
     </ClCompile>
     <Link>
       <SubSystem>
