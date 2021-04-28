@@ -35,7 +35,7 @@
 //extern "C" {
 //#endif	// __cplusplus
 
-
+#include "gpro-net/gpro-net/gpro-net-RakNet.hpp"
 #include "gpro-net/gpro-net-client/gpro-net-RakNet-Client.hpp"
 
 
@@ -82,6 +82,9 @@ typedef struct sPluginState
 
 	// pointer to fast trig table
 	a3f32 trigTable[4096 * 4];
+
+	gproNet::RenderSceneData rsd;
+
 #endif	// GPRO_USING_A3
 } sPluginState;
 

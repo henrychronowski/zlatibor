@@ -37,6 +37,8 @@
 #include "RakNet/RakNetTypes.h"
 #include "RakNet/GetTime.h"
 
+#include "cereal/cereal.hpp"
+
 
 namespace gproNet
 {
@@ -57,6 +59,19 @@ namespace gproNet
 
 
 		ID_GPRO_MESSAGE_COMMON_END
+	};
+
+
+	class RenderSceneData
+	{
+	public:
+		float objectPositions[128][3]; // Position of each object in the scene
+
+		template <class Archive>
+		void serialize(Archive& archive)
+		{
+			archive(objectPositions);
+		}
 	};
 
 

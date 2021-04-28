@@ -47,7 +47,7 @@ namespace gproNet
 
 	void cRakNetClient::SendPositionUniform(const float pos[3])
 	{
-		RakNet::BitStream bitstream_w;
+		/*RakNet::BitStream bitstream_w;
 		WriteTimestamp(bitstream_w);
 		bitstream_w.Write((RakNet::MessageID)ID_GPRO_PHONG_UNIFORM);
 
@@ -71,17 +71,17 @@ namespace gproNet
 			archive(rsd);
 		}
 
-		bitstream_w.Write(dataStream);
+		bitstream_w.Write(dataStream);*/
 		//printf(dataStream.str().c_str());
 
-		{
-			cereal::PortableBinaryInputArchive iarchive(dataStream);
-			RenderSceneData rsd;
-			iarchive(rsd);
-			printf("%f %f %f \n", rsd.x, rsd.y, rsd.z);
-		}
+		//{
+		//	cereal::PortableBinaryInputArchive iarchive(dataStream);
+		//	RenderSceneData rsd;
+		//	iarchive(rsd);
+		//	//printf("%f %f %f \n", rsd.x, rsd.y, rsd.z);
+		//}
 
-		peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, server, false);
+		//peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, server, false);
 	}
 
 	bool cRakNetClient::ProcessMessage(RakNet::BitStream& bitstream, RakNet::SystemAddress const sender, RakNet::Time const dtSendToReceive, RakNet::MessageID const msgID)
