@@ -48,6 +48,7 @@ void renderer_update_bindSkybox(sSceneObjectComponent const* sceneObject_skybox,
 #endif	// __cplusplus
 
 void updateRSDPosition(sPluginState* state, int index);
+void sendRSDPosition(sPluginState* state);
 
 //-----------------------------------------------------------------------------
 
@@ -263,6 +264,8 @@ void plugin_update_simulate(sPluginState* pluginState, double const dt)
 		renderer_updateSceneObjectStack(pluginState->obj_client + i, projector);
 	}
 
+	sendRSDPosition(pluginState);
+
 	// refill buffers
 	a3bufferRefillOffset(pluginState->renderer->ubo_transform + 0, 0, 0, sizeof(pluginState->modelstack), pluginState->modelstack);
 	a3bufferRefillOffset(pluginState->renderer->ubo_light + 0, 0, 0, sizeof(pluginState->ltdata), pluginState->ltdata);
@@ -280,6 +283,11 @@ void updateRSDPosition(sPluginState* state, int index)
 	state->rsd.objectPositions[index][2] = objClient->dataPtr->position.z;
 
 	//state->client->SendPositionUniform(pos);
+}
+
+void sendRSDPosition(sPluginState* state)
+{
+	state->client->SendRSDPosition(state->rsd);
 }
 
 

@@ -56,7 +56,7 @@ namespace gproNet
 	{
 		ID_GPRO_MESSAGE_COMMON_BEGIN = ID_USER_PACKET_ENUM,
 
-
+		ID_GPRO_COMMON_SEND_POSITION,
 
 		ID_GPRO_MESSAGE_COMMON_END
 	};
@@ -81,6 +81,9 @@ namespace gproNet
 	{
 		// protected data
 	protected:
+		const int MAX_OBJECTS = 128;
+		const int MAX_COMPONENTS = 3;
+
 		// peer
 		//	Pointer to RakNet peer instance.
 		RakNet::RakPeerInterface* peer;
