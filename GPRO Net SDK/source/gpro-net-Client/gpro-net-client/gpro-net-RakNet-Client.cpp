@@ -45,21 +45,13 @@ namespace gproNet
 		peer->Shutdown(0, 0, IMMEDIATE_PRIORITY);
 	}
 
-	void cRakNetClient::SendRSDPosition(RenderSceneData rsd)
+	void cRakNetClient::SendRSDPosition(RenderSceneData& rsd)
 	{
 		RakNet::BitStream bitstream_w;
 		WriteTimestamp(bitstream_w);
 		bitstream_w.Write((RakNet::MessageID)ID_GPRO_COMMON_SEND_POSITION);
 
-		std::stringstream dataStream;
-
-		{
-			cereal::PortableBinaryOutputArchive archive(dataStream);
-			archive(rsd);
-		}
-
-
-		bitstream_w.Write(dataStream);
+		rsd.Write(bitstream_w, rsd);
 
 		peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, server, false);
 	}

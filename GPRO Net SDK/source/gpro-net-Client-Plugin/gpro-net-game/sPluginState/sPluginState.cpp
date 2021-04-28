@@ -278,11 +278,11 @@ void updateRSDPosition(sPluginState* state, int index)
 {
 	sSceneObjectComponent* objClient = state->obj_client + index;
 
-	state->rsd.posX[index] = objClient->dataPtr->position.x;
-	//state->rsd.posY[index] = objClient->dataPtr->position.y;
-	//state->rsd.posZ[index] = objClient->dataPtr->position.z;
+	state->rsd.position[0] = objClient->dataPtr->position.x;
+	state->rsd.position[1] = objClient->dataPtr->position.y;
+	state->rsd.position[2] = objClient->dataPtr->position.z;
 
-	//state->client->SendPositionUniform(pos);
+	state->client->SendRSDPosition(state->rsd);
 }
 
 void sendRSDPosition(sPluginState* state)

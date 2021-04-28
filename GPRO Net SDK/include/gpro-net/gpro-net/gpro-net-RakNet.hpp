@@ -62,18 +62,31 @@ namespace gproNet
 	};
 
 
-	class RenderSceneData
+	struct RenderSceneData
 	{
-	public:
-		float posX[128]; // Position of each object in the scene
-		float posY[128];
-		float posZ[128];
+		short ownerID;
+		float position[3];
+		float velocity[3];
+		float acceleration[3];
+		float force[3];
 
-		template <class Archive>
-		void serialize(Archive& archive)
+		static RakNet::BitStream& Write(RakNet::BitStream& bitstream, RenderSceneData const& obj)
 		{
-			archive(cereal::binary_data(posX, sizeof(float) * 128));//, cereal::binary_data(posY, sizeof(float) * 128), cereal::binary_data(posZ, sizeof(float) * 128));//cereal::binary_data(objectPositions, sizeof(float) * 128 * 3));
+			bitstream.Write(obj.position[0]);
+			bitstream.Write(obj.position[1]);
+			bitstream.Write(obj.position[2]);
+			return bitstream;
 		}
+
+		static RakNet::BitStream& Read(RakNet::BitStream& bitstream, RenderSceneData const& obj)
+		{
+			bitstream.Read(obj.position[0]);
+			bitstream.Read(obj.position[1]);
+			bitstream.Read(obj.position[2]);
+
+			return bitstream;
+		}
+		
 	};
 
 

@@ -70,7 +70,7 @@ namespace gproNet
 		//	Destructor.
 		virtual ~cRakNetClient();
 
-		void SendRSDPosition(RenderSceneData rsd);
+		void SendRSDPosition(RenderSceneData& rsd);
 
 		// protected methods
 	protected:
