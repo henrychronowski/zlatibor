@@ -102,6 +102,7 @@ namespace gproNet
 
 		case ID_GPRO_COMMON_CLIENT_ID:
 		{
+			//Receive id
 			unsigned short id;
 			bitstream.Read(id);
 
