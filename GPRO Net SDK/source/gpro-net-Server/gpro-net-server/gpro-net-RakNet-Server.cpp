@@ -81,7 +81,8 @@ namespace gproNet
 
 			RakNet::BitStream trigger;
 			WriteTimestamp(trigger);
-			trigger.Write((RakNet::MessageID)ID_GPRO_SEND_UNIFORM);
+			trigger.Write((RakNet::MessageID)ID_GPRO_COMMON_CLIENT_ID);
+			trigger.Write(peer->NumberOfConnections());
 			peer->Send(&trigger, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 		}	return true;
 
