@@ -37,7 +37,6 @@
 #include "RakNet/RakNetTypes.h"
 #include "RakNet/GetTime.h"
 
-#include "cereal/cereal.hpp"
 
 
 namespace gproNet
