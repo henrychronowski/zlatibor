@@ -73,6 +73,7 @@ namespace gproNet
 
 		static RakNet::BitStream& Write(RakNet::BitStream& bitstream, RenderSceneData const& obj)
 		{
+			bitstream.Write(obj.ownerID);
 			bitstream.Write(obj.position[0]);
 			bitstream.Write(obj.position[1]);
 			bitstream.Write(obj.position[2]);
@@ -81,6 +82,7 @@ namespace gproNet
 
 		static RakNet::BitStream& Read(RakNet::BitStream& bitstream, RenderSceneData const& obj)
 		{
+			bitstream.Read(obj.ownerID);
 			bitstream.Read(obj.position[0]);
 			bitstream.Read(obj.position[1]);
 			bitstream.Read(obj.position[2]);
