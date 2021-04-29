@@ -103,10 +103,7 @@ namespace gproNet
 		case ID_GPRO_COMMON_CLIENT_ID:
 		{
 			unsigned short id;
-			RakNet::BitStream bitstream_r;
-			bitstream_r.Read(id);
-
-			printf("%u", id);
+			bitstream.Read(id);
 
 			clientID = id;
 			rsd.ownerID = clientID;
