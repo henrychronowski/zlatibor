@@ -23,7 +23,6 @@
 */
 
 #include "gpro-net/gpro-net-client/gpro-net-RakNet-Client.hpp"
-#include "cereal/archives/portable_binary.hpp"
 #include "gpro-net/gpro-net/RenderSceneData.h"
 #include <sstream>
 
@@ -54,6 +53,11 @@ namespace gproNet
 		rsd.Write(bitstream_w, rsd);
 
 		peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, server, false);
+	}
+
+	RenderSceneData& cRakNetClient::getRSD()
+	{
+		return rsd;
 	}
 
 	bool cRakNetClient::ProcessMessage(RakNet::BitStream& bitstream, RakNet::SystemAddress const sender, RakNet::Time const dtSendToReceive, RakNet::MessageID const msgID)
@@ -92,11 +96,22 @@ namespace gproNet
 			RakNet::BitStream bitstream_w;
 			//WriteTest(bitstream_w, "Hello server from client");
 			WriteTimestamp(bitstream_w);
-			bitstream_w.Write((RakNet::MessageID)ID_GPRO_RECIEVE_UNIFORM);
-			char const uniforms[] = "Uniform Data :)";
-			bitstream_w.Write(uniforms);
+			bitstream_w.Write((RakNet::MessageID)ID_GPRO_MESSAGE_COMMON_END);
 			peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 		}	return true;
+
+		case ID_GPRO_COMMON_CLIENT_ID:
+		{
+			unsigned short id;
+			RakNet::BitStream bitstream_r;
+			bitstream_r.Read(id);
+
+			printf("%u", id);
+
+			clientID = id;
+			rsd.ownerID = clientID;
+
+		} return true;
 
 			// index receipt
 		case ID_GPRO_MESSAGE_COMMON_BEGIN:
@@ -112,23 +127,6 @@ namespace gproNet
 			// client receives greeting, just print it
 			ReadTest(bitstream);
 		}
-
-		case ID_GPRO_SEND_UNIFORM:
-		{
-			RakNet::BitStream bitstream_w;
-			WriteTimestamp(bitstream_w);
-			bitstream_w.Write((RakNet::MessageID)ID_GPRO_RECIEVE_UNIFORM);
-			char const uniforms[] = "Uniform Data :)";
-			bitstream_w.Write(uniforms);
-			peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
-		}return true;
-
-		case ID_GPRO_PHONG_UNIFORM:
-		{
-			RakNet::BitStream bitstream_w;
-			WriteTimestamp(bitstream_w);
-
-		}return true;
 
 		}
 		return false;

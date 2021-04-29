@@ -48,7 +48,6 @@ void renderer_update_bindSkybox(sSceneObjectComponent const* sceneObject_skybox,
 #endif	// __cplusplus
 
 void updateRSDPosition(sPluginState* state, int index);
-void sendRSDPosition(sPluginState* state);
 
 //-----------------------------------------------------------------------------
 
@@ -264,8 +263,6 @@ void plugin_update_simulate(sPluginState* pluginState, double const dt)
 		renderer_updateSceneObjectStack(pluginState->obj_client + i, projector);
 	}
 
-	sendRSDPosition(pluginState);
-
 	// refill buffers
 	a3bufferRefillOffset(pluginState->renderer->ubo_transform + 0, 0, 0, sizeof(pluginState->modelstack), pluginState->modelstack);
 	a3bufferRefillOffset(pluginState->renderer->ubo_light + 0, 0, 0, sizeof(pluginState->ltdata), pluginState->ltdata);
@@ -277,17 +274,13 @@ void plugin_update_simulate(sPluginState* pluginState, double const dt)
 void updateRSDPosition(sPluginState* state, int index)
 {
 	sSceneObjectComponent* objClient = state->obj_client + index;
+	gproNet::cRakNetClient* client = state->client;
 
-	state->rsd.position[0] = objClient->dataPtr->position.x;
-	state->rsd.position[1] = objClient->dataPtr->position.y;
-	state->rsd.position[2] = objClient->dataPtr->position.z;
+	client->getRSD().position[0] = objClient->dataPtr->position.x;
+	client->getRSD().position[1] = objClient->dataPtr->position.y;
+	client->getRSD().position[2] = objClient->dataPtr->position.z;
 
-	state->client->SendRSDPosition(state->rsd);
-}
-
-void sendRSDPosition(sPluginState* state)
-{
-	state->client->SendRSDPosition(state->rsd);
+	state->client->SendRSDPosition(client->getRSD());
 }
 
 

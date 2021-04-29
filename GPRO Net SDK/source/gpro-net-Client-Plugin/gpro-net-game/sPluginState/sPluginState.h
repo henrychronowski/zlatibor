@@ -82,7 +82,7 @@ typedef struct sPluginState
 	// pointer to fast trig table
 	a3f32 trigTable[4096 * 4];
 
-	gproNet::RenderSceneData rsd;
+	//gproNet::RenderSceneData rsd;
 
 #endif	// GPRO_USING_A3
 } sPluginState;

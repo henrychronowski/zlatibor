@@ -38,10 +38,6 @@ namespace gproNet
 	{
 		ID_GPRO_MESSAGE_CLIENT_BEGIN = ID_GPRO_MESSAGE_COMMON_END,
 
-		ID_GPRO_SEND_UNIFORM,
-		ID_GPRO_RECIEVE_UNIFORM,
-		ID_GPRO_PHONG_UNIFORM,
-
 		ID_GPRO_RENDER_RESULT,
 		ID_GPRO_MESSAGE_CLIENT_END
 	};
@@ -60,6 +56,12 @@ namespace gproNet
 		//	Index in system list of server to whom we are connected.
 		int index;
 
+		//clientID
+		// The ID of this client provided by the server
+		short clientID = -1;
+
+		gproNet::RenderSceneData rsd;
+
 		// public methods
 	public:
 		// cRakNetClient
@@ -71,6 +73,8 @@ namespace gproNet
 		virtual ~cRakNetClient();
 
 		void SendRSDPosition(RenderSceneData& rsd);
+
+		RenderSceneData& getRSD();
 
 		// protected methods
 	protected:
