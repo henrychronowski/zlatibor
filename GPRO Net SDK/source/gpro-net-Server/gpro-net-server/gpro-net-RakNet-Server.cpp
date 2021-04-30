@@ -76,8 +76,8 @@ namespace gproNet
 			// server receives greeting, print it and send one back
 			RakNet::BitStream bitstream_w;
 			ReadTest(bitstream);
-			WriteTest(bitstream_w, "Hello client from server");
-			peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
+			//WriteTest(bitstream_w, "Hello client from server");
+			//peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 
 			RakNet::BitStream trigger;
 			WriteTimestamp(trigger);
@@ -88,15 +88,15 @@ namespace gproNet
 
 		case ID_GPRO_COMMON_SEND_POSITION:
 		{
-			RakNet::RakString rs;
 			RenderSceneData dat;
 
 			RenderSceneData::Read(bitstream, dat);
+			printf("%i \n", dat.ownerID);
 
-			for (int i = 0; i < 3; ++i)
+			/*for (int i = 0; i < 3; ++i)
 			{
 				printf("%f ", dat.position[i]);
-			}
+			}*/
 		}
 
 		}
