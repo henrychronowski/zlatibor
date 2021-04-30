@@ -23,15 +23,19 @@
 */
 
 #include "gpro-net/gpro-net-server/gpro-net-RakNet-Server.hpp"
+#include "gpro-net/gpro-net-server/Timer.h"
 
 
 int main(int const argc, char const* const argv[])
 {
 	gproNet::cRakNetServer server;
+	Timer timer;
 
 	while (1)
 	{
+		timer.Start();
 		server.MessageLoop();
+		server.PhysicsUpdate(timer.Stop());
 	}
 
 	printf("\n\n");
