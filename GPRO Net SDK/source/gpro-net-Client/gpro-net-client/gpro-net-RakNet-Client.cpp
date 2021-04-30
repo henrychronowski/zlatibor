@@ -127,7 +127,16 @@ namespace gproNet
 
 		case ID_GPRO_COMMON_SEND_OBJECT_UPDATES:
 		{
+			for (int i = 0; i < 128; ++i)
+			{
+				if (i != rsdObjects[clientID].ownerID)
+				{
+					RenderSceneData dat;
+					RenderSceneData::Read(bitstream, dat);
 
+					RenderSceneData::Copy(rsdObjects[i], dat);
+				}
+			}
 		} return true;
 
 			// index receipt
