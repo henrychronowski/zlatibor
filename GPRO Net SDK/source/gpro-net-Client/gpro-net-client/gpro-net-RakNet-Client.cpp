@@ -134,6 +134,9 @@ namespace gproNet
 					RenderSceneData dat;
 					RenderSceneData::Read(bitstream, dat);
 
+					//Dead reckoning
+
+					//Update our state
 					RenderSceneData::Copy(rsdObjects[i], dat);
 				}
 			}
