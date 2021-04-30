@@ -259,9 +259,10 @@ void plugin_update_simulate(sPluginState* pluginState, double const dt)
 		i < j; ++i)
 	{
 		renderer_updateSceneObject(pluginState->obj_client + i, 0);
-		updateRSDPosition(pluginState, i);
 		renderer_updateSceneObjectStack(pluginState->obj_client + i, projector);
 	}
+
+	updateRSDPosition(pluginState, pluginState->client->getClientID());
 
 	// refill buffers
 	a3bufferRefillOffset(pluginState->renderer->ubo_transform + 0, 0, 0, sizeof(pluginState->modelstack), pluginState->modelstack);

@@ -76,6 +76,8 @@ namespace gproNet
 
 		RenderSceneData& getRSD(int index);
 
+		int getClientID() { return clientID; }
+
 		// protected methods
 	protected:
 		// ProcessMessage

@@ -125,6 +125,11 @@ namespace gproNet
 			
 		} return true;
 
+		case ID_GPRO_COMMON_SEND_OBJECT_UPDATES:
+		{
+
+		} return true;
+
 			// index receipt
 		case ID_GPRO_MESSAGE_COMMON_BEGIN:
 		{
