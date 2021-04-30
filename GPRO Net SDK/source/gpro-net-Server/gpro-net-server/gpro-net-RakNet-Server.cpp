@@ -91,7 +91,7 @@ namespace gproNet
 			RenderSceneData dat;
 
 			RenderSceneData::Read(bitstream, dat);
-			printf("%i \n", dat.ownerID);
+			printf("%i", dat.ownerID);
 
 			/*for (int i = 0; i < 3; ++i)
 			{
