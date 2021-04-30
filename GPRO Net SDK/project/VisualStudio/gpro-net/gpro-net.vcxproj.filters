@@ -45,6 +45,9 @@
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net\RenderSceneData.h">
       <Filter>Header Files\gpro-net</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\gpro-net\gpro-net\gpro-net-util\Timer.h">
+      <Filter>Header Files\gpro-net\gpro-net-util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\gpro-net\gpro-net.c">
@@ -54,6 +57,9 @@
       <Filter>Source Files\gpro-net\gpro-net-util</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\gpro-net\gpro-net\gpro-net-RakNet.cpp">
+      <Filter>Source Files\gpro-net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\gpro-net\gpro-net\gpro-net-util\Timer.cpp">
       <Filter>Source Files\gpro-net</Filter>
     </ClCompile>
   </ItemGroup>

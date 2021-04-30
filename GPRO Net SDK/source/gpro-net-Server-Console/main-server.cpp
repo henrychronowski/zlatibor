@@ -23,7 +23,7 @@
 */
 
 #include "gpro-net/gpro-net-server/gpro-net-RakNet-Server.hpp"
-#include "gpro-net/gpro-net-server/Timer.h"
+#include "gpro-net/gpro-net/gpro-net-util/Timer.h"
 
 
 int main(int const argc, char const* const argv[])

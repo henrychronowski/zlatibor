@@ -138,6 +138,8 @@ namespace gproNet
 			lhs.force[0] = rhs.force[0];
 			lhs.force[1] = rhs.force[1];
 			lhs.force[2] = rhs.force[2];
+
+			return lhs;
 		}
 	};
 

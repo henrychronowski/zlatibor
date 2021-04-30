@@ -46,7 +46,7 @@ namespace gproNet
 		peer->Shutdown(0);
 	}
 
-	void cRakNetServer::PhysicsUpdate(float dt)
+	void cRakNetServer::PhysicsUpdate(double dt)
 	{
 		for (size_t i = 0; i < MAX_PHYSICS_OBJECTS; ++i)
 		{

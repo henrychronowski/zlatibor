@@ -58,7 +58,7 @@ namespace gproNet
 		//	Destructor.
 		virtual ~cRakNetServer();
 
-		void PhysicsUpdate(float dt);
+		void PhysicsUpdate(double dt);
 
 		// protected methods
 	protected:

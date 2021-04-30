@@ -5,8 +5,7 @@
 #include <ctime>
 #include <cmath>
 
-typedef std::chrono::steady_clock clock;
-typedef std::chrono::time_point<clock> time_point;
+typedef std::chrono::time_point<std::chrono::steady_clock> time_point;
 typedef std::chrono::milliseconds milliseconds;
 
 class Timer
