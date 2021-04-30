@@ -276,11 +276,11 @@ void updateRSDPosition(sPluginState* state, int index)
 	sSceneObjectComponent* objClient = state->obj_client + index;
 	gproNet::cRakNetClient* client = state->client;
 
-	client->getRSD().position[0] = objClient->dataPtr->position.x;
-	client->getRSD().position[1] = objClient->dataPtr->position.y;
-	client->getRSD().position[2] = objClient->dataPtr->position.z;
+	client->getRSD(index).position[0] = objClient->dataPtr->position.x;
+	client->getRSD(index).position[1] = objClient->dataPtr->position.y;
+	client->getRSD(index).position[2] = objClient->dataPtr->position.z;
 
-	state->client->SendRSDPosition(client->getRSD());
+	state->client->SendRSDPosition(client->getRSD(index));
 }
 
 

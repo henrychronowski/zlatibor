@@ -37,6 +37,8 @@
 #include "RakNet/RakNetTypes.h"
 #include "RakNet/GetTime.h"
 
+#define MAX_OBJECTS = 128
+#define MAX_COMPONENTS = 3
 
 
 namespace gproNet
@@ -99,9 +101,6 @@ namespace gproNet
 	{
 		// protected data
 	protected:
-		const int MAX_OBJECTS = 128;
-		const int MAX_COMPONENTS = 3;
-
 		// peer
 		//	Pointer to RakNet peer instance.
 		RakNet::RakPeerInterface* peer;

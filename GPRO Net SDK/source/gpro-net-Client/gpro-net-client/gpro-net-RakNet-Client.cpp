@@ -55,9 +55,9 @@ namespace gproNet
 		peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, server, false);
 	}
 
-	RenderSceneData& cRakNetClient::getRSD()
+	RenderSceneData& cRakNetClient::getRSD(int index)
 	{
-		return rsd;
+		return rsdObjects[index];
 	}
 
 	bool cRakNetClient::ProcessMessage(RakNet::BitStream& bitstream, RakNet::SystemAddress const sender, RakNet::Time const dtSendToReceive, RakNet::MessageID const msgID)
@@ -107,7 +107,7 @@ namespace gproNet
 			bitstream.Read(id);
 
 			clientID = id;
-			rsd.ownerID = clientID;
+			rsdObjects[clientID].ownerID = clientID;
 
 		} return true;
 

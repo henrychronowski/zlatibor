@@ -60,7 +60,7 @@ namespace gproNet
 		// The ID of this client provided by the server
 		short clientID = -1;
 
-		gproNet::RenderSceneData rsd;
+		gproNet::RenderSceneData rsdObjects[128];
 
 		// public methods
 	public:
@@ -74,7 +74,7 @@ namespace gproNet
 
 		void SendRSDPosition(RenderSceneData& rsd);
 
-		RenderSceneData& getRSD();
+		RenderSceneData& getRSD(int index);
 
 		// protected methods
 	protected:
