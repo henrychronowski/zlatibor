@@ -37,11 +37,25 @@ namespace gproNet
 
 		peer->Startup(MAX_CLIENTS, &sd, 1);
 		peer->SetMaximumIncomingConnections(MAX_CLIENTS);
+
+		InitializePhysicsObjects();
 	}
 
 	cRakNetServer::~cRakNetServer()
 	{
 		peer->Shutdown(0);
+	}
+
+	void cRakNetServer::PhysicsUpdate(float dt)
+	{
+		for (size_t i = 0; i < MAX_PHYSICS_OBJECTS; ++i)
+		{
+			if (physicsObjects->ownerID == 0)
+			{
+				updateVelocity(physicsObjects[i].velocity, physicsObjects[i].acceleration, dt);
+				updatePosition(physicsObjects[i].position, physicsObjects[i].velocity, dt);
+			}
+		}
 	}
 
 	bool cRakNetServer::ProcessMessage(RakNet::BitStream& bitstream, RakNet::SystemAddress const sender, RakNet::Time const dtSendToReceive, RakNet::MessageID const msgID)
@@ -84,6 +98,12 @@ namespace gproNet
 			trigger.Write((RakNet::MessageID)ID_GPRO_COMMON_CLIENT_ID);
 			trigger.Write(peer->NumberOfConnections());
 			peer->Send(&trigger, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
+
+			trigger.Reset();
+			WriteTimestamp(trigger);
+			trigger.Write((RakNet::MessageID)ID_GPRO_COMMON_OTHER_CLIENT_ID);
+			trigger.Write(peer->NumberOfConnections());
+			peer->Send(&trigger, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, true);	// To all but sender
 		}	return true;
 
 		case ID_GPRO_COMMON_SEND_POSITION:
@@ -91,15 +111,42 @@ namespace gproNet
 			RenderSceneData dat;
 
 			RenderSceneData::Read(bitstream, dat);
-			printf("%i", dat.ownerID);
-
-			/*for (int i = 0; i < 3; ++i)
-			{
-				printf("%f ", dat.position[i]);
-			}*/
+			
+			RenderSceneData::Copy(physicsObjects[dat.ownerID], dat);
+			
+			RakNet::BitStream bitstream_out;
+			bitstream_out.Write((RakNet::MessageID)ID_GPRO_COMMON_SEND_OBJECT_UPDATES);
+			WritePhysicsData(dat.ownerID, bitstream_out);
+			peer->Send(&bitstream_out, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 		}
 
 		}
 		return false;
+	}
+
+	void cRakNetServer::InitializePhysicsObjects()
+	{
+		for (size_t i = 0; i < MAX_PHYSICS_OBJECTS; ++i)
+		{
+			physicsObjects[i].ownerID = 0;
+
+			physicsObjects[i].position[0] = (float)((i % 8) * 3);
+			physicsObjects[i].position[1] = (float)((i / 8) * 3);
+			physicsObjects[i].position[2] = 0.0f;
+
+			physicsObjects[i].velocity[0] = physicsObjects[i].velocity[1] = physicsObjects[i].velocity[2] = 0.0f;
+
+			physicsObjects[i].acceleration[0] = physicsObjects[i].acceleration[1] = 0.0f;
+			physicsObjects[i].acceleration[2] = PHYSICS_GRAVITY;
+		}
+	}
+
+	void cRakNetServer::WritePhysicsData(short ownerID, RakNet::BitStream& out)
+	{
+		for (size_t i = 0; i < MAX_PHYSICS_OBJECTS; ++i)
+		{
+			if (physicsObjects[i].ownerID != ownerID)
+				RenderSceneData::Write(out, physicsObjects[i]);
+		}
 	}
 }

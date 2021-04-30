@@ -58,6 +58,8 @@ namespace gproNet
 		//	Destructor.
 		virtual ~cRakNetServer();
 
+		void PhysicsUpdate(float dt);
+
 		// protected methods
 	protected:
 		// ProcessMessage
@@ -67,6 +69,16 @@ namespace gproNet
 		//		param msgID: message identifier
 		//		return: was message processed
 		virtual bool ProcessMessage(RakNet::BitStream& bitstream, RakNet::SystemAddress const sender, RakNet::Time const dtSendToReceive, RakNet::MessageID const msgID);
+
+		// private data
+	private:
+		const size_t MAX_PHYSICS_OBJECTS = 128;
+		RenderSceneData physicsObjects[128];
+
+		// private methods
+	private:
+		void InitializePhysicsObjects();
+		void WritePhysicsData(short ownerID, RakNet::BitStream&out);
 	};
 
 }

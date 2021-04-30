@@ -93,6 +93,26 @@ namespace gproNet
 			return bitstream;
 		}
 		
+		static RenderSceneData& Copy(RenderSceneData&lhs, RenderSceneData const&rhs)
+		{
+			lhs.ownerID = rhs.ownerID;
+
+			lhs.position[0] = rhs.position[0];
+			lhs.position[1] = rhs.position[1];
+			lhs.position[2] = rhs.position[2];
+
+			lhs.velocity[0] = rhs.velocity[0];
+			lhs.velocity[1] = rhs.velocity[1];
+			lhs.velocity[2] = rhs.velocity[2];
+
+			lhs.acceleration[0] = rhs.acceleration[0];
+			lhs.acceleration[1] = rhs.acceleration[1];
+			lhs.acceleration[2] = rhs.acceleration[2];
+
+			lhs.force[0] = rhs.force[0];
+			lhs.force[1] = rhs.force[1];
+			lhs.force[2] = rhs.force[2];
+		}
 	};
 
 
