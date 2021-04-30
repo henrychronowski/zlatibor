@@ -107,8 +107,22 @@ namespace gproNet
 			bitstream.Read(id);
 
 			clientID = id;
-			rsdObjects[clientID].ownerID = clientID;
 
+			for (int i = 1; i <= id; ++i)
+			{
+				rsdObjects[i].ownerID = i;
+			}
+
+		} return true;
+
+		case ID_GPRO_COMMON_OTHER_CLIENT_ID:
+		{
+			//Receive id
+			unsigned short id;
+			bitstream.Read(id);
+
+			rsdObjects[id].ownerID = id;
+			
 		} return true;
 
 			// index receipt
