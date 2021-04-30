@@ -280,6 +280,8 @@ void updateRSDPosition(sPluginState* state, int index)
 	client->getRSD(index).position[1] = objClient->dataPtr->position.y;
 	client->getRSD(index).position[2] = objClient->dataPtr->position.z;
 
+	printf("%i %i \n", client->getRSD(index).ownerID, index);
+
 	state->client->SendRSDPosition(client->getRSD(index));
 }
 

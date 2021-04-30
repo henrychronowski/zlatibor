@@ -68,7 +68,7 @@ namespace gproNet
 
 	struct RenderSceneData
 	{
-		short ownerID;
+		short ownerID = 0;
 		float position[3];
 		float velocity[3];
 		float acceleration[3];
