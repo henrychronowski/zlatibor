@@ -68,7 +68,7 @@ namespace gproNet
 		{
 		case ID_NEW_INCOMING_CONNECTION:
 		{
-			// send new connection their index on our system
+			// send new connection their index on server
 			RakNet::BitStream bitstream_w;
 			bitstream_w.Write((RakNet::MessageID)ID_GPRO_MESSAGE_COMMON_BEGIN);
 			bitstream_w.Write(peer->GetIndexFromSystemAddress(sender));
@@ -84,15 +84,9 @@ namespace gproNet
 			//printf("A client lost the connection.\n");
 			return true;
 
-			// test message
-		case ID_GPRO_MESSAGE_COMMON_END:
+			// Recieved when a new client has successfully connected
+		case ID_GPRO_COMMON_NEW_PLAYER:
 		{
-			// server receives greeting, print it and send one back
-			RakNet::BitStream bitstream_w;
-			ReadTest(bitstream);
-			//WriteTest(bitstream_w, "Hello client from server");
-			//peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
-
 			RakNet::BitStream trigger;
 			WriteTimestamp(trigger);
 			trigger.Write((RakNet::MessageID)ID_GPRO_COMMON_CLIENT_ID);
