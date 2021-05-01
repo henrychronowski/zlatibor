@@ -24,7 +24,9 @@
 
 #include "gpro-net/gpro-net-client/gpro-net-RakNet-Client.hpp"
 #include "gpro-net/gpro-net/RenderSceneData.h"
+#include "gpro-net/gpro-net/gpro-net-util/Physics_Update.h"
 #include <sstream>
+#include <cmath>
 
 namespace gproNet
 {
@@ -55,9 +57,18 @@ namespace gproNet
 		peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, server, false);
 	}
 
-	RenderSceneData& cRakNetClient::getRSD(int index)
+	RenderSceneData& cRakNetClient::GetRSD(int index)
 	{
 		return rsdObjects[index];
+	}
+
+	void cRakNetClient::PhysicsUpdate(double dt)
+	{
+		for (int i = 0; i < 128; ++i)
+		{
+			updateVelocity(rsdObjects[i].velocity, rsdObjects[i].acceleration, dt);
+			updatePosition(rsdObjects[i].position, rsdObjects[i].velocity, dt);
+		}
 	}
 
 	bool cRakNetClient::ProcessMessage(RakNet::BitStream& bitstream, RakNet::SystemAddress const sender, RakNet::Time const dtSendToReceive, RakNet::MessageID const msgID)
@@ -134,10 +145,15 @@ namespace gproNet
 					RenderSceneData dat;
 					RenderSceneData::Read(bitstream, dat);
 
+					RenderSceneData temp = rsdObjects[i];
+
 					//Dead reckoning
+					temp.position[0] = temp.position[0] + (dat.position[0] - temp.position[0]) * dtSendToReceive;
+					temp.position[1] = temp.position[1] + (dat.position[1] - temp.position[1]) * dtSendToReceive;
+					temp.position[2] = temp.position[2] + (dat.position[2] - temp.position[2]) * dtSendToReceive;
 
 					//Update our state
-					RenderSceneData::Copy(rsdObjects[i], dat);
+					RenderSceneData::Copy(rsdObjects[i], temp);
 				}
 			}
 		} return true;

@@ -70,9 +70,9 @@ namespace gproNet
 	struct RenderSceneData
 	{
 		short ownerID = 0;
-		float position[3] = { 0.0f, 0.0f, 0.0f };
-		float velocity[3] = { 0.0f, 0.0f, 0.0f };
-		float acceleration[3] = { 0.0f, 0.0f, -9.81f };
+		float position[3];
+		float velocity[3];
+		float acceleration[3];
 		float force[3];
 
 		static RakNet::BitStream& Write(RakNet::BitStream& bitstream, RenderSceneData const& obj)

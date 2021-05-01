@@ -74,9 +74,11 @@ namespace gproNet
 
 		void SendRSDPosition(RenderSceneData& rsd);
 
-		RenderSceneData& getRSD(int index);
+		RenderSceneData& GetRSD(int index);
 
-		int getClientID() { return clientID; }
+		int GetClientID() { return clientID; }
+
+		void PhysicsUpdate(double dt);
 
 		// protected methods
 	protected:

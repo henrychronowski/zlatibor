@@ -267,8 +267,10 @@ void plugin_update_simulate(sPluginState* pluginState, double const dt)
 		renderer_updateSceneObjectStack(pluginState->obj_client + i, projector);
 	}
 
-	if(pluginState->client->getClientID() != -1)
-		updateRSDPosition(pluginState, pluginState->client->getClientID());
+	if(pluginState->client->GetClientID() != -1)
+		updateRSDPosition(pluginState, pluginState->client->GetClientID());
+
+	pluginState->client->PhysicsUpdate(dt);
 
 	// refill buffers
 	a3bufferRefillOffset(pluginState->renderer->ubo_transform + 0, 0, 0, sizeof(pluginState->modelstack), pluginState->modelstack);
@@ -283,13 +285,13 @@ void updateRSDPosition(sPluginState* state, int index)
 	sSceneObjectComponent* objClient = state->obj_client + index;
 	gproNet::cRakNetClient* client = state->client;
 
-	client->getRSD(index).position[0] = objClient->dataPtr->position.x;
-	client->getRSD(index).position[1] = objClient->dataPtr->position.y;
-	client->getRSD(index).position[2] = objClient->dataPtr->position.z;
+	client->GetRSD(index).position[0] = objClient->dataPtr->position.x;
+	client->GetRSD(index).position[1] = objClient->dataPtr->position.y;
+	client->GetRSD(index).position[2] = objClient->dataPtr->position.z;
 
 	//printf("%i %i \n", client->getRSD(index).ownerID, index);
 
-	state->client->SendRSDPosition(client->getRSD(index));
+	state->client->SendRSDPosition(client->GetRSD(index));
 }
 
 void updateLocalPosition(sPluginState* state, int index)
@@ -297,12 +299,12 @@ void updateLocalPosition(sPluginState* state, int index)
 	sSceneObjectComponent* objClient = state->obj_client + index;
 	gproNet::cRakNetClient* client = state->client;
 
-	objClient->dataPtr->position.x = client->getRSD(index).position[0];
-	objClient->dataPtr->position.y = client->getRSD(index).position[1];
-	objClient->dataPtr->position.z = client->getRSD(index).position[2];
+	objClient->dataPtr->position.x = client->GetRSD(index).position[0];
+	objClient->dataPtr->position.y = client->GetRSD(index).position[1];
+	objClient->dataPtr->position.z = client->GetRSD(index).position[2];
 
-	if (client->getClientID() == index)
-		printf("%f %f %f \n", client->getRSD(index).position[0], client->getRSD(index).position[1], client->getRSD(index).position[2]);
+	if (client->GetClientID() == index)
+		printf("%f %f %f \n", client->GetRSD(index).position[0], client->GetRSD(index).position[1], client->GetRSD(index).position[2]);
 }
 
 
