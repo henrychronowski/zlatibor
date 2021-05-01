@@ -144,11 +144,12 @@ namespace gproNet
 			physicsObjects[i].position[1] = (float)((i / 8) * 3);
 			physicsObjects[i].position[2] = 0.0f;
 
-			physicsObjects[i].velocity[0] = physicsObjects[i].velocity[1] = 0.0f;
-			physicsObjects[i].velocity[2] = 5.0f;
+			physicsObjects[i].velocity[0] = (float)(rand() % 20 - 19);
+			physicsObjects[i].velocity[1] = (float)(rand() % 20 - 19);
+			physicsObjects[i].velocity[2] = (float)(rand() % 10 + 1);
 
 			physicsObjects[i].acceleration[0] = physicsObjects[i].acceleration[1] = 0.0f;
-			physicsObjects[i].acceleration[2] = 0.0f;//PHYSICS_GRAVITY;
+			physicsObjects[i].acceleration[2] = PHYSICS_GRAVITY;
 		}
 	}
 

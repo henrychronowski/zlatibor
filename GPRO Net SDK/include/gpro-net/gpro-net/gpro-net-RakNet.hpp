@@ -144,6 +144,20 @@ namespace gproNet
 
 			return lhs;
 		}
+
+		static float DeltaPos(RenderSceneData lhs, RenderSceneData rhs)
+		{
+			return sqrtf(powf(rhs.position[0] - lhs.position[0], 2) + 
+						powf(rhs.position[1] - lhs.position[1], 2) + 
+						powf(rhs.position[2] - lhs.position[2], 2));
+		}
+
+		static float DeltaPosSqr(RenderSceneData lhs, RenderSceneData rhs)
+		{
+			return powf(rhs.position[0] - lhs.position[0], 2) +
+				   powf(rhs.position[1] - lhs.position[1], 2) +
+				   powf(rhs.position[2] - lhs.position[2], 2);
+		}
 	};
 
 

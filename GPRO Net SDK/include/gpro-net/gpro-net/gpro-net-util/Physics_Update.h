@@ -3,7 +3,7 @@
 
 #include "gpro-net/gpro-net/RenderSceneData.h"
 
-const float PHYSICS_GRAVITY = -9.81f;
+const float PHYSICS_GRAVITY = -3.0f;
 
 void updateVelocity(float vel[3], float accel[3], double dt);
 void updatePosition(float pos[3], float vel[3], double dt);
