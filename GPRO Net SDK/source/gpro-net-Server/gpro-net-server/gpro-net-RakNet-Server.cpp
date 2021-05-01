@@ -55,6 +55,12 @@ namespace gproNet
 				updateVelocity(physicsObjects[i].velocity, physicsObjects[i].acceleration, dt);
 				updatePosition(physicsObjects[i].position, physicsObjects[i].velocity, dt);
 			}
+
+			if (physicsObjects[i].position[2] <= -100)
+			{
+				physicsObjects[i].velocity[2] = 0.0f;
+				physicsObjects[i].position[2] = 100.0f;
+			}
 		}
 	}
 
@@ -144,8 +150,8 @@ namespace gproNet
 			physicsObjects[i].position[1] = (float)((i / 8) * 3);
 			physicsObjects[i].position[2] = 0.0f;
 
-			physicsObjects[i].velocity[0] = (float)(rand() % 20 - 19);
-			physicsObjects[i].velocity[1] = (float)(rand() % 20 - 19);
+			physicsObjects[i].velocity[0] = (float)(rand() % 30 - 14);
+			physicsObjects[i].velocity[1] = (float)(rand() % 30 - 14);
 			physicsObjects[i].velocity[2] = (float)(rand() % 10 + 1);
 
 			physicsObjects[i].acceleration[0] = physicsObjects[i].acceleration[1] = 0.0f;

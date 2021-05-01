@@ -28,14 +28,19 @@
 
 int main(int const argc, char const* const argv[])
 {
+	const double FRAME_TIME = 2.0875;// 0.0020875;	// 480 fps in seconds
 	gproNet::cRakNetServer server;
 	Timer timer;
 
+	timer.Start();
 	while (1)
 	{
-		timer.Start();
 		server.MessageLoop();
-		server.PhysicsUpdate(timer.Stop());
+		if (timer.Lap() >= FRAME_TIME)
+		{
+			server.PhysicsUpdate(0.001 * timer.Stop());
+			timer.Start();
+		}
 	}
 
 	printf("\n\n");
