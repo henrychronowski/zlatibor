@@ -140,7 +140,7 @@ namespace gproNet
 		{
 			for (int i = 0; i < 128; ++i)
 			{
-				if (i != rsdObjects[clientID].ownerID)
+				if (i != clientID)
 				{
 					RenderSceneData dat;
 					RenderSceneData::Read(bitstream, dat);
@@ -168,6 +168,15 @@ namespace gproNet
 					peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 				}
 			}
+
+		} return true;
+
+		case ID_GPRO_COMMON_INITIAL_CLIENT_PARAMETERS:
+		{
+			RenderSceneData dat;
+			RenderSceneData::Read(bitstream, dat);
+
+			RenderSceneData::Copy(rsdObjects[dat.ownerID], dat);
 
 		} return true;
 

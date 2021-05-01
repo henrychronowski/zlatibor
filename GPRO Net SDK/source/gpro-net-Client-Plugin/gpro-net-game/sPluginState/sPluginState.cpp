@@ -183,8 +183,8 @@ void plugin_load_init(sPluginState* pluginState)
 		sceneObjectData->position.x = (a3real)((i % 8) * 3);
 		sceneObjectData->position.y = (a3real)((i / 8) * 3);
 
-		updateRSDPosition(pluginState, i);
-		updateLocalPosition(pluginState, i);
+		//updateRSDPosition(pluginState, i);
+		//updateLocalPosition(pluginState, i);
 	}
 }
 
@@ -302,9 +302,6 @@ void updateLocalPosition(sPluginState* state, int index)
 	objClient->dataPtr->position.x = client->GetRSD(index).position[0];
 	objClient->dataPtr->position.y = client->GetRSD(index).position[1];
 	objClient->dataPtr->position.z = client->GetRSD(index).position[2];
-
-	if (client->GetClientID() == index)
-		printf("%f %f %f \n", client->GetRSD(index).position[0], client->GetRSD(index).position[1], client->GetRSD(index).position[2]);
 }
 
 
