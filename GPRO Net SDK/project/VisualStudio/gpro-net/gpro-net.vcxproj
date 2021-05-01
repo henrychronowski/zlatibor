@@ -181,6 +181,7 @@
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net\gpro-net-util\gpro-net-console.h" />
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net\gpro-net-util\gpro-net-gamestate.h" />
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net\gpro-net-util\gpro-net-lib.h" />
+    <ClInclude Include="..\..\..\include\gpro-net\gpro-net\gpro-net-util\Physics_Update.h" />
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net\gpro-net-util\Timer.h" />
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net\RenderSceneData.h" />
   </ItemGroup>
@@ -188,6 +189,7 @@
     <ClCompile Include="..\..\..\source\gpro-net\gpro-net.c" />
     <ClCompile Include="..\..\..\source\gpro-net\gpro-net\gpro-net-RakNet.cpp" />
     <ClCompile Include="..\..\..\source\gpro-net\gpro-net\gpro-net-util\gpro-net-console_win.c" />
+    <ClCompile Include="..\..\..\source\gpro-net\gpro-net\gpro-net-util\Physics_Update.cpp" />
     <ClCompile Include="..\..\..\source\gpro-net\gpro-net\gpro-net-util\Timer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

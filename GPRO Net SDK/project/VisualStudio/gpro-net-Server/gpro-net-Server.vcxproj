@@ -163,11 +163,9 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\source\gpro-net-Server\gpro-net-server.c" />
     <ClCompile Include="..\..\..\source\gpro-net-Server\gpro-net-server\gpro-net-RakNet-Server.cpp" />
-    <ClCompile Include="..\..\..\source\gpro-net-Server\gpro-net-server\Physics_Update.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net-server\gpro-net-RakNet-Server.hpp" />
-    <ClInclude Include="..\..\..\include\gpro-net\gpro-net-server\Physics_Update.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

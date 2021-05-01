@@ -25,7 +25,7 @@
 #include <sstream>
 
 #include "gpro-net/gpro-net-server/gpro-net-RakNet-Server.hpp"
-#include "gpro-net/gpro-net-server/Physics_Update.h"
+#include "gpro-net/gpro-net/gpro-net-util/Physics_Update.h"
 
 
 namespace gproNet
@@ -128,7 +128,8 @@ namespace gproNet
 			physicsObjects[i].position[1] = (float)((i / 8) * 3);
 			physicsObjects[i].position[2] = 0.0f;
 
-			physicsObjects[i].velocity[0] = physicsObjects[i].velocity[1] = physicsObjects[i].velocity[2] = 0.0f;
+			physicsObjects[i].velocity[0] = physicsObjects[i].velocity[1] = 0.0f;
+			physicsObjects[i].velocity[2] = 5.0f;
 
 			physicsObjects[i].acceleration[0] = physicsObjects[i].acceleration[1] = 0.0f;
 			physicsObjects[i].acceleration[2] = PHYSICS_GRAVITY;

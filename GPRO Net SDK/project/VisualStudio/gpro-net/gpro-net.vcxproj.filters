@@ -48,6 +48,9 @@
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net\gpro-net-util\Timer.h">
       <Filter>Header Files\gpro-net\gpro-net-util</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\gpro-net\gpro-net\gpro-net-util\Physics_Update.h">
+      <Filter>Header Files\gpro-net\gpro-net-util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\gpro-net\gpro-net.c">
@@ -61,6 +64,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\gpro-net\gpro-net\gpro-net-util\Timer.cpp">
       <Filter>Source Files\gpro-net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\gpro-net\gpro-net\gpro-net-util\Physics_Update.cpp">
+      <Filter>Source Files\gpro-net\gpro-net-util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
