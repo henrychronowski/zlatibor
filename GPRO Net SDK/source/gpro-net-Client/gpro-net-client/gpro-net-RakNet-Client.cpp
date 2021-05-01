@@ -222,8 +222,6 @@ namespace gproNet
 					}
 				}
 			}
-
-			printf("%f %f \n", rsdObjects[5].position[2], d);
 		} return true;
 
 			// index receipt
