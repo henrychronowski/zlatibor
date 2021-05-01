@@ -94,6 +94,11 @@ namespace gproNet
 			peer->Send(&trigger, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 
 			trigger.Reset();
+			trigger.Write((RakNet::MessageID)ID_GPRO_COMMON_INITIAL_PARAMETERS);
+			WritePhysicsData(physicsObjects[peer->NumberOfConnections()].ownerID, trigger);
+			peer->Send(&trigger, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
+
+			trigger.Reset();
 			WriteTimestamp(trigger);
 			trigger.Write((RakNet::MessageID)ID_GPRO_COMMON_OTHER_CLIENT_ID);
 			trigger.Write(peer->NumberOfConnections());
