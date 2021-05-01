@@ -169,6 +169,8 @@ namespace gproNet
 				}
 			}
 
+			connected = true;
+
 		} return true;
 
 		case ID_GPRO_COMMON_INITIAL_CLIENT_PARAMETERS:
@@ -182,6 +184,7 @@ namespace gproNet
 
 		case ID_GPRO_COMMON_SEND_OBJECT_UPDATES:
 		{
+			float d = 0.0f;
 			for (int i = 0; i < 128; ++i)
 			{
 				if (i != rsdObjects[clientID].ownerID)
@@ -189,17 +192,38 @@ namespace gproNet
 					RenderSceneData dat;
 					RenderSceneData::Read(bitstream, dat);
 
+					if (i == 5)
+						d = dat.position[2];
+
 					RenderSceneData temp = rsdObjects[i];
 
 					//Dead reckoning
-					temp.position[0] = temp.position[0] + (dat.position[0] - temp.position[0]) * dtSendToReceive;
-					temp.position[1] = temp.position[1] + (dat.position[1] - temp.position[1]) * dtSendToReceive;
-					temp.position[2] = temp.position[2] + (dat.position[2] - temp.position[2]) * dtSendToReceive;
+					if (abs(dat.position[2] - temp.position[2]) < 2)
+					{
+						temp.position[0] = temp.position[0] + (dat.position[0] - temp.position[0]) * dtSendToReceive;
+						temp.position[1] = temp.position[1] + (dat.position[1] - temp.position[1]) * dtSendToReceive;
+						temp.position[2] = temp.position[2] + (dat.position[2] - temp.position[2]) * dtSendToReceive;
 
-					//Update our state
-					RenderSceneData::Copy(rsdObjects[i], temp);
+						temp.velocity[0] = dat.velocity[0];
+						temp.velocity[1] = dat.velocity[1];
+						temp.velocity[2] = dat.velocity[2];
+
+						temp.acceleration[0] = dat.acceleration[0];
+						temp.acceleration[1] = dat.acceleration[1];
+						temp.acceleration[2] = dat.acceleration[2];
+
+						//Update our state
+						RenderSceneData::Copy(rsdObjects[i], temp);
+					}
+					else
+					{
+						//Update our state
+						RenderSceneData::Copy(rsdObjects[i], dat);
+					}
 				}
 			}
+
+			printf("%f %f \n", rsdObjects[5].position[2], d);
 		} return true;
 
 			// index receipt

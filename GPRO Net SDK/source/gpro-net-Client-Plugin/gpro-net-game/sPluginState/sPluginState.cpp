@@ -182,9 +182,6 @@ void plugin_load_init(sPluginState* pluginState)
 		// test posing them in a line
 		sceneObjectData->position.x = (a3real)((i % 8) * 3);
 		sceneObjectData->position.y = (a3real)((i / 8) * 3);
-
-		//updateRSDPosition(pluginState, i);
-		//updateLocalPosition(pluginState, i);
 	}
 }
 
@@ -268,9 +265,12 @@ void plugin_update_simulate(sPluginState* pluginState, double const dt)
 	}
 
 	if(pluginState->client->GetClientID() != -1)
-		updateRSDPosition(pluginState, pluginState->client->GetClientID());
+		//updateRSDPosition(pluginState, pluginState->client->GetClientID());
 
 	pluginState->client->PhysicsUpdate(dt);
+
+	if(pluginState->client->IsConnected())
+		pluginState->client->SendRSDPosition(pluginState->client->GetRSD(pluginState->client->GetClientID()));
 
 	// refill buffers
 	a3bufferRefillOffset(pluginState->renderer->ubo_transform + 0, 0, 0, sizeof(pluginState->modelstack), pluginState->modelstack);
@@ -288,8 +288,6 @@ void updateRSDPosition(sPluginState* state, int index)
 	client->GetRSD(index).position[0] = objClient->dataPtr->position.x;
 	client->GetRSD(index).position[1] = objClient->dataPtr->position.y;
 	client->GetRSD(index).position[2] = objClient->dataPtr->position.z;
-
-	//printf("%i %i \n", client->getRSD(index).ownerID, index);
 
 	state->client->SendRSDPosition(client->GetRSD(index));
 }

@@ -62,6 +62,8 @@ namespace gproNet
 
 		gproNet::RenderSceneData rsdObjects[128];
 
+		bool connected = false;
+
 		// public methods
 	public:
 		// cRakNetClient
@@ -77,6 +79,8 @@ namespace gproNet
 		RenderSceneData& GetRSD(int index);
 
 		int GetClientID() { return clientID; }
+
+		bool IsConnected() { return connected; }
 
 		void PhysicsUpdate(double dt);
 
