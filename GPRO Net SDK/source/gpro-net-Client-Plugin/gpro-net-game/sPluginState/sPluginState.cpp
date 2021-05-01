@@ -48,6 +48,7 @@ void renderer_update_bindSkybox(sSceneObjectComponent const* sceneObject_skybox,
 #endif	// __cplusplus
 
 void updateRSDPosition(sPluginState* state, int index);
+void updateLocalPosition(sPluginState* state, int index);
 
 //-----------------------------------------------------------------------------
 
@@ -181,6 +182,9 @@ void plugin_load_init(sPluginState* pluginState)
 		// test posing them in a line
 		sceneObjectData->position.x = (a3real)((i % 8) * 3);
 		sceneObjectData->position.y = (a3real)((i / 8) * 3);
+
+		updateRSDPosition(pluginState, i);
+		updateLocalPosition(pluginState, i);
 	}
 }
 
@@ -258,11 +262,13 @@ void plugin_update_simulate(sPluginState* pluginState, double const dt)
 	for (i = 0, j = rendererArrayLen(pluginState->obj_client);
 		i < j; ++i)
 	{
+		updateLocalPosition(pluginState, i);
 		renderer_updateSceneObject(pluginState->obj_client + i, 0);
 		renderer_updateSceneObjectStack(pluginState->obj_client + i, projector);
 	}
 
-	updateRSDPosition(pluginState, pluginState->client->getClientID());
+	if(pluginState->client->getClientID() != -1)
+		updateRSDPosition(pluginState, pluginState->client->getClientID());
 
 	// refill buffers
 	a3bufferRefillOffset(pluginState->renderer->ubo_transform + 0, 0, 0, sizeof(pluginState->modelstack), pluginState->modelstack);
@@ -281,9 +287,22 @@ void updateRSDPosition(sPluginState* state, int index)
 	client->getRSD(index).position[1] = objClient->dataPtr->position.y;
 	client->getRSD(index).position[2] = objClient->dataPtr->position.z;
 
-	printf("%i %i \n", client->getRSD(index).ownerID, index);
+	//printf("%i %i \n", client->getRSD(index).ownerID, index);
 
 	state->client->SendRSDPosition(client->getRSD(index));
+}
+
+void updateLocalPosition(sPluginState* state, int index)
+{
+	sSceneObjectComponent* objClient = state->obj_client + index;
+	gproNet::cRakNetClient* client = state->client;
+
+	objClient->dataPtr->position.x = client->getRSD(index).position[0];
+	objClient->dataPtr->position.y = client->getRSD(index).position[1];
+	objClient->dataPtr->position.z = client->getRSD(index).position[2];
+
+	if (client->getClientID() == index)
+		printf("%f %f %f \n", client->getRSD(index).position[0], client->getRSD(index).position[1], client->getRSD(index).position[2]);
 }
 
 

@@ -96,7 +96,7 @@ namespace gproNet
 			RakNet::BitStream bitstream_w;
 			//WriteTest(bitstream_w, "Hello server from client");
 			WriteTimestamp(bitstream_w);
-			bitstream_w.Write((RakNet::MessageID)ID_GPRO_MESSAGE_COMMON_END);
+			bitstream_w.Write((RakNet::MessageID)ID_GPRO_COMMON_NEW_PLAYER);
 			peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 		}	return true;
 
