@@ -279,6 +279,7 @@
     <None Include="..\..\..\resource\glsl\4x\vs\03-lod\empty_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\04-anim\passColor_hierarchy_transform_instanced_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\04-anim\passTangentBasis_morph_transform_vs4x.glsl" />
+    <None Include="..\..\..\resource\glsl\4x\vs\Final\ssao_vertex.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\passColor_transform_instanced_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\passColor_transform_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\passthru_transform_instanced_vs4x.glsl" />

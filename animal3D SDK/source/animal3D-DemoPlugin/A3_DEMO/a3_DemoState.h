@@ -305,6 +305,8 @@ struct a3_DemoState
 				prog_drawTangentBasisPOM_morph[1],			// draw tangent basis and wireframe for morphing POM objects
 				prog_drawPhongPOM_morph[1],					// draw Phong for morphing POM objects
 				prog_drawColorHierarchy_instanced[1];		// draw color based on hierarchical index
+			a3_DemoStateShaderProgram
+				prog_ssao_vertex[1];
 		};
 	};
 

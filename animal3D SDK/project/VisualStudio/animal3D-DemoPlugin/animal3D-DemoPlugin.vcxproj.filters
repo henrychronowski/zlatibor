@@ -118,6 +118,9 @@
     <Filter Include="Resource Files\A3_DEMO\glsl\4x\vs\04-anim">
       <UniqueIdentifier>{18252e52-3ee4-474d-aad9-aea70fdbf3de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\A3_DEMO\glsl\4x\vs\Final">
+      <UniqueIdentifier>{a559cde3-59c0-46fa-811a-501754c71b89}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_src_win\main_dll.c">
@@ -387,6 +390,9 @@
     </None>
     <None Include="..\..\..\resource\glsl\4x\vs\04-anim\passColor_hierarchy_transform_instanced_vs4x.glsl">
       <Filter>Resource Files\A3_DEMO\glsl\4x\vs\04-anim</Filter>
+    </None>
+    <None Include="..\..\..\resource\glsl\4x\vs\Final\ssao_vertex.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\vs\Final</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -506,6 +506,9 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 			a3_DemoStateShader
 				passColor_hierarchy_transform_instanced_vs[1],
 				passTangentBasis_morph_transform_vs[1];
+			// Final
+			a3_DemoStateShader
+				ssao_vertex_vs[1];
 
 			// tessellation shaders
 			// 03-lod
@@ -577,6 +580,8 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 			{ { { 0 },	"shdr-vs:pass-hcol-trans-inst",		a3shader_vertex  ,	1,{ A3_DEMO_VS"04-anim/passColor_hierarchy_transform_instanced_vs4x.glsl" } } }, // ****DECODE
 			{ { { 0 },	"shdr-vs:pass-tb-morph-trans",		a3shader_vertex  ,	2,{ A3_DEMO_VS"04-anim/passTangentBasis_morph_transform_vs4x.glsl", // ****DECODE
 																					A3_DEMO_VS"00-common/utilCommon_vs4x.glsl",} } }, // ****DECODE
+			// Final
+			{ { { 0 },  "shdr-vs:ssao_vertex",				a3shader_vertex ,   1,{ A3_DEMO_VS"Final/ssao_vertex.glsl"} } },
 
 			// ts
 			// 03-lod
@@ -828,6 +833,11 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-hcol-inst");
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passColor_hierarchy_transform_instanced_vs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawColorAttrib_fs->shader);
+
+	// Final Project Programs
+	currentDemoProg = demoState->prog_ssao_vertex;
+	a3shaderProgramCreate(currentDemoProg->program, "prog:ssao_vertex");
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.ssao_vertex_vs->shader);
 
 
 	// activate a primitive for validation

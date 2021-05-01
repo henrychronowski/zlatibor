@@ -20,4 +20,7 @@
     <LocalDebuggerEnvironment>PATH=%PATH%;$(DEV_SDK_DIR)bin\$(PlatformTarget);$(DEV_SDK_DIR)bin\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup>
+    <ShowAllFiles>false</ShowAllFiles>
+  </PropertyGroup>
 </Project>
