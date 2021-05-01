@@ -136,6 +136,41 @@ namespace gproNet
 			
 		} return true;
 
+		case ID_GPRO_COMMON_INITIAL_PARAMETERS:
+		{
+			for (int i = 0; i < 128; ++i)
+			{
+				if (i != rsdObjects[clientID].ownerID)
+				{
+					RenderSceneData dat;
+					RenderSceneData::Read(bitstream, dat);
+
+					RenderSceneData::Copy(rsdObjects[i], dat);
+				}
+				else
+				{
+					rsdObjects[clientID].position[0] = 0.0f;
+					rsdObjects[clientID].position[1] = 0.0f;
+					rsdObjects[clientID].position[2] = 20.0f;
+
+					rsdObjects[clientID].velocity[0] = 0.0f;
+					rsdObjects[clientID].velocity[1] = 0.0f;
+					rsdObjects[clientID].velocity[2] = 0.0f;
+
+					rsdObjects[clientID].acceleration[0] = 0.0f;
+					rsdObjects[clientID].acceleration[1] = 0.0f;
+					rsdObjects[clientID].acceleration[2] = -9.81f;
+
+					RakNet::BitStream bitstream_w;
+					WriteTimestamp(bitstream_w);
+					bitstream_w.Write((RakNet::MessageID)ID_GPRO_COMMON_INITIAL_CLIENT_PARAMETERS);
+					RenderSceneData::Write(bitstream_w, rsdObjects[clientID]);
+					peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
+				}
+			}
+
+		} return true;
+
 		case ID_GPRO_COMMON_SEND_OBJECT_UPDATES:
 		{
 			for (int i = 0; i < 128; ++i)
