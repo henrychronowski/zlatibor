@@ -73,6 +73,8 @@
                 col.rgb = Prefilter(BoxSample(i.uv, 1.0).rgb);
                 col.a = 1.0;
                 return col;
+
+
             }
             ENDCG
         }
