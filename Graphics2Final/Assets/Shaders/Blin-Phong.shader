@@ -77,12 +77,8 @@ Shader "Custom/Blinn-Phong"
 
                 float3 ambient = UNITY_LIGHTMODEL_AMBIENT.rgb * uColor.rgb;
                 float3 diffuse = attenuation * _LightColor0.rgb * uColor.rgb * max(0.0, dot(normal, lightFace));
-                float3 specular = attenuation * _LightColor0.rgb * uSpecColor.rgb * pow(max(0.0, dot(reflect(-lightFace, normal), viewDir)), uSpecularPower);
-                //float spec = pow(max(dot(normal, halfwayDir), 0.0f), uSpecularPower);
-                //pow(max(0.0f, dot(halfwayDir, reflect(-lightFace, normal))), uSpecularPower);//
-                specular = pow(max(dot(normal, halfwayDir), 0.0f), uSpecularPower);
-                specular *= _LightColor0.rgb;
-
+                float3 specular = attenuation * _LightColor0.rgb * uSpecColor.rgb * pow(max(dot(normal, halfwayDir), 0.0f), uSpecularPower);
+                
                 float3 color = (ambient + diffuse) * tex2D(uTexture, input.uv) + specular;
 
                 return float4(color, 1);
@@ -143,16 +139,16 @@ Shader "Custom/Blinn-Phong"
             fixed4 frag(vertToFrag input) : COLOR
             {
                 float3 normal = normalize(input.normal);
-                float3 viewDir = normalize(_WorldSpaceCameraPos - input.worldPos.xyz); // Calculate view direction
-                float3 lightDir = normalize(_WorldSpaceLightPos0.xyz - input.worldPos.xyz);
+                float3 viewDir = normalize(_WorldSpaceCameraPos.xyz - input.worldPos.xyz); // Calculate view direction
+                float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
                 float3 halfwayDir = normalize(lightDir + viewDir);
+
                 float attenuation = lerp(1.0, 1.0 / lightDir, _WorldSpaceLightPos0.w);
                 float3 lightFace = _WorldSpaceLightPos0.xyz - input.worldPos.xyz * _WorldSpaceLightPos0.w;
 
                 float3 ambient = UNITY_LIGHTMODEL_AMBIENT.rgb * uColor.rgb;
                 float3 diffuse = attenuation * _LightColor0.rgb * uColor.rgb * max(0.0, dot(normal, lightFace));
-                float3 specular = attenuation * _LightColor0.rgb * uSpecColor.rgb * pow(max(0.0f, dot(halfwayDir, normal)), uSpecularPower);//pow(max(0.0, dot(reflect(-lightFace, normal), viewDir)), uSpecularPower);
-                //float spec = pow(max(dot(normal, halfwayDir), 0.0f), uSpecularPower);
+                float3 specular = attenuation * _LightColor0.rgb * uSpecColor.rgb * pow(max(dot(normal, halfwayDir), 0.0f), uSpecularPower);
 
                 float3 color = (ambient + diffuse) * tex2D(uTexture, input.uv) + specular;
 
