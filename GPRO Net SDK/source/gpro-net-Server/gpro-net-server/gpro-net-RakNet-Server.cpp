@@ -17,6 +17,7 @@
 /*
 	GPRO Net SDK: Networking framework.
 	By Daniel S. Buckstein
+	Extended by Henry Chronowski
 
 	gpro-net-RakNet-Server.cpp
 	Source for RakNet server management.
@@ -38,6 +39,7 @@ namespace gproNet
 		peer->Startup(MAX_CLIENTS, &sd, 1);
 		peer->SetMaximumIncomingConnections(MAX_CLIENTS);
 
+		// Set the starter physics data for all objects
 		InitializePhysicsObjects();
 	}
 
@@ -48,18 +50,21 @@ namespace gproNet
 
 	void cRakNetServer::PhysicsUpdate(double dt)
 	{
+		// Iterate through all physics objects
 		for (size_t i = 0; i < MAX_PHYSICS_OBJECTS; ++i)
 		{
+			// If the object is managed by the server calculate kinematics
 			if (physicsObjects->ownerID == 0)
 			{
 				updateVelocity(physicsObjects[i].velocity, physicsObjects[i].acceleration, dt);
 				updatePosition(physicsObjects[i].position, physicsObjects[i].velocity, dt);
-			}
 
-			if (physicsObjects[i].position[2] <= -100)
-			{
-				physicsObjects[i].velocity[2] = 0.0f;
-				physicsObjects[i].position[2] = 100.0f;
+				// If the object has passed below a threshold, reposition it to the top of the area (in order to keep them visible for longer)
+				if (physicsObjects[i].position[2] <= -100)
+				{
+					physicsObjects[i].velocity[2] = 0.0f;
+					physicsObjects[i].position[2] = 100.0f;
+				}
 			}
 		}
 	}
@@ -90,46 +95,54 @@ namespace gproNet
 			//printf("A client lost the connection.\n");
 			return true;
 
-			// Recieved when a new client has successfully connected
+		// Recieved when a new client has successfully connected
 		case ID_GPRO_COMMON_NEW_PLAYER:
 		{
+			// Notify the client of their ownerID in the server's records
 			RakNet::BitStream trigger;
 			WriteTimestamp(trigger);
 			trigger.Write((RakNet::MessageID)ID_GPRO_COMMON_CLIENT_ID);
-			trigger.Write(peer->NumberOfConnections());
+			trigger.Write(peer->NumberOfConnections());	// NumberOfConnections = OwnerID of the new client
 			peer->Send(&trigger, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 
+			// Send the current physics data for all objects in order to initialize the objects on the client
 			trigger.Reset();
 			trigger.Write((RakNet::MessageID)ID_GPRO_COMMON_INITIAL_PARAMETERS);
 			WritePhysicsData(peer->NumberOfConnections(), trigger);
 			peer->Send(&trigger, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 
+			// Send the ownerID of the new client to all other connected clients
 			trigger.Reset();
 			WriteTimestamp(trigger);
 			trigger.Write((RakNet::MessageID)ID_GPRO_COMMON_OTHER_CLIENT_ID);
 			trigger.Write(peer->NumberOfConnections());
 			peer->Send(&trigger, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, true);	// To all but sender
 		}	return true;
+
+		//	Recieved when a client updates the server with their position, responds by sending updated physics data to the client
 		case ID_GPRO_COMMON_SEND_POSITION:
 		{
+			// Read in the new physics data for the client and store it
 			RenderSceneData dat;
-
 			RenderSceneData::Read(bitstream, dat);
-			
 			RenderSceneData::Copy(physicsObjects[dat.ownerID], dat);
 			
+			// Send the updated physics data for server owned objects and objects owned by other clients back to the sender client
 			RakNet::BitStream bitstream_out;
 			bitstream_out.Write((RakNet::MessageID)ID_GPRO_COMMON_SEND_OBJECT_UPDATES);
 			WritePhysicsData(dat.ownerID, bitstream_out);
 			peer->Send(&bitstream_out, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 		}
+
+		// Recieved during the process of initial client connection, contains the initial physics data of the client's owned object
 		case ID_GPRO_COMMON_INITIAL_CLIENT_PARAMETERS:
 		{
+			// Read in and store the physics data for the newly client-owned object
 			RenderSceneData dat;
 			RenderSceneData::Read(bitstream, dat);
-
 			RenderSceneData::Copy(physicsObjects[dat.ownerID], dat);
 
+			// Send the updated physics data for the new client to all other connected clients
 			RakNet::BitStream bitstream_out;
 			bitstream_out.Write((RakNet::MessageID)ID_GPRO_COMMON_INITIAL_CLIENT_PARAMETERS);
 			RenderSceneData::Write(bitstream_out, dat);
@@ -142,18 +155,23 @@ namespace gproNet
 
 	void cRakNetServer::InitializePhysicsObjects()
 	{
+		// Iterate through all physics objects and initialize them to defaults
 		for (size_t i = 0; i < MAX_PHYSICS_OBJECTS; ++i)
 		{
+			// Server-managed by default
 			physicsObjects[i].ownerID = 0;
 
+			// Positions objects in a grid
 			physicsObjects[i].position[0] = (float)((i % 8) * 3);
 			physicsObjects[i].position[1] = (float)((i / 8) * 3);
 			physicsObjects[i].position[2] = 0.0f;
 
+			// Gives the objects a random initial velocity in the positive z direction
 			physicsObjects[i].velocity[0] = (float)(rand() % 30 - 14);
 			physicsObjects[i].velocity[1] = (float)(rand() % 30 - 14);
 			physicsObjects[i].velocity[2] = (float)(rand() % 10 + 1);
 
+			// Sets the objects acceleration to a constant gravity
 			physicsObjects[i].acceleration[0] = physicsObjects[i].acceleration[1] = 0.0f;
 			physicsObjects[i].acceleration[2] = PHYSICS_GRAVITY;
 		}
@@ -161,8 +179,10 @@ namespace gproNet
 
 	void cRakNetServer::WritePhysicsData(short ownerID, RakNet::BitStream& out)
 	{
+		// Iterate through all physics objects
 		for (size_t i = 0; i < MAX_PHYSICS_OBJECTS; ++i)
 		{
+			// Write physics data to the bitstream, ignoring any owned by the given ownerID
 			if (physicsObjects[i].ownerID != ownerID)
 				RenderSceneData::Write(out, physicsObjects[i]);
 		}

@@ -17,6 +17,7 @@
 /*
 	GPRO Net SDK: Networking framework.
 	By Daniel S. Buckstein
+	Extended by Henry Chronowski
 
 	main-server.cpp
 	Main source for console server application.
@@ -28,7 +29,7 @@
 
 int main(int const argc, char const* const argv[])
 {
-	const double FRAME_TIME = 2.0875;// 0.0020875;	// 480 fps in seconds
+	const double FRAME_TIME = 2.0675;	// 480 fps in milliseconds - 0.02ms to roughly account for time spent checking the time
 	gproNet::cRakNetServer server;
 	Timer timer;
 
@@ -36,8 +37,11 @@ int main(int const argc, char const* const argv[])
 	while (1)
 	{
 		server.MessageLoop();
+
+		// Check to see if a physics update should be run
 		if (timer.Lap() >= FRAME_TIME)
 		{
+			// Convert the duration to seconds as the kinematics are expecting time in seconds
 			server.PhysicsUpdate(0.001 * timer.Stop());
 			timer.Start();
 		}

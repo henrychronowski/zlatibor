@@ -9,11 +9,27 @@ typedef std::chrono::time_point<std::chrono::steady_clock> time_point;
 typedef std::chrono::milliseconds milliseconds;
 typedef std::chrono::seconds seconds;
 
+// A very basic timer class utilizing std::chrono
+// Written by Henry Chronowski
+
 class Timer
 {
 public:
+	// Start
+		//	Starts the timer
+		//		return: void
 	void Start();
+
+	// Stop
+		//	Stops the timer, returning the duration in milliseconds. 
+		//		Returns a duration of zero if the timer was not started
+		//		return: duration in milliseconds
 	double Stop();
+
+	// Lap
+		//	Returns the current duration without stopping the timer.
+		//		Returns a duration of zero if the timer was not started
+		//		return: duration in milliseconds
 	double Lap();
 
 private:
