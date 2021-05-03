@@ -17,6 +17,8 @@ public class DepthOfField : MonoBehaviour
     public float focusRange = 3.0f;
     [Range(1f, 10f)]
     public float bokehRadius = 4f;
+    [Range(0, 4)]
+    public int pass = 4;
 
     const int FOCUS_PASS = 0;
     const int DEPTH_DOWNSAMPLE_PASS = 1;
@@ -56,9 +58,29 @@ public class DepthOfField : MonoBehaviour
             DOFMat.SetTexture("_DOFTexture", halfRes);
 
             Graphics.Blit(source, focus, DOFMat, FOCUS_PASS);
+            if (pass == FOCUS_PASS)
+            {
+                Graphics.Blit(focus, destination);
+                return;
+            }
             Graphics.Blit(source, halfRes, DOFMat, DEPTH_DOWNSAMPLE_PASS);
+            if (pass == DEPTH_DOWNSAMPLE_PASS)
+            {
+                Graphics.Blit(halfRes, destination);
+                return;
+            }
             Graphics.Blit(halfRes, bokehHalfRes, DOFMat, BOKEH_PASS);
+            if (pass == BOKEH_PASS)
+            {
+                Graphics.Blit(bokehHalfRes, destination);
+                return;
+            }
             Graphics.Blit(bokehHalfRes, halfRes, DOFMat, BLUR_PASS);
+            if (pass == BLUR_PASS)
+            {
+                Graphics.Blit(halfRes, destination);
+                return;
+            }
             Graphics.Blit(source, destination, DOFMat, COMPOSITE_PASS);
 
             RenderTexture.ReleaseTemporary(focus);

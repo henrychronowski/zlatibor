@@ -73,23 +73,40 @@
             #pragma fragment frag
 
 
+            half Weigh(half3 col)
+            {
+                return 1 / (1 + max(max(col.r, col.g), col.b));
+            }
+
+
             half4 frag(vertex2fragment i) : SV_Target
             {
-                float4 quarts = _MainTex_TexelSize.xyxy * float2(-0.5, 0.5).xxyy;
+               float4 quarts = _MainTex_TexelSize.xyxy * float2(-0.5, 0.5).xxyy;
 
-                half focus0 = tex2D(_FocusTexture, i.uv + quarts.xy).r;
-                half focus1 = tex2D(_FocusTexture, i.uv + quarts.zy).r;
-                half focus2 = tex2D(_FocusTexture, i.uv + quarts.xw).r;
-                half focus3 = tex2D(_FocusTexture, i.uv + quarts.zw).r;
+               half3 source0 = tex2D(_MainTex, i.uv + quarts.xy).rgb;
+               half3 source1 = tex2D(_MainTex, i.uv + quarts.zy).rgb;
+               half3 source2 = tex2D(_MainTex, i.uv + quarts.xw).rgb;
+               half3 source3 = tex2D(_MainTex, i.uv + quarts.zw).rgb;
 
-                half focusMin = min(min(min(focus0, focus1), focus2), focus3);
-                half focusMax = max(max(max(focus0, focus1), focus2), focus3);
+               half weight0 = Weigh(source0);
+               half weight1 = Weigh(source1);
+               half weight2 = Weigh(source2);
+               half weight3 = Weigh(source3);
 
-                half focus = focusMax >= -focusMin ? focusMax : focusMin;
+               half3 col = source0 * weight0 + source1 * weight1 + source2 * weight2 + source3 * weight3;
+               col /= max(weight0 + weight1 + weight2 + source3, 0.00001);
 
-                half4 col = half4(tex2D(_MainTex, i.uv).rgb, focus);
+               half focus0 = tex2D(_FocusTexture, i.uv + quarts.xy).r;
+               half focus1 = tex2D(_FocusTexture, i.uv + quarts.zy).r;
+               half focus2 = tex2D(_FocusTexture, i.uv + quarts.xw).r;
+               half focus3 = tex2D(_FocusTexture, i.uv + quarts.zw).r;
 
-                return col;
+               half focusMin = min(min(min(focus0, focus1), focus2), focus3);
+               half focusMax = max(max(max(focus0, focus1), focus2), focus3);
+
+               half focus = focusMax >= -focusMin ? focusMax : focusMin;
+
+               return half4(col, focus);
             }
             ENDCG
         }
@@ -134,8 +151,10 @@
 
             half4 frag(vertex2fragment i) : SV_Target
             {
-                half4 col = 0;
-                float weight = 0;
+                half focus = tex2D(_MainTex, i.uv).a;
+
+                half4 bgCol = 0, fgCol = 0;
+                float bgWeight = 0, fgWeight = 0;
                 
                 // Sample texles around the current fragment
                 for (int k = 0; k < kernelSampleCount; k++)
@@ -147,15 +166,26 @@
                     
                     half4 texSample = tex2D(_MainTex, i.uv + texelOffset);
                     
-                    half sampleWeight = saturate((abs(texSample.a) - radius + 2) * 0.5);
-                    col += texSample * sampleWeight;
-                    weight += sampleWeight;
+                    half sampleWeight = saturate((max(0, min(texSample.a, focus)) - radius + 2) * 0.5);
+                    bgCol += texSample * sampleWeight;
+                    bgWeight += sampleWeight;
+
+                    sampleWeight = saturate((-texSample.a - radius + 2) * 0.5);
+                    fgCol += texSample * sampleWeight;
+                    fgWeight += sampleWeight;
                 }
 
-                col *= 1.0 / weight;
-                col.w = 1;
+                bgCol *= 1.0 / (bgWeight + (bgWeight == 0));
+                bgCol.w = 1;
                 
-                return col;
+                fgCol *= 1.0 / (fgWeight + (fgWeight == 0));
+                fgCol.w = 1;
+
+                half bgfg = min(1, fgWeight * 3.141592654 / kernelSampleCount);
+
+                half3 col = lerp(bgCol.rgb, fgCol.rgb, bgfg);
+
+                return half4(col, bgfg);
             }
          ENDCG
         }
@@ -196,8 +226,8 @@
                 half focus = tex2D(_FocusTexture, i.uv).r;
                 half4 dof = tex2D(_DOFTexture, i.uv);
 
-                half dofStrength = smoothstep(0.1, 1, abs(focus));
-                half3 col = lerp(sourceTexture.rgb, dof.rgb, dofStrength);
+                half dofStrength = smoothstep(0.1, 1, focus);
+                half3 col = lerp(sourceTexture.rgb, dof.rgb, dofStrength + dof.a - dofStrength * dof.a);
                 
                 return half4(col, sourceTexture.a);
             }
