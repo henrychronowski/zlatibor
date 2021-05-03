@@ -17,6 +17,7 @@
 /*
 	GPRO Net SDK: Networking framework.
 	By Daniel S. Buckstein
+	Extended by Henry Chronowski
 
 	gpro-net-RakNet-Server.hpp
 	Header for RakNet server management.
@@ -39,7 +40,6 @@ namespace gproNet
 		ID_GPRO_MESSAGE_SERVER_BEGIN = ID_GPRO_MESSAGE_COMMON_END,
 
 
-		ID_GPRO_RENDER_RESULT,
 		ID_GPRO_MESSAGE_SERVER_END
 	};
 
@@ -58,6 +58,10 @@ namespace gproNet
 		//	Destructor.
 		virtual ~cRakNetServer();
 
+		// PhysicsUpdate
+		//	Update the physics data of all server owned objects given the time step
+		//		param dt: time since last update
+		//		return: void
 		void PhysicsUpdate(double dt);
 
 		// protected methods
@@ -77,7 +81,16 @@ namespace gproNet
 
 		// private methods
 	private:
+		// InitializePhysicsObjects
+		//	Initialize all physics objects to a grid position, random velocity, and with standard gravititational acceleration
+		//		return: void
 		void InitializePhysicsObjects();
+
+		// WritePhysicsData
+		//	Writes physics data for all physics objects that do no belong to the given ownerID to a RakNet bitstream
+		//		param ownerID: the ownerID to ignore
+		//		param out: the bitstream to write data to
+		//		return: void
 		void WritePhysicsData(short ownerID, RakNet::BitStream&out);
 	};
 
