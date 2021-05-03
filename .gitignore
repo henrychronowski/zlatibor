@@ -1,96 +1,11 @@
-# git ignore filter
-*.hg*
-*.merge*
-*.orig
-*.resolve
-*.BASE.txt
-*.LOCAL.txt
-*.REMOTE.txt
-bin*/
-lib*/
-gen*/
-build*/
-[dD]ebug*/
-[rR]elease*/
-ipch/
-.vs/
-*.DS_Store
-*.ipch
-*.db
-*.opendb
-*.sdf
-*.opensdf
-*.ncb
-*.suo
-*.aps
-*.apk
-*.ap_
-*.dex
-*.class
-*.classpath
-*.project
-*.idea
-*.gradle
-*.tmp
-
-# user settings
-#_SLN/
-#_WORKSPACE/
-#xcuserdata/
-#*.user
-
-# Prerequisites
-*.d
-
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
-
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+## Lines in this file starting with a '#' are comments
+## Some elements are commented out, you may wish to uncomment
+## these lines to tell git to ignore them by default
+## Information for this file cobbled together from:
+## https://github.com/github/gitignore/blob/master/Unity.gitignore
+## https://github.com/github/gitignore/blob/master/Global/macOS.gitignore
+## And other sources, such as:
+## https://docs.unity3d.com/Manual/ExternalVersionControlSystemSupport.html
 
 [Ll]ibrary/
 [Tt]emp/
@@ -99,6 +14,10 @@ dkms.conf
 [Bb]uilds/
 [Ll]ogs/
 Assets/AssetStoreTools*
+
+# Meta files but not source files with postfix
+*.meta
+!*.*.meta
 
 # TextMesh Pro Files
 ![Aa]ssets/**/*.meta
@@ -127,7 +46,6 @@ ExportedObj/
 # Unity3D generated meta files
 *.pidb.meta
 *.pdb.meta
-*.meta
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
