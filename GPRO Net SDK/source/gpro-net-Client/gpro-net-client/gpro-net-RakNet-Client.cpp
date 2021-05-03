@@ -48,6 +48,7 @@ namespace gproNet
 
 	void cRakNetClient::SendRSDPosition(RenderSceneData& rsd)
 	{
+		//Send rsd to server
 		RakNet::BitStream bitstream_w;
 		WriteTimestamp(bitstream_w);
 		bitstream_w.Write((RakNet::MessageID)ID_GPRO_COMMON_SEND_POSITION);
@@ -64,8 +65,10 @@ namespace gproNet
 
 	void cRakNetClient::PhysicsUpdate(double dt)
 	{
+		// Loop through each object in the scene
 		for (int i = 0; i < 128; ++i)
 		{
+			// Update object's velocity and position
 			updateVelocity(rsdObjects[i].velocity, rsdObjects[i].acceleration, dt);
 			updatePosition(rsdObjects[i].position, rsdObjects[i].velocity, dt);
 		}
@@ -111,14 +114,17 @@ namespace gproNet
 			peer->Send(&bitstream_w, MEDIUM_PRIORITY, UNRELIABLE_SEQUENCED, 0, sender, false);
 		}	return true;
 
+		// Set this client's id
 		case ID_GPRO_COMMON_CLIENT_ID:
 		{
-			//Receive id
+			// Receive id from server
 			unsigned short id;
 			bitstream.Read(id);
 
+			// Set this client's id to the received id
 			clientID = id;
 
+			// Set id of any other connected clients
 			for (int i = 1; i <= id; ++i)
 			{
 				rsdObjects[i].ownerID = i;
@@ -126,41 +132,53 @@ namespace gproNet
 
 		} return true;
 
+		// Set id of another client
 		case ID_GPRO_COMMON_OTHER_CLIENT_ID:
 		{
-			//Receive id
+			//Receive id from server
 			unsigned short id;
 			bitstream.Read(id);
 
+			// Set id of other client
 			rsdObjects[id].ownerID = id;
 			
 		} return true;
 
+		// Initialize all object's data
 		case ID_GPRO_COMMON_INITIAL_PARAMETERS:
 		{
+			// Loop through each object in the scene
 			for (int i = 0; i < 128; ++i)
-			{
+			{	
+				// If object is not owned by this client, init object with data from the server
 				if (i != clientID)
 				{
+					// Read data from server
 					RenderSceneData dat;
 					RenderSceneData::Read(bitstream, dat);
 
+					// Set current object data (position, velocity, acceleration) to data from the server
 					RenderSceneData::Copy(rsdObjects[i], dat);
 				}
+				// Hard coded defaults for client controlled object
 				else
 				{
+					// Default client position
 					rsdObjects[clientID].position[0] = 0.0f;
 					rsdObjects[clientID].position[1] = 0.0f;
 					rsdObjects[clientID].position[2] = 20.0f;
 
+					// Default client velocity
 					rsdObjects[clientID].velocity[0] = 0.0f;
 					rsdObjects[clientID].velocity[1] = 0.0f;
 					rsdObjects[clientID].velocity[2] = 0.0f;
 
+					// Default client acceleration
 					rsdObjects[clientID].acceleration[0] = 0.0f;
 					rsdObjects[clientID].acceleration[1] = 0.0f;
 					rsdObjects[clientID].acceleration[2] = -9.81f;
 
+					// Send client default data to server
 					RakNet::BitStream bitstream_w;
 					WriteTimestamp(bitstream_w);
 					bitstream_w.Write((RakNet::MessageID)ID_GPRO_COMMON_INITIAL_CLIENT_PARAMETERS);
@@ -173,41 +191,47 @@ namespace gproNet
 
 		} return true;
 
+		// Initialize client parameters from server 
 		case ID_GPRO_COMMON_INITIAL_CLIENT_PARAMETERS:
 		{
+			// Get data from server
 			RenderSceneData dat;
 			RenderSceneData::Read(bitstream, dat);
 
+			// Set this client's rsd data to data from server
 			RenderSceneData::Copy(rsdObjects[dat.ownerID], dat);
 
 		} return true;
 
+		// Send updated object data to server
 		case ID_GPRO_COMMON_SEND_OBJECT_UPDATES:
 		{
-			float d = 0.0f;
+			// Loop through all objects in the scene
 			for (int i = 0; i < 128; ++i)
 			{
+				// Check if object is owned by the client
 				if (i != rsdObjects[clientID].ownerID)
 				{
+					// Read position data from server
 					RenderSceneData dat;
 					RenderSceneData::Read(bitstream, dat);
 
-					if (i == 5)
-						d = dat.position[2];
-
 					RenderSceneData temp = rsdObjects[i];
 
-					//Dead reckoning
+					//Dead reckoning - Interpolate position to server pos if the difference in position is small enough
 					if (abs(dat.position[2] - temp.position[2]) < 2)
 					{
+						// Linearly interpolate position to server position
 						temp.position[0] = temp.position[0] + (dat.position[0] - temp.position[0]) * dtSendToReceive;
 						temp.position[1] = temp.position[1] + (dat.position[1] - temp.position[1]) * dtSendToReceive;
 						temp.position[2] = temp.position[2] + (dat.position[2] - temp.position[2]) * dtSendToReceive;
 
+						// Set velocity to server velocity
 						temp.velocity[0] = dat.velocity[0];
 						temp.velocity[1] = dat.velocity[1];
 						temp.velocity[2] = dat.velocity[2];
 
+						// Set acceleration to server acceleration
 						temp.acceleration[0] = dat.acceleration[0];
 						temp.acceleration[1] = dat.acceleration[1];
 						temp.acceleration[2] = dat.acceleration[2];
@@ -215,7 +239,7 @@ namespace gproNet
 						//Update our state
 						RenderSceneData::Copy(rsdObjects[i], temp);
 					}
-					else
+					else // Snap to server position
 					{
 						//Update our state
 						RenderSceneData::Copy(rsdObjects[i], dat);

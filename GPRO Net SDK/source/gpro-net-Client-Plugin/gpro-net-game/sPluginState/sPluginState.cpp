@@ -47,7 +47,6 @@ void renderer_update_bindSkybox(sSceneObjectComponent const* sceneObject_skybox,
 }
 #endif	// __cplusplus
 
-void updateRSDPosition(sPluginState* state, int index);
 void updateLocalPosition(sPluginState* state, int index);
 
 //-----------------------------------------------------------------------------
@@ -259,13 +258,10 @@ void plugin_update_simulate(sPluginState* pluginState, double const dt)
 	for (i = 0, j = rendererArrayLen(pluginState->obj_client);
 		i < j; ++i)
 	{
-		updateLocalPosition(pluginState, i);
+		updateLocalPosition(pluginState, i); // Update local object positons from rsd position
 		renderer_updateSceneObject(pluginState->obj_client + i, 0);
 		renderer_updateSceneObjectStack(pluginState->obj_client + i, projector);
 	}
-
-	if(pluginState->client->GetClientID() != -1)
-		//updateRSDPosition(pluginState, pluginState->client->GetClientID());
 
 	pluginState->client->PhysicsUpdate(dt);
 
@@ -280,23 +276,16 @@ void plugin_update_simulate(sPluginState* pluginState, double const dt)
 	a3bufferRefillOffset(pluginState->renderer->ubo_transform + 1, 0, 0, sizeof(pluginState->modelstack_client), pluginState->modelstack_client);
 }
 
-void updateRSDPosition(sPluginState* state, int index)
-{
-	sSceneObjectComponent* objClient = state->obj_client + index;
-	gproNet::cRakNetClient* client = state->client;
-
-	client->GetRSD(index).position[0] = objClient->dataPtr->position.x;
-	client->GetRSD(index).position[1] = objClient->dataPtr->position.y;
-	client->GetRSD(index).position[2] = objClient->dataPtr->position.z;
-
-	state->client->SendRSDPosition(client->GetRSD(index));
-}
-
+// updateLocalPosition
+		//	Updates the local position of a scene object from RenderSceneData data stored in the client
+		//		param state: plugin state
+		//		param index: index of object in the object array
 void updateLocalPosition(sPluginState* state, int index)
 {
 	sSceneObjectComponent* objClient = state->obj_client + index;
 	gproNet::cRakNetClient* client = state->client;
 
+	// Set object position to position of RSD stored in the client
 	objClient->dataPtr->position.x = client->GetRSD(index).position[0];
 	objClient->dataPtr->position.y = client->GetRSD(index).position[1];
 	objClient->dataPtr->position.z = client->GetRSD(index).position[2];

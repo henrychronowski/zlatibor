@@ -68,7 +68,7 @@ namespace gproNet
 		ID_GPRO_MESSAGE_COMMON_END
 	};
 
-
+	// Data for an object in the scene
 	struct RenderSceneData
 	{
 		short ownerID = 0;
@@ -77,22 +77,32 @@ namespace gproNet
 		float acceleration[3];
 		float force[3];
 
+		// Write
+		//	Writes the data of a RenderSceneData object to a bitstream
+		//		param bitstream: packet data in bitstream
+		//		param obj: RenderSceneData object to write
+		//		return: bitstream that was written to
 		static RakNet::BitStream& Write(RakNet::BitStream& bitstream, RenderSceneData const& obj)
 		{
+			// Write owner id
 			bitstream.Write(obj.ownerID);
 			
+			// Write position
 			bitstream.Write(obj.position[0]);
 			bitstream.Write(obj.position[1]);
 			bitstream.Write(obj.position[2]);
 
+			// Write velocity
 			bitstream.Write(obj.velocity[0]);
 			bitstream.Write(obj.velocity[1]);
 			bitstream.Write(obj.velocity[2]);
 
+			// Write acceleration
 			bitstream.Write(obj.acceleration[0]);
 			bitstream.Write(obj.acceleration[1]);
 			bitstream.Write(obj.acceleration[2]);
 
+			// Write force
 			bitstream.Write(obj.force[0]);
 			bitstream.Write(obj.force[1]);
 			bitstream.Write(obj.force[2]);
@@ -100,21 +110,32 @@ namespace gproNet
 			return bitstream;
 		}
 
+		// Read
+		//	Reads the data of a RenderSceneData object from a bitstream
+		//		param bitstream: packet data in bitstream
+		//		param obj: RenderSceneData object to read to
+		//		return: bitstream that was read from
 		static RakNet::BitStream& Read(RakNet::BitStream& bitstream, RenderSceneData const& obj)
 		{
+			// Read owner id
 			bitstream.Read(obj.ownerID);
+
+			// Read position
 			bitstream.Read(obj.position[0]);
 			bitstream.Read(obj.position[1]);
 			bitstream.Read(obj.position[2]);
 
+			// Read velocity
 			bitstream.Read(obj.velocity[0]);
 			bitstream.Read(obj.velocity[1]);
 			bitstream.Read(obj.velocity[2]);
 
+			// Read acceleration
 			bitstream.Read(obj.acceleration[0]);
 			bitstream.Read(obj.acceleration[1]);
 			bitstream.Read(obj.acceleration[2]);
 
+			// Read force
 			bitstream.Read(obj.force[0]);
 			bitstream.Read(obj.force[1]);
 			bitstream.Read(obj.force[2]);
@@ -122,22 +143,32 @@ namespace gproNet
 			return bitstream;
 		}
 		
+		// Copy
+		//	Copies the data of a RenderSceneData object to another RenderSceneData object
+		//		param lhs: RenderSceneData object to copy to
+		//		param obj: RenderSceneData object to copy from
+		//		return: the newly copied RenderSceneData object (lhs)
 		static RenderSceneData& Copy(RenderSceneData&lhs, RenderSceneData const&rhs)
 		{
+			// Copy owner id
 			lhs.ownerID = rhs.ownerID;
 
+			// Copy position
 			lhs.position[0] = rhs.position[0];
 			lhs.position[1] = rhs.position[1];
 			lhs.position[2] = rhs.position[2];
 
+			// Copy velocity
 			lhs.velocity[0] = rhs.velocity[0];
 			lhs.velocity[1] = rhs.velocity[1];
 			lhs.velocity[2] = rhs.velocity[2];
 
+			// Copy acceleration
 			lhs.acceleration[0] = rhs.acceleration[0];
 			lhs.acceleration[1] = rhs.acceleration[1];
 			lhs.acceleration[2] = rhs.acceleration[2];
 
+			// Copy force
 			lhs.force[0] = rhs.force[0];
 			lhs.force[1] = rhs.force[1];
 			lhs.force[2] = rhs.force[2];
@@ -145,6 +176,11 @@ namespace gproNet
 			return lhs;
 		}
 
+		// DeltaPos
+		//	Finds the distance between two objects in the scene
+		//		param lhs: RenderSceneData object start
+		//		param obj: RenderSceneData object end
+		//		return: the distance between the two RenderSceneData objects
 		static float DeltaPos(RenderSceneData lhs, RenderSceneData rhs)
 		{
 			return sqrtf(powf(rhs.position[0] - lhs.position[0], 2) + 
@@ -152,6 +188,11 @@ namespace gproNet
 						powf(rhs.position[2] - lhs.position[2], 2));
 		}
 
+		// DeltaPosSqr
+		//	Finds the squared distance between two objects in the scene
+		//		param lhs: RenderSceneData object start
+		//		param obj: RenderSceneData object end
+		//		return: the squared distance between the two RenderSceneData objects
 		static float DeltaPosSqr(RenderSceneData lhs, RenderSceneData rhs)
 		{
 			return powf(rhs.position[0] - lhs.position[0], 2) +

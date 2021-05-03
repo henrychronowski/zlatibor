@@ -74,14 +74,30 @@ namespace gproNet
 		//	Destructor.
 		virtual ~cRakNetClient();
 
+		// SendRSDPosition
+		//	Send the position of a RenderSceneData object to the server
+		//		param rsd: RenderSceneData object to send
 		void SendRSDPosition(RenderSceneData& rsd);
 
+		// GetRSD
+		//	Return a RenderSceneData object from rsdObjects array
+		//		param index: index of RenderSceneData object
+		//		return: RenderSceneData object at index
 		RenderSceneData& GetRSD(int index);
 
+		// GetClientID
+		//	Gets the ID of this client
+		//		return: ID of this client
 		int GetClientID() { return clientID; }
 
+		// Is Connected
+		//	Returns whether or not the client is connected to the server
+		//		return: is client connected to the server
 		bool IsConnected() { return connected; }
 
+		// Physics Update
+		//	Update physics on this client
+		//		param dt: current frame time
 		void PhysicsUpdate(double dt);
 
 		// protected methods
