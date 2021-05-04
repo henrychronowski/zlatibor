@@ -85,7 +85,7 @@ Material:
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
-    - uBumpScale: 1.1
+    - uBumpScale: 1
     - uEmissiveStrength: 1
     - uSpecScale: 1
     - uSpecularPower: 384

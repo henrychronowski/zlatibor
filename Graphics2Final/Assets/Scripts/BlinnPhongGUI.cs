@@ -14,11 +14,13 @@ public class BlinnPhongGUI : ShaderGUI
 	MaterialEditor editor;
 	MaterialProperty[] properties;
 
+	// Helper function to slightly reduce the length of calls
 	MaterialProperty FindProperty(string name)
 	{
 		return FindProperty(name, properties);
 	}
 
+	// Helper function to simplify labelling GUI elements
 	static GUIContent MakeLabel( string text, string tooltip = null)
 	{
 		staticLabel.text = text;
@@ -28,67 +30,50 @@ public class BlinnPhongGUI : ShaderGUI
 
 	public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
 	{
-		this.editor = materialEditor;
+		editor = materialEditor;
 		this.properties = properties;
 
+		// Display the main maps and then the parameters specific to this shader
 		MainMaps();
 		ShaderSpecific();
 	}
 
+	// General maps common on the default Unity shader
 	void MainMaps()
 	{
 		GUILayout.Label("Main Maps", EditorStyles.boldLabel);
 
+		// The base colour map
 		MaterialProperty mainTex = FindProperty("uTexture");
 		editor.TexturePropertySingleLine(MakeLabel("Albedo", "Albedo (RGB)"), mainTex, FindProperty("uColor"));
 
-		//MetallicMap();
-		//Smoothness();
 		NormalMap();
 		EmissiveMap();
 
+		// The offset and scale coordinates for the shader's UVs
 		EditorGUI.indentLevel += 2;
 		editor.TextureScaleOffsetProperty(mainTex); 
 		EditorGUI.indentLevel -= 2;
 	}
 
+	// The normal map with a float intensity scale
 	void NormalMap()
 	{
 		MaterialProperty map = FindProperty("uNormalMap");
 		editor.TexturePropertySingleLine(MakeLabel("Normal Map"), map, map.textureValue ? FindProperty("uBumpScale") : null);
 	}
 
+	// The emissive map with a float intensity scale
 	void EmissiveMap()
 	{
 		MaterialProperty map = FindProperty("uEmissionMap");
 		editor.TexturePropertySingleLine(MakeLabel("Emissive"), map, map.textureValue ? FindProperty("uEmissiveStrength") : null);
 	}
 
-	void MetallicMap()
-	{
-		MaterialProperty slider = FindProperty("_Metallic");
-		EditorGUI.indentLevel += 2;
-		editor.ShaderProperty(slider, MakeLabel("Metallic"));
-		EditorGUI.indentLevel -= 2;
-	}
-
-	void Smoothness()
-	{
-		MaterialProperty slider = FindProperty("_Smoothness");
-		EditorGUI.indentLevel += 2;
-		editor.ShaderProperty(slider, MakeLabel("Smoothness"));
-		EditorGUI.indentLevel -= 2;
-	}
-
-
-
+	// Non-general parameters (I know it's a bad wording but I can't think of anything better)
 	void ShaderSpecific()
 	{
 		GUILayout.Label("Parameters", EditorStyles.boldLabel);
-
-		//MaterialProperty mainTex = FindProperty("uTexture");
-		//editor.TexturePropertySingleLine(MakeLabel("Albedo", "Albedo (RGB)"), mainTex, FindProperty("uColor"));
-
 		EditorGUI.indentLevel += 2;
 		SpecScale();
 		SpecColor();
@@ -96,18 +81,21 @@ public class BlinnPhongGUI : ShaderGUI
 		EditorGUI.indentLevel -= 2;
 	}
 
+	// float scale of the specular effect
 	void SpecScale()
 	{
 		MaterialProperty slider = FindProperty("uSpecScale");
 		editor.ShaderProperty(slider, MakeLabel("Specular Scale"));
 	}
 
+	// Tint colour for the specular effect
 	void SpecColor()
 	{
 		MaterialProperty slider = FindProperty("uSpecColor");
 		editor.ShaderProperty(slider, MakeLabel("Specular Color"));
 	}
 
+	// The float power for the specular effect
 	void SpecPower()
 	{
 		MaterialProperty slider = FindProperty("uSpecularPower");

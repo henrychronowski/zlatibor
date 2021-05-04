@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// This rotates the light at a steady speed.
 public class Rotate : MonoBehaviour
 {
     public bool rotate = false;

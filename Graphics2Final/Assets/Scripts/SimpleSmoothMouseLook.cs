@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 
 // From https://forum.unity.com/threads/a-free-simple-smooth-mouselook.73117/
-// Extended to include keyboard movement by Henry Chronowski
+// Extended to include keyboard movement where labelled by Henry Chronowski
 
 [AddComponentMenu("Camera/Simple Smooth Mouse Look ")]
 public class SimpleSmoothMouseLook : MonoBehaviour
 {
-    // Movement
+    // Keyboard movement variables
     public float flySpeed = 0.5f;
     public float vertFactor = 0.3f;
 
@@ -37,7 +37,7 @@ public class SimpleSmoothMouseLook : MonoBehaviour
 
     void Update()
     {
-        // Movement
+        // Keyboard movement input
         if (Input.GetAxis("Vertical") != 0)
 		{
 			transform.Translate(Vector3.forward * flySpeed * Input.GetAxis("Vertical"));
@@ -56,6 +56,7 @@ public class SimpleSmoothMouseLook : MonoBehaviour
 		{
 			transform.Translate(Vector3.down * flySpeed * vertFactor);
 		}
+        // End keyboard movement input
 
 		if (Input.GetKey(KeyCode.Mouse0))
         {
