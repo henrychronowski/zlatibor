@@ -4,20 +4,28 @@ using UnityEngine;
 
 public class KinematicsManager : MonoBehaviour
 {
-    public List<Joint> modelJoints;
+    [Header("IK Parameters")]
     public float samplingDistance;
     public float learningRate;
     public float distanceThreshold;
-    public Transform target;
 
+    [Header("Object References")]
+    public Transform IKTarget;
+    public GameObject armature;
+
+    [Header("Debug")]
+    public List<Joint> modelJoints;
+    [SerializeField]
+    float[] localAngles;
     
     int boneCount;
     Joint[] joints;
-    float[] localAngles;
 
     // Start is called before the first frame update
     void Start()
     {
+        InitBones();
+
         boneCount = modelJoints.Count;
         joints = new Joint[boneCount];
         modelJoints.CopyTo(joints);
@@ -31,7 +39,7 @@ public class KinematicsManager : MonoBehaviour
     void Update()
     {
         // Calculate new rotations using IK
-        CalculateInverseKinematics(target.position);
+        CalculateInverseKinematics(IKTarget.position);
 
         // Apply new rotations
         for (int i = 0; i < boneCount; i++)
@@ -40,7 +48,32 @@ public class KinematicsManager : MonoBehaviour
 
     void InitBones()
     {
-        
+        Vector3[] axis = new Vector3[3];
+        axis[0] = new Vector3(1, 0, 0);
+        axis[1] = new Vector3(0, 1, 0);
+        axis[2] = new Vector3(0, 0, 1);
+
+        Transform bone = armature.transform;
+        Joint joint;
+        int axisCounter = 0;
+
+        // Add joint script to each bone on mesh
+        while(bone.childCount > 0)
+        {
+            bone = bone.GetChild(0);
+            
+            // Set correct axis
+            joint = bone.gameObject.AddComponent<Joint>();
+            joint.axis = axis[axisCounter];
+
+            // Set correct min/max angles
+            joint.minAngle = -35.0f;
+            joint.maxAngle = 35.0f;
+            axisCounter = (axisCounter++) % 3;
+
+            // Add joint to list of joints
+            modelJoints.Add(joint);
+        }
     }
 
     public void CalculateInverseKinematics(Vector3 target)
@@ -86,11 +119,12 @@ public class KinematicsManager : MonoBehaviour
     {
         float angle = localAngles[index];
 
-        //Calculate Gradient - see https://www.alanzucconi.com/2017/04/10/gradient-descent/
+        //Calculate Gradient - see https://www.alanzucconi.com/2017/04/10/gradient-descent/ 
         float distance = GetDistanceFromTarget(target);
         localAngles[index] += samplingDistance;
         float distPlusSample = GetDistanceFromTarget(target);
 
+        // [F(x + h) - F(x)] / h (Simulate a limit)
         float gradient = (distPlusSample - distance) / samplingDistance;
 
         //Reset Local Angle
@@ -102,6 +136,9 @@ public class KinematicsManager : MonoBehaviour
     public float GetDistanceFromTarget(Vector3 target)
     {
         Vector3 start = CalculateForwardKinematics();
-        return  Vector3.Distance(target, start);
+        float dist = Vector3.Distance(target, start);
+
+
+        return dist;
     }
 }
