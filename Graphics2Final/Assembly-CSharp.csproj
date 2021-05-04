@@ -66,6 +66,8 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Bloom.cs" />
     <Compile Include="Assets\Scripts\DepthOfField.cs" />
+    <Compile Include="Assets\Scripts\Joint.cs" />
+    <Compile Include="Assets\Scripts\KinematicsManager.cs" />
     <Compile Include="Assets\Scripts\Rotate.cs" />
     <None Include="Assets\Shaders\Bloom.shader" />
     <None Include="Assets\Shaders\Blin-Phong.shader" />
