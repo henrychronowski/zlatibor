@@ -7,6 +7,7 @@ public class DepthOfField : MonoBehaviour
 {
     [HideInInspector]
     public Shader DOFShader;
+    [HideInInspector]
     public Material DOFMat;
 
     public bool isActive = false;

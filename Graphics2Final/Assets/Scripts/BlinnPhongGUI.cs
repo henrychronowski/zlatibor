@@ -7,7 +7,7 @@ using UnityEditor;
 // Written by Henry Chronowski
 // Referenced https://catlikecoding.com/unity/tutorials/rendering/part-9/
 
-public class CustomShaderGui : ShaderGUI
+public class BlinnPhongGUI : ShaderGUI
 {
 	static GUIContent staticLabel = new GUIContent();
 
@@ -32,6 +32,7 @@ public class CustomShaderGui : ShaderGUI
 		this.properties = properties;
 
 		MainMaps();
+		ShaderSpecific();
 	}
 
 	void MainMaps()
@@ -43,9 +44,11 @@ public class CustomShaderGui : ShaderGUI
 
 		//MetallicMap();
 		//Smoothness();
-		NormalMap();
+		//NormalMap();
 
-		editor.TextureScaleOffsetProperty(mainTex);
+		EditorGUI.indentLevel += 2;
+		editor.TextureScaleOffsetProperty(mainTex); 
+		EditorGUI.indentLevel -= 2;
 	}
 
 	void NormalMap()
@@ -66,7 +69,41 @@ public class CustomShaderGui : ShaderGUI
 	{
 		MaterialProperty slider = FindProperty("_Smoothness");
 		EditorGUI.indentLevel += 2;
-		editor.ShaderProperty(slider, MakeLabel("slider"));
+		editor.ShaderProperty(slider, MakeLabel("Smoothness"));
 		EditorGUI.indentLevel -= 2;
+	}
+
+
+
+	void ShaderSpecific()
+	{
+		GUILayout.Label("Parameters", EditorStyles.boldLabel);
+
+		//MaterialProperty mainTex = FindProperty("uTexture");
+		//editor.TexturePropertySingleLine(MakeLabel("Albedo", "Albedo (RGB)"), mainTex, FindProperty("uColor"));
+
+		EditorGUI.indentLevel += 2;
+		SpecScale();
+		SpecColor();
+		SpecPower();
+		EditorGUI.indentLevel -= 2;
+	}
+
+	void SpecScale()
+	{
+		MaterialProperty slider = FindProperty("uSpecScale");
+		editor.ShaderProperty(slider, MakeLabel("Specular Scale"));
+	}
+
+	void SpecColor()
+	{
+		MaterialProperty slider = FindProperty("uSpecColor");
+		editor.ShaderProperty(slider, MakeLabel("Specular Color"));
+	}
+
+	void SpecPower()
+	{
+		MaterialProperty slider = FindProperty("uSpecularPower");
+		editor.ShaderProperty(slider, MakeLabel("Specular Power"));
 	}
 }

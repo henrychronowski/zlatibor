@@ -157,4 +157,5 @@
         // Adds support for unity's shadow casting
         UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
     }
+    CustomEditor "BlinnPhongGUI"
 }

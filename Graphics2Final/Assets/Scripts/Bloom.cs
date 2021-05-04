@@ -11,9 +11,12 @@ public class Bloom : MonoBehaviour
 	public int pass = 3;
 	[Range(1, 16)]
 	public int iterations = 1;
-	[Range(0, 10)]
+	[Range(0, 1)]
 	public float threshold = 1;
+
+	[HideInInspector]
 	public Shader bloomShader;
+	[HideInInspector]
 	public Material bloomMat;
 
 	const int BRIGHT_PASS = 0;
