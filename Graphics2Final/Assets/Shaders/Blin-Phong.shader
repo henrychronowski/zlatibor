@@ -6,7 +6,11 @@
         uSpecScale("Specular Scale", Float) = 1.0
         uSpecColor("Specular Color", Color) = (1, 1, 1, 1)
         uTexture("Texture", 2D) = "tex" {}
+        uNormalMap("Normals", 2D) = "bump" {}
+        uBumpScale("Bump Scale", Float) = 1.0
         uSpecularPower("Specular Power", Float) = 128
+        uEmissionMap("Emission", 2D) = "black" {}
+        uEmissiveStrength("Emissive Strength", Float) = 1.0
     }
         SubShader
     {
@@ -21,10 +25,15 @@
             #pragma fragment frag
 
             #include "UnityCG.cginc" //Provides light and camera data
+            #include "UnityStandardUtils.cginc" //Provides unpack normal function to deal with DXT5nm
 
             uniform float4 _LightColor0; //From UnityCG
 
             sampler2D uTexture;
+            sampler2D uNormalMap;
+            sampler2D uEmissionMap;
+            float uBumpScale;
+            float uEmissiveStrength;
             float4 uTexture_ST;
             uniform float4 uColor;
             uniform float4 uSpecColor;
@@ -63,7 +72,12 @@
 
             fixed4 frag(vertToFrag input) : COLOR
             {
-                float3 normal = normalize(input.normal);
+                // Calculate Normal
+                float3 normal;
+                normal = UnpackScaleNormal(tex2D(uNormalMap, input.uv), uBumpScale);    // Unpack from DXT5nm to usable
+                normal = normal.xzy;
+                normal = normalize(normal);
+
                 float3 viewDir = normalize(_WorldSpaceCameraPos.xyz - input.worldPos.xyz); // Calculate view direction
                 float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
                 float3 halfwayDir = normalize(lightDir + viewDir);
@@ -73,9 +87,20 @@
 
                 float3 ambient = UNITY_LIGHTMODEL_AMBIENT.rgb * uColor.rgb;
                 float3 diffuse = attenuation * _LightColor0.rgb * uColor.rgb * max(0.0, dot(normal, lightFace));
-                float3 specular = attenuation * _LightColor0.rgb * uSpecColor.rgb * pow(max(dot(normal, halfwayDir), 0.0f), uSpecularPower);
+                float3 specular;
                 
-                float3 color = (ambient + diffuse) * tex2D(uTexture, input.uv) + specular;
+                if (dot(input.normal, lightFace) < 0.0)
+                {
+                    specular = float3(0.0, 0.0, 0.0);
+                }
+                else
+                {
+                    specular = attenuation* _LightColor0.rgb* uSpecColor.rgb* pow(max(dot(normal, halfwayDir), 0.0f), uSpecularPower);
+                }
+
+                float3 emissive = tex2D(uEmissionMap, input.uv.xy) * uEmissiveStrength;
+
+                float3 color = (ambient + diffuse) * tex2D(uTexture, input.uv) + specular + emissive;
 
                 return float4(color, 1);
             }

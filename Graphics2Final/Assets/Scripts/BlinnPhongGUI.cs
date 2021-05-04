@@ -44,7 +44,8 @@ public class BlinnPhongGUI : ShaderGUI
 
 		//MetallicMap();
 		//Smoothness();
-		//NormalMap();
+		NormalMap();
+		EmissiveMap();
 
 		EditorGUI.indentLevel += 2;
 		editor.TextureScaleOffsetProperty(mainTex); 
@@ -55,6 +56,12 @@ public class BlinnPhongGUI : ShaderGUI
 	{
 		MaterialProperty map = FindProperty("uNormalMap");
 		editor.TexturePropertySingleLine(MakeLabel("Normal Map"), map, map.textureValue ? FindProperty("uBumpScale") : null);
+	}
+
+	void EmissiveMap()
+	{
+		MaterialProperty map = FindProperty("uEmissionMap");
+		editor.TexturePropertySingleLine(MakeLabel("Emissive"), map, map.textureValue ? FindProperty("uEmissiveStrength") : null);
 	}
 
 	void MetallicMap()
