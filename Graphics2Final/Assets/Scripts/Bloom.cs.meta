@@ -3,7 +3,9 @@ guid: 90b5701f79abc4b4a925bf29fd8abfe4
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - bloomShader: {fileID: 4800000, guid: 03eaa87f6e18615478024de07fe5991d, type: 3}
+  - bloomMat: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
