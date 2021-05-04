@@ -37,6 +37,8 @@ public class DepthOfField : MonoBehaviour
     {
         if(isActive)
         {
+            // Loop based off of idle-render loop in animal3D
+
             // Create new material to be used by camera's RenderTexture
             if (DOFMat == null)
             {
