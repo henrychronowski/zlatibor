@@ -1,4 +1,8 @@
-﻿Shader "Custom/DepthOfField"
+﻿// Written by Henry Chronowski and Ethan Heil
+// The blue book was referenced for methodology/algorithms and we followed this tutorial from catlikecoding.com 
+//      for the HLSL implementation: https://catlikecoding.com/unity/tutorials/advanced-rendering/depth-of-field/
+
+Shader "Custom/DepthOfField"
 {
     Properties
     {

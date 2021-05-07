@@ -5,7 +5,9 @@ using UnityEngine;
 // Class to manage bloom on a camera 
 // Written by Ethan Heil and Henry Chronowski
 // Heavily referenced Project 2: Multi-Pass & Post-Processing Pipelines for the pass structure here
-//		and of course referencing the blue book's algorithms and suggestions for improvements
+//		and of course referencing the blue book's algorithms and suggestions for improvements in combination
+//		with the tutorial cited in the shader corresponding shader for how to interact with the shader passes
+//		from C#
 
 [ExecuteInEditMode]
 public class Bloom : MonoBehaviour
